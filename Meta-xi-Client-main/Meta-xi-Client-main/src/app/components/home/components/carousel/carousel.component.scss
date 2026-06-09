@@ -1,0 +1,154 @@
+// =========================================================
+// CAROUSEL — VIP Minimalist Carousel with Gold Border
+// =========================================================
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+// ─── Container with Rotating Gold Border ────
+.vip-card-container {
+  position: relative;
+  width: 92%;
+  max-width: 550px;
+  aspect-ratio: 18 / 9;
+  background: #25282a;
+  border-radius: 16px;
+  padding: 2px; // space for the gold line
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  margin: 0 auto;
+}
+
+.vip-card-container::before {
+  content: '';
+  position: absolute;
+  width: 150%;
+  height: 150%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    transparent 10%,
+    #d4af37 15%,
+    #f9f295 17%,
+    #d4af37 19%,
+    transparent 25%
+  );
+  animation: goldRotate 5s linear infinite;
+}
+
+@keyframes goldRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+// ─── Inner Wrapper ────
+.inner-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #1c1f21;
+  border-radius: 14px;
+  z-index: 2;
+  overflow: hidden;
+}
+
+// ─── Edge Shading (depth frame) ────
+.edge-shading {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: 14px;
+}
+
+// ─── Progress Bar ────
+.progress-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 12;
+}
+
+.progress-bar {
+  height: 100%;
+  background: #d4af37;
+  box-shadow: 0 0 10px #d4af37;
+}
+
+// ─── Track ────
+.track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+// ─── Slide ────
+.slide {
+  min-width: 100%;
+  height: 100%;
+  position: relative;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.7);
+  }
+}
+
+// ─── Content Overlay ────
+.content {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 11;
+  color: white;
+
+  h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    margin: 0;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  }
+
+  p {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 5px 0 0 0;
+    color: #d4af37;
+    font-family: 'Montserrat', sans-serif;
+  }
+}
+
+// ─── Responsive ────
+@media (max-width: 600px) {
+  .vip-card-container {
+    width: 96%;
+  }
+
+  .content {
+    bottom: 14px;
+    left: 14px;
+
+    h3 {
+      font-size: 16px;
+    }
+
+    p {
+      font-size: 8px;
+      letter-spacing: 1.5px;
+    }
+  }
+}

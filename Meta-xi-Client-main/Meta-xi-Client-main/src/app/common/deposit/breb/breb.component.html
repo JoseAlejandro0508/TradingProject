@@ -1,0 +1,64 @@
+<div class="deposit-wrap">
+    <!-- Back Nav -->
+    <a routerLink="/home" class="back-nav">
+        <div class="arrow-green"></div>
+        <span class="nav-label">Volver</span>
+    </a>
+
+    <!-- Green Card Frame -->
+    <div class="green-card">
+        <div class="inner-container">
+
+            <!-- Balance -->
+            <div class="balance-header">
+                <span class="balance-title">Balance de cuenta</span>
+                <span class="balance-val">$ {{ displayBalance }}</span>
+            </div>
+
+            <!-- Input -->
+            <input type="text"
+                   class="input-box"
+                   placeholder="0"
+                   [ngModel]="displayAmount"
+                   (ngModelChange)="onAmountInput($event)">
+
+            <!-- Preset Amounts -->
+            <div class="amounts-grid">
+                @for (amt of presets; track amt.value) {
+                    <button class="amount-btn"
+                            [class.selected]="rawAmount === amt.value"
+                            (click)="selectAmount(amt.value)">
+                        ${{ amt.label }}
+                    </button>
+                }
+            </div>
+
+            <!-- Payment Method (Bre-b) -->
+            <div class="payment-method-row">
+                <div class="icon-box-bre">
+                    <div class="inner-glow-bre"></div>
+                    <img src="assets/token/breb.jpg" class="method-img" alt="Bre-B">
+                </div>
+                <span class="method-name-text">Bre-B</span>
+                <div class="chevron-green"></div>
+            </div>
+
+            <!-- Confirm Button -->
+            <button class="btn-confirm"
+                    [class.active]="rawAmount >= MIN_AMOUNT"
+                    [disabled]="rawAmount < MIN_AMOUNT"
+                    [routerLink]="['/breb', 'breb']"
+                    [queryParams]="{cantidad: rawAmount}">
+                Confirmar Recarga
+            </button>
+
+        </div>
+    </div>
+
+    <!-- Legal Info -->
+    <div class="legal-info">
+        1. Recarga minima: <b class="green-text">50,000 COP</b> para activar boton.<br>
+        2. Al confirmar, escanee el codigo QR generado.<br>
+        3. Acreditacion automatica en <b class="green-text">1-10 minutos</b>.
+    </div>
+</div>

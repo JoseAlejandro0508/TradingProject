@@ -1,0 +1,16 @@
+<div class="vip-nano-list-widget">
+  <div class="header">
+    <h2>Miembros VIP</h2>
+    <div class="live"><div class="dot"></div> LIVE</div>
+  </div>
+  <ul class="nano-list">
+    <li *ngFor="let user of userlist; trackBy: trackByIndex" class="item" [class.item-enter]="user.isNew">
+      <img [src]="user.avatarUrl" alt="Avatar" class="avatar" (error)="handleAvatarError($event)">
+      <div class="details">
+        <b>Miembro ****{{ user.phoneNumber }}</b>
+        <span>Completado satisfactoriamente</span>
+      </div>
+      <div class="price">{{ user.amountFormatted }}<span>COP</span></div>
+    </li>
+  </ul>
+</div>

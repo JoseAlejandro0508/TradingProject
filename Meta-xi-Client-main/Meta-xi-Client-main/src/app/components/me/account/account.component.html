@@ -1,0 +1,54 @@
+<div class="premium-container">
+    <div class="header">
+        <button class="back-button" routerLink="/home">←</button>
+        <span class="header-title">Resumen VIP</span>
+        <span class="vip-badge">PREMIUM</span>
+    </div>
+
+    <div class="main-card">
+        <div class="stat-group">
+            <span class="label">Ganancia Total</span>
+            <span class="value green">{{ formatCurrency(totalEarned) }}</span>
+        </div>
+        <div class="stat-group" style="margin-top: 10px;">
+            <span class="label">Inversión</span>
+            <span class="value" style="font-size: 18px; color: #d4af37;">{{ formatCurrency(totalInvested) }}</span>
+        </div>
+    </div>
+
+    <div class="details-grid">
+        <div class="small-stat">
+            <span class="small-label">Recargada</span>
+            <span class="small-value" style="color: white;">{{ formatCurrency(totalRecharged) }}</span>
+        </div>
+        <div class="small-stat">
+            <span class="small-label">Retirada</span>
+            <span class="small-value" style="color: #e74c3c;">{{ formatCurrency(totalWithdrawn) }}</span>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div style="margin-bottom: 10px; font-size: 12px; font-weight: 600; color: #d4af37; text-transform: uppercase; letter-spacing: 1px;">
+        Desglose de Ganancias
+    </div>
+
+    <div class="details-grid">
+        <div class="small-stat">
+            <span class="small-label">Por Tareas</span>
+            <span class="small-value">{{ formatCurrency(taskEarnings) }}</span>
+        </div>
+        <div class="small-stat">
+            <span class="small-label">Por Misiones</span>
+            <span class="small-value" style="color: #d4af37;">{{ formatCurrency(missionEarnings) }}</span>
+        </div>
+        <div class="small-stat" style="grid-column: span 2;">
+            <span class="small-label">Por Referidos</span>
+            <span class="small-value">{{ formatCurrency(referralEarnings) }}</span>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px;">
+        <div style="font-size: 10px; color: #555; letter-spacing: 2px;">ESTATUS DE CUENTA {{ accountStatus }}</div>
+    </div>
+</div>

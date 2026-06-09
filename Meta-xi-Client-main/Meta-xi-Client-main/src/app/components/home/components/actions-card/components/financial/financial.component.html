@@ -1,0 +1,36 @@
+<div >
+
+  <div class="action-hub">
+    <div class="neo-btn btn-deposit" [routerLink]="['/recharge']">
+      <div class="neo-btn-surface">
+        <span
+          class="symbol"
+          style="filter: drop-shadow(0 0 8px rgba(0, 255, 170, 0.4))"
+          >+</span
+        >
+        <span class="btn-tag">Depósito</span>
+      </div>
+    </div>
+
+    <div class="neo-btn btn-withdraw"  [routerLink]="['/withdrawToken']">
+      <div class="neo-btn-surface">
+        <span
+          class="symbol"
+          style="filter: drop-shadow(0 0 8px rgba(255, 51, 102, 0.4))"
+          >−</span
+        >
+        <span class="btn-tag">Retiro</span>
+      </div>
+    </div>
+
+    <div class="neo-btn btn-long btn-gold" [routerLink]="['/tasks']">
+      <div class="neo-btn-surface">
+        <div
+          class="icon-svg icon-invest"
+          style="filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3))"
+        ></div>
+        <span class="btn-tag" style="font-size: 11px">Invertir</span>
+      </div>
+    </div>
+  </div>
+</div>
