@@ -1,0 +1,317 @@
+.home-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--tv-bg-main);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  padding-bottom: 40px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* --- CONTENEDOR PRINCIPAL VISTA SMARTPHONE --- */
+.dashboard-container {
+  width: 100%;
+  max-width: 360px; 
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+  padding: 0 14px;
+  margin-top: 12px;
+  box-sizing: border-box;
+}
+
+/* --- MASTER CAROUSEL --- */
+.promo-header-container {
+  width: 100vw; 
+  height: 165px; 
+  background-color: var(--tv-bg-main);
+  position: relative;
+}
+
+.promo-carousel-wrapper {
+  width: 100%; height: 100%; 
+  position: relative; overflow: hidden;
+}
+
+.promo-carousel {
+  display: flex; width: 100%; height: 100%;
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  scroll-behavior: smooth; scrollbar-width: none;
+}
+.promo-carousel::-webkit-scrollbar { display: none; }
+
+.promo-slide {
+  flex: 0 0 100vw; width: 100vw; height: 100%;
+  scroll-snap-align: start; padding: 16px 24px;
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative; box-sizing: border-box;
+  border-bottom: 1px solid var(--tv-border);
+}
+
+.slide-1 { background: var(--banner-1); }
+.slide-2 { background: var(--banner-2); }
+.slide-3 { background: var(--banner-3); }
+.slide-4 { background: var(--banner-4); }
+.slide-5 { background: var(--banner-5); }
+.slide-6 { background: var(--banner-6); }
+
+.promo-content { position: relative; z-index: 2; max-width: 75%; }
+
+.promo-badge {
+  display: inline-block; font-size: 0.6rem; font-weight: 700; padding: 3px 8px;
+  background: var(--badge-bg-default); color: var(--text-primary);
+  border: 1px solid var(--tv-border); border-radius: 4px;
+  text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px;
+}
+
+.promo-title { font-size: 1.2rem; font-weight: 800; line-height: 1.25; margin-bottom: 5px; color: var(--text-primary); letter-spacing: -0.3px; }
+.promo-subtitle { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4; font-weight: 400; }
+
+.carousel-dots {
+  position: absolute; bottom: 16px; right: 24px;
+  display: flex; gap: 5px; z-index: 10;
+}
+.dot { width: 5px; height: 5px; border-radius: 50%; background: var(--text-secondary); opacity: 0.25; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+.dot.active { width: 14px; border-radius: 3px; background: var(--primary); opacity: 1; }
+
+.promo-icon {
+  position: absolute; right: 26px; top: 32%; opacity: 0.22; color: var(--text-primary);
+  pointer-events: none; z-index: 1;
+  animation: premiumFloat 3.5s infinite ease-in-out alternate;
+}
+.promo-icon svg { width: 52px; height: 52px; }
+
+@keyframes premiumFloat {
+  0% { transform: translateY(0) rotate(-2deg); }
+  100% { transform: translateY(-8px) rotate(5deg); }
+}
+
+/* --- RECUADRO BALANCE PRINCIPAL --- */
+.balance-card {
+  background-color: var(--tv-bg-card);
+  border: 1px solid var(--tv-border);
+  border-radius: 16px; padding: 18px 20px;
+  box-shadow: 0 4px 14px var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.3s;
+}
+
+.balance-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 3px;
+  background: var(--current-glow);
+  opacity: 0.8;
+  transition: background 0.4s ease;
+}
+
+/* --- RECUADRO GRANDE EXTENDIDO DE BORDE A BORDE PERFECTO (100vw) --- */
+.earnings-card {
+  background: linear-gradient(135deg, var(--bg-grad-start), var(--bg-grad-end));
+  width: 100vw; /* Forzado total al ancho real de la pantalla */
+  margin-left: calc(-50vw + 50%); /* Centrado absoluto rompiendo paddings del padre */
+  margin-right: calc(-50vw + 50%);
+  border-radius: 0; /* Sin curvas para mimetizarse con los límites laterales */
+  padding: 26px 24px; 
+  position: relative; 
+  overflow: hidden; /* Mantiene la notificación contenida */
+  border-top: 1px solid rgba(255, 255, 255, 0.08); 
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08); 
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Resplandores inferiores del color del recuadro grande */
+.earnings-card::after {
+  content: ""; 
+  position: absolute; 
+  bottom: -6px; left: 15%; width: 70%; height: 12px;
+  background: linear-gradient(90deg, var(--bg-grad-start), var(--bg-grad-end));
+  filter: blur(14px);
+  z-index: -1;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.earnings-card::before {
+  content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background-image: linear-gradient(rgba(255,255,255,0.01) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.01) 1px, transparent 1px);
+  background-size: 16px 16px; z-index: 1;
+  pointer-events: none;
+}
+
+.content-wrapper { position: relative; z-index: 3; }
+.header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+
+.label { font-size: 0.72rem; color: #ffffff; opacity: 0.75; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; }
+
+.live-badge { font-size: 0.65rem; color: #ffffff; background: rgba(255, 255, 255, 0.12); padding: 2px 8px; border-radius: 4px; font-weight: 700; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255,255,255,0.05); }
+.live-badge::before { content: ""; width: 5px; height: 5px; background-color: var(--text-secondary); border-radius: 50%; }
+
+.earnings-card.active-bot .live-badge { background: rgba(0, 200, 83, 0.25); border-color: rgba(0, 200, 83, 0.4); }
+.earnings-card.active-bot .live-badge::before { background-color: #00c853; animation: pulseGlow 1.5s infinite; }
+@keyframes pulseGlow { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+
+.balance-container { font-size: 2.1rem; font-weight: 800; margin-bottom: 16px; color: #ffffff; display: flex; align-items: baseline; gap: 6px; }
+.balance-container.main-wallet { margin: 0; font-size: 1.75rem; color: var(--text-primary); }
+.balance-currency { color: rgba(255,255,255,0.6); font-size: 1.1rem; font-weight: 600; }
+[data-theme="light"] .balance-container.main-wallet .balance-currency { color: var(--text-secondary); }
+
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; opacity: 0.55; transition: opacity 0.4s ease; }
+.earnings-card.active-bot .stats-grid { opacity: 1; }
+
+.stat-box { background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.04); padding: 12px; border-radius: 12px; }
+.stat-val { font-weight: 700; color: #ffffff; display: block; font-size: 1rem; }
+.stat-label { font-size: 0.68rem; color: rgba(255,255,255,0.55); margin-top: 2px; display: block; }
+
+.btn-claim {
+  width: 100%; background-color: var(--tv-blue); color: white; border: none; padding: 15px; border-radius: 12px;
+  font-weight: 700; font-size: 0.88rem; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;
+  box-shadow: 0 4px 14px rgba(41, 98, 255, 0.3); transition: all 0.2s ease;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.btn-claim:hover { opacity: 0.9; }
+.btn-claim:active { transform: scale(0.98); }
+.btn-claim:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.footer-text { font-size: 0.68rem; text-align: center; margin-top: 12px; color: rgba(255,255,255,0.5); transition: color 0.3s ease; }
+
+/* --- CUADRÍCULA DE ACCIONES --- */
+.action-buttons-grid { 
+  display: grid; 
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 10px; 
+}
+
+.btn-action {
+  background-color: var(--tv-bg-card); 
+  border: 1px solid var(--tv-border); 
+  border-radius: 14px;
+  padding: 14px 2px; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 8px; 
+  color: var(--text-primary); 
+  cursor: pointer; 
+  box-shadow: 0 4px 10px var(--shadow-card);
+  position: relative;
+  transition: transform 0.2s, background-color 0.2s;
+}
+.btn-action:active { transform: translateY(2px); background-color: var(--btn-hover); }
+
+.btn-action .icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-action-recargar .icon-box { background-color: var(--tile-accent-1); color: var(--icon-color-1); }
+.btn-action-retirar .icon-box { background-color: var(--tile-accent-2); color: var(--icon-color-2); }
+.btn-action-referidos .icon-box { background-color: var(--tile-accent-3); color: var(--icon-color-3); }
+.btn-action-cuenta .icon-box { background-color: var(--tile-accent-4); color: var(--icon-color-4); }
+
+.btn-action svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2.2; fill: none; }
+.btn-action span { font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); letter-spacing: -0.2px; }
+
+/* --- BOTÓN LARGO DE BONO --- */
+.btn-bonus-long {
+  width: 100%; 
+  background-color: var(--bonus-btn-bg); 
+  border: 1px solid var(--bonus-btn-border); 
+  border-radius: 14px;
+  padding: 16px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 8px; 
+  color: var(--bonus-btn-text); 
+  font-weight: 700; 
+  font-size: 0.85rem; 
+  cursor: pointer; 
+  text-transform: uppercase; 
+  letter-spacing: 0.6px;
+  box-shadow: 0 4px 12px var(--shadow-card);
+  transition: background-color 0.2s, transform 0.2s;
+}
+.btn-bonus-long:hover { opacity: 0.9; }
+.btn-bonus-long:active { transform: scale(0.99); opacity: 0.9; }
+.btn-bonus-long svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+/* VELAS TRADING */
+.trading-chart { position: absolute; bottom: 0; left: 0; width: 100%; height: 50px; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 8px; opacity: 0.03; z-index: 2; pointer-events: none; transition: opacity 0.5s ease; }
+.earnings-card.active-bot .trading-chart { opacity: 0.12; }
+.candle-container { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; flex: 1; }
+.candle { width: 5px; position: relative; border-radius: 1px; transform-origin: bottom; }
+.earnings-card.active-bot .candle { animation: fluctuate 2s infinite alternate ease-in-out; }
+
+.candle.bull { background: var(--tv-green); } 
+.candle.bear { background: var(--tv-red); }
+.c1 { animation-duration: 2s; height: 18px; }
+.c2 { animation-duration: 1.6s; height: 35px; }
+.c3 { animation-duration: 2.3s; height: 12px; }
+.c4 { animation-duration: 1.8s; height: 42px; }
+.c5 { animation-duration: 2.1s; height: 25px; }
+.c6 { animation-duration: 1.5s; height: 38px; }
+.c7 { animation-duration: 1.9s; height: 20px; }
+@keyframes fluctuate { 0% { transform: scaleY(0.9); } 100% { transform: scaleY(1.1); } }
+
+/* --- NOTIFICACIÓN TOAST --- */
+.toast-notification { 
+  position: absolute; 
+  top: -80px; /* Desplazado completamente fuera del recuadro por defecto */
+  left: 16px; 
+  right: 16px; 
+  background-color: var(--tv-blue); 
+  color: white; 
+  padding: 12px; 
+  border-radius: 10px; 
+  font-size: 0.8rem; 
+  text-align: center; 
+  font-weight: 600; 
+  z-index: 10; 
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+}
+.toast-notification.show { 
+  top: 14px; /* Baja elegantemente a su posición visual sólo al activarse */
+}
+
+/* --- RESPONSIVE --- */
+@media (min-width: 768px) {
+  .dashboard-container {
+    max-width: 480px;
+    padding: 0 20px;
+  }
+  
+  .promo-header-container {
+    height: 200px;
+  }
+  
+  .promo-slide {
+    padding: 24px 32px;
+  }
+  
+  .promo-title {
+    font-size: 1.5rem;
+  }
+  
+  .promo-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .balance-container {
+    font-size: 2.5rem;
+  }
+  
+  .balance-container.main-wallet {
+    font-size: 2rem;
+  }
+}

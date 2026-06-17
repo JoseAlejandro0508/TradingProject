@@ -5,6 +5,61 @@
 
 /* --- VARIABLES DE DISEÑO PREMIUM OPTIMIZADAS --- */
 :root {
+  /* Home Component Theme Variables */
+  --neon-white: #ffffff;
+  --tv-white: #ffffff;
+  --tv-red: #f23645;
+  --tv-green: #00c853; 
+  --tv-blue: #2962ff;
+  
+  --tv-bg-main: #0c0d14; 
+  --tv-bg-card: #161824; 
+  --tv-border: rgba(255, 255, 255, 0.06);
+  --bg-grad-start: #3f1e85;
+  --bg-grad-end: #1e1042;
+
+  --text-primary: #ffffff;
+  --text-secondary: #848e9c;
+  --text-muted: #b2b5be;
+
+  --primary: #2962ff;
+  --success: #00c853;
+  --btn-hover: rgba(255, 255, 255, 0.08);
+
+  --banner-1: linear-gradient(135deg, rgba(41, 98, 255, 0.25) 0%, rgba(12, 13, 20, 0.98) 90%);
+  --banner-2: linear-gradient(135deg, rgba(114, 46, 209, 0.25) 0%, rgba(12, 13, 20, 0.98) 90%);
+  --banner-3: linear-gradient(135deg, rgba(0, 200, 83, 0.25) 0%, rgba(12, 13, 20, 0.98) 90%);
+  --banner-4: linear-gradient(135deg, rgba(255, 152, 0, 0.25) 0%, rgba(12, 13, 20, 0.98) 90%);
+  --banner-5: linear-gradient(135deg, rgba(0, 188, 212, 0.25) 0%, rgba(12, 13, 20, 0.98) 90%);
+  --banner-6: linear-gradient(135deg, rgba(233, 30, 99, 0.25) 0%, rgba(12, 13, 20, 0.98) 90%);
+  
+  --nav-glow-1: rgba(41, 98, 255, 0.4);
+  --nav-glow-2: rgba(114, 46, 209, 0.4);
+  --nav-glow-3: rgba(0, 200, 83, 0.4);
+  --nav-glow-4: rgba(255, 152, 0, 0.4);
+  --nav-glow-5: rgba(0, 188, 212, 0.4);
+  --nav-glow-6: rgba(233, 30, 99, 0.4);
+
+  --current-glow: var(--nav-glow-1);
+
+  --shadow-card: rgba(0, 0, 0, 0.5);
+  
+  --tile-accent-1: rgba(41, 98, 255, 0.1);
+  --tile-accent-2: rgba(242, 54, 69, 0.1);
+  --tile-accent-3: rgba(114, 46, 209, 0.1);
+  --tile-accent-4: rgba(0, 200, 83, 0.1);
+  
+  --icon-color-1: #2962ff;
+  --icon-color-2: #f23645;
+  --icon-color-3: #722ed1;
+  --icon-color-4: #00c853;
+
+  --bonus-btn-bg: #161824;
+  --bonus-btn-text: #ffb74d;
+  --bonus-btn-border: rgba(255, 183, 77, 0.2);
+  --badge-bg-default: rgba(255, 255, 255, 0.08);
+
+  /* Legacy variables */
   --bg-main: #0c0e10;
   --bg-surface: #14171a;
   --bg-card: rgba(24, 28, 32, 0.8);
@@ -22,9 +77,7 @@
   --glass-blur: blur(20px);
 
   /* Profile / Template integration variables */
-  --primary: var(--accent);
   --primary-hover: #1e4bd6;
-  --success: var(--accent-green);
   --warning: #ffb300;
   --danger: var(--accent-red);
   --border-color: var(--border);
@@ -35,7 +88,7 @@
 
   /* Recharge / Deposit UI tokens */
   --btn-bg: rgba(255, 255, 255, 0.03);
-  --btn-hover: rgba(255, 255, 255, 0.06);
+  --btn-hover-legacy: rgba(255, 255, 255, 0.06);
   --btn-logo-bg: rgba(255, 255, 255, 0.04);
   --card-container-bg: rgba(255, 255, 255, 0.02);
   --input-focus-ring: rgba(41, 98, 255, 0.15);
@@ -52,6 +105,48 @@
 }
 
 [data-theme="light"] {
+  /* Home Component Light Theme */
+  --neon-white: #131722;
+  --tv-white: #131722;
+  --tv-bg-main: #f4f6fa;
+  --tv-bg-card: #ffffff;
+  --tv-border: rgba(0, 0, 0, 0.08);
+  --bg-grad-start: #4c1d95;
+  --bg-grad-end: #1e1b4b;
+  
+  --text-primary: #131722;
+  --text-secondary: #5d6673;
+  --text-muted: #333a46;
+  
+  --btn-hover: rgba(0, 0, 0, 0.05);
+
+  --banner-1: linear-gradient(135deg, rgba(41, 98, 255, 0.12) 0%, #ffffff 90%);
+  --banner-2: linear-gradient(135deg, rgba(114, 46, 209, 0.12) 0%, #ffffff 90%);
+  --banner-3: linear-gradient(135deg, rgba(0, 200, 83, 0.12) 0%, #ffffff 90%);
+  --banner-4: linear-gradient(135deg, rgba(255, 152, 0, 0.12) 0%, #ffffff 90%);
+  --banner-5: linear-gradient(135deg, rgba(0, 188, 212, 0.12) 0%, #ffffff 90%);
+  --banner-6: linear-gradient(135deg, rgba(233, 30, 99, 0.12) 0%, #ffffff 90%);
+  
+  --nav-glow-1: rgba(41, 98, 255, 0.25);
+  --nav-glow-2: rgba(114, 46, 209, 0.25);
+  --nav-glow-3: rgba(0, 200, 83, 0.25);
+  --nav-glow-4: rgba(255, 152, 0, 0.25);
+  --nav-glow-5: rgba(0, 188, 212, 0.25);
+  --nav-glow-6: rgba(233, 30, 99, 0.25);
+
+  --shadow-card: rgba(13, 17, 34, 0.06);
+
+  --tile-accent-1: rgba(41, 98, 255, 0.08);
+  --tile-accent-2: rgba(242, 54, 69, 0.08);
+  --tile-accent-3: rgba(114, 46, 209, 0.08);
+  --tile-accent-4: rgba(0, 200, 83, 0.08);
+
+  --bonus-btn-bg: #fff6e6;
+  --bonus-btn-text: #b26a00;
+  --bonus-btn-border: rgba(178, 106, 0, 0.2);
+  --badge-bg-default: rgba(0, 0, 0, 0.06);
+
+  /* Legacy variables */
   --bg-main: #f4f6f9;
   --bg-surface: #ffffff;
   --bg-card: rgba(240, 244, 248, 0.9);
@@ -77,7 +172,7 @@
 
   /* Recharge / Deposit UI tokens */
   --btn-bg: #ffffff;
-  --btn-hover: rgba(0, 0, 0, 0.02);
+  --btn-hover-legacy: rgba(0, 0, 0, 0.02);
   --btn-logo-bg: rgba(0, 0, 0, 0.04);
   --card-container-bg: rgba(0, 0, 0, 0.01);
   --input-focus-ring: rgba(41, 98, 255, 0.08);
