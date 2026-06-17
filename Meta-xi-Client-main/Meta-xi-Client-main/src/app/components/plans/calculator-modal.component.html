@@ -1,0 +1,87 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-content">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2 class="modal-title">📊 Calculadora de Ganancias</h2>
+      <button class="btn-close" (click)="onClose()">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Bot Name -->
+    <div class="bot-name-section" *ngIf="botPlan">
+      <h3 class="bot-name">{{ botPlan.name }}</h3>
+      <span class="pair-badge">{{ botPlan.tradingPair }}</span>
+    </div>
+
+    <!-- Cost Section -->
+    <div class="cost-section">
+      <div class="cost-row">
+        <span class="cost-label">Inversión Inicial:</span>
+        <span class="cost-value" [class.free]="cost === 0">
+          {{ cost === 0 ? 'GRATIS' : formatCurrency(cost) + ' COP' }}
+        </span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-label">Duración:</span>
+        <span class="cost-value">{{ duration }} días</span>
+      </div>
+    </div>
+
+    <!-- Profits Grid -->
+    <div class="profits-section">
+      <h4 class="section-title">Proyección de Ganancias</h4>
+      
+      <div class="profit-cards">
+        <div class="profit-card daily">
+          <div class="card-icon">📅</div>
+          <div class="card-content">
+            <span class="card-label">Diario</span>
+            <span class="card-value">+{{ formatCurrency(dailyProfit) }} COP</span>
+          </div>
+        </div>
+
+        <div class="profit-card weekly">
+          <div class="card-icon">📊</div>
+          <div class="card-content">
+            <span class="card-label">Semanal</span>
+            <span class="card-value">+{{ formatCurrency(weeklyProfit) }} COP</span>
+          </div>
+        </div>
+
+        <div class="profit-card monthly">
+          <div class="card-icon">📈</div>
+          <div class="card-content">
+            <span class="card-label">Mensual</span>
+            <span class="card-value">+{{ formatCurrency(monthlyProfit) }} COP</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total -->
+      <div class="total-section">
+        <div class="total-row">
+          <span class="total-label">Ganancia Total Estimada</span>
+          <span class="total-value">+{{ formatCurrency(totalProfit) }} COP</span>
+        </div>
+        <div class="roi-badge">
+          <span class="roi-label">ROI:</span>
+          <span class="roi-value">+{{ roi }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+      <svg viewBox="0 0 24 24" width="16" height="16">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+      </svg>
+      <span>Estas proyecciones son estimaciones basadas en el rendimiento histórico. Los resultados reales pueden variar.</span>
+    </div>
+
+    <!-- Close Button -->
+    <button class="btn-close-modal" (click)="onClose()">Cerrar</button>
+  </div>
+</div>

@@ -16,7 +16,7 @@
   width: 100vw;
   height: 100vh;
   z-index: 1;
-  background: aqua;
+  background: var(--bg-main);
 }
 
 .bg-yellow-diagonal {
@@ -25,7 +25,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #FBE44A;
+  background: linear-gradient(135deg, rgba(218, 0, 119, 0.15) 0%, transparent 60%);
   clip-path: polygon(0 0, 100% 0, 0 100%);
 }
 
@@ -35,7 +35,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #FE6569;
+  background: linear-gradient(135deg, rgba(41, 98, 255, 0.1) 0%, transparent 60%);
   clip-path: polygon(20% 0%, 80% 0%, 100% 32%, 50% 95%, 0% 32%);
   z-index: 2;
 }
@@ -71,37 +71,37 @@
 .logo-text {
   font-size: 24px;
   font-weight: 900;
-  color: #000;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text-main);
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .info-text {
-  color: #fff;
+  color: var(--text-main);
   font-size: 14px;
   margin-bottom: 2px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .order-id {
-  color: #fff;
+  color: var(--text-muted);
   font-size: 13px;
   font-style: italic;
   opacity: 0.9;
   margin-bottom: 5px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .amount {
   font-size: 42px;
   font-weight: 900;
-  color: #fff;
+  color: var(--text-main);
   margin-bottom: 15px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 // ─── QR Box ──────────────────────────────────
 .qr-box {
-  background: #fff;
+  background: var(--bg-card);
   padding: 15px;
   border-radius: 25px;
   width: 240px;
@@ -110,6 +110,7 @@
   justify-content: center;
   align-items: center;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
 
   img {
     width: 100%;
@@ -119,39 +120,41 @@
 }
 
 .qr-footer-text {
-  color: #21014E;
+  color: var(--text-main);
   font-weight: 800;
   font-size: 14px;
   margin: 15px 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 // ─── Input ───────────────────────────────────
 .input-ref {
-  color: #000;
+  color: var(--text-main);
   width: 85%;
   padding: 12px;
   border-radius: 25px;
-  border: 2px solid #21014E;
+  border: 2px solid var(--border-color);
+  background: var(--input-bg);
   text-align: center;
   font-size: 14px;
   outline: none;
   margin-bottom: 10px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 // ─── Instructions ────────────────────────────
 .instructions {
-  background: #fff;
+  background: var(--bg-card);
   width: 85%;
   padding: 12px;
   border-radius: 10px;
   text-align: left;
   font-size: 12px;
-  color: #21014E;
+  color: var(--text-main);
   line-height: 1.4;
   margin-bottom: 15px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  border: 1px solid var(--border-color);
 
   b { display: block; margin-bottom: 3px; }
 }
@@ -166,15 +169,15 @@
   border: none;
   cursor: pointer;
   transition: 0.3s;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .btn-blue {
-  background: #3162FF;
+  background: var(--primary);
   color: #fff;
 
   &:disabled {
-    background: #999;
+    background: var(--btn-disabled-bg);
     opacity: 0.7;
     cursor: not-allowed;
   }
@@ -201,13 +204,13 @@
   flex-direction: column;
   align-items: center;
   padding-top: 40px;
-  background-color: #4EBEEF;
+  background: var(--bg-main);
 }
 
 .check-icon {
   width: 120px;
   height: 120px;
-  background: #1D9A3B;
+  background: var(--accent-green);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -226,17 +229,18 @@
 }
 
 .final-text {
-  color: #fff;
+  color: var(--text-main);
   font-size: 24px;
   font-weight: 800;
   font-style: italic;
   line-height: 1.3;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .btn-white {
-  background: #fff;
-  color: #21014E;
+  background: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
   margin-top: 30px;
   width: 50%;
 }

@@ -333,6 +333,92 @@ public class UserController : ControllerBase
         return Ok(new { message = "Número de teléfono actualizado correctamente" });
     }
 
+    //Endpoint para establecer/actualizar contraseña de retiro
+    [HttpPatch("SetWithdrawPassword")]
+    public async Task<IActionResult> SetWithdrawPassword(UpdateWithdrawPassword updateWithdrawPassword)
+    {
+        var user = await context.Users.FirstOrDefaultAsync(option => option.Email == updateWithdrawPassword.Username || option.PhoneNumber == updateWithdrawPassword.Username);
+        if (user == null)
+        {
+            return NotFound(new { message = "Usuario no encontrado" });
+        }
+
+        // If user already has a withdrawal password, verify old password first
+        if (!string.IsNullOrEmpty(user.WithdrawPassword))
+        {
+            if (string.IsNullOrEmpty(updateWithdrawPassword.OldWithdrawPassword))
+            {
+                return BadRequest(new { message = "Debes proporcionar la contraseña de retiro anterior" });
+            }
+            if (!userService.verifyPassword(updateWithdrawPassword.OldWithdrawPassword, user.WithdrawPassword))
+            {
+                return BadRequest(new { message = "Contraseña de retiro anterior incorrecta" });
+            }
+        }
+
+        // Validate new password: exactly 4 digits
+        if (updateWithdrawPassword.NewWithdrawPassword.Length != 4)
+        {
+            return BadRequest(new { message = "La contraseña de retiro debe tener exactamente 4 dígitos" });
+        }
+        if (!updateWithdrawPassword.NewWithdrawPassword.All(char.IsDigit))
+        {
+            return BadRequest(new { message = "La contraseña de retiro solo puede contener números" });
+        }
+
+        user.WithdrawPassword = userService.GeneratePassword(updateWithdrawPassword.NewWithdrawPassword);
+        context.Entry(user).State = EntityState.Modified;
+        await context.SaveChangesAsync();
+        return Ok(new { message = "Contraseña de retiro actualizada correctamente" });
+    }
+
+    //Endpoint para verificar si tiene contraseña de retiro configurada
+    [HttpGet("HasWithdrawPassword/{username}")]
+    public async Task<IActionResult> HasWithdrawPassword(string username)
+    {
+        var user = await context.Users.FirstOrDefaultAsync(option => option.Email == username || option.PhoneNumber == username);
+        if (user == null)
+        {
+            return NotFound(new { message = "Usuario no encontrado" });
+        }
+
+        return Ok(new { hasWithdrawPassword = !string.IsNullOrEmpty(user.WithdrawPassword) });
+    }
+
+    //Endpoint para verificar contraseña de retiro
+    [HttpPost("VerifyWithdrawPassword")]
+    public async Task<IActionResult> VerifyWithdrawPassword(UserLogin userLogin)
+    {
+        User? user = null;
+
+        if (userLogin.Email != null)
+        {
+            user = await context.Users.FirstOrDefaultAsync(option => option.Email == userLogin.Email);
+        }
+
+        if (user == null && userLogin.PhoneNumber != null)
+        {
+            user = await context.Users.FirstOrDefaultAsync(option => option.PhoneNumber == userLogin.PhoneNumber);
+        }
+
+        if (user == null)
+        {
+            return NotFound(new { message = "Usuario no encontrado" });
+        }
+
+        if (string.IsNullOrEmpty(user.WithdrawPassword))
+        {
+            return BadRequest(new { message = "No tienes una contraseña de retiro configurada. Configúrala primero en tu perfil." });
+        }
+
+        if (!userService.verifyPassword(userLogin.Password, user.WithdrawPassword))
+        {
+            return BadRequest(new { message = "Contraseña de retiro incorrecta" });
+        }
+
+        return Ok(new { message = "Correcto" });
+    }
+
     //Endpoint para cerrar sesión
     [HttpGet("Logout/{username}")]
     public async Task<IActionResult> Logout(string username)

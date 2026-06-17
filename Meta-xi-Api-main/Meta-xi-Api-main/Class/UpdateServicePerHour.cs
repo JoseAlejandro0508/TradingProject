@@ -14,7 +14,7 @@ public class UpdateServicePerHour : BackgroundService
                 var updatePlansPerHour = scope.ServiceProvider.GetRequiredService<IUpdatePlansPerHour>();
                 await updatePlansPerHour.UpdatePlansPerHour();
             }
-            await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
+            await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
         }
     }
 }

@@ -1,6 +1,11 @@
 <section class="w-full pb-[100px]">
   @if(token === 'nequi') {
   <app-nequi />
+  } @else if(token === 'daviplata') {
+  <app-daviplata />
+  } @else if(token === 'usdt-trc20') {
+  <app-back-home />
+  <app-usdt-trc20 />
   } @else if(token === 'usdt-bep20') {
   <app-back-home />
   <app-usdt-bep20 />

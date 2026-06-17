@@ -1,0 +1,127 @@
+<div class="canjear-bono-page">
+  <!-- Header -->
+  <div class="page-header">
+    <button class="back-link" (click)="goBack()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 19l-7-7 7-7"></path>
+      </svg>
+      <span>Volver</span>
+    </button>
+    <h1 class="page-title">Bono</h1>
+    <button class="theme-toggle-btn" (click)="toggleTheme()">
+      <svg *ngIf="themeService.getTheme() === 'dark'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+      <svg *ngIf="themeService.getTheme() === 'light'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Gift Box Card -->
+  <div class="gift-box-card">
+    <div class="gift-box-container" [class.open]="isOpen" [class.shake]="isShaking" (click)="canjearCodigo()">
+      <!-- Dots -->
+      <div class="dots-container">
+        <div class="dot dot-1"></div>
+        <div class="dot dot-2"></div>
+        <div class="dot dot-3"></div>
+        <div class="dot dot-4"></div>
+        <div class="dot dot-5"></div>
+        <div class="dot dot-6"></div>
+        <div class="dot dot-7"></div>
+        <div class="dot dot-8"></div>
+        <div class="dot dot-9"></div>
+        <div class="dot dot-10"></div>
+        <div class="dot dot-11"></div>
+        <div class="dot dot-12"></div>
+        <div class="dot dot-13"></div>
+        <div class="dot dot-14"></div>
+        <div class="dot dot-15"></div>
+        <div class="dot dot-16"></div>
+        <div class="dot dot-17"></div>
+        <div class="dot dot-18"></div>
+        <div class="dot dot-19"></div>
+        <div class="dot dot-20"></div>
+        <div class="dot dot-21"></div>
+        <div class="dot dot-22"></div>
+        <div class="dot dot-23"></div>
+        <div class="dot dot-24"></div>
+        <div class="dot dot-25"></div>
+        <div class="dot dot-26"></div>
+        <div class="dot dot-27"></div>
+        <div class="dot dot-28"></div>
+        <div class="dot dot-29"></div>
+        <div class="dot dot-30"></div>
+      </div>
+
+      <!-- Gift Lid Wrapper -->
+      <div class="gift-lid-wrapper" [class.open]="isOpen">
+        <div class="gift-ribbon-loop"></div>
+        <div class="gift-lid"></div>
+      </div>
+
+      <!-- Gift Body -->
+      <div class="gift-body">
+        <div class="gift-ribbon-vertical"></div>
+      </div>
+
+      <!-- Gift Reward Zone -->
+      <div class="gift-reward-zone">
+        <div class="gift-reward" [class.open]="isOpen">+${{ rewardAmount ?? '1,800' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Section -->
+  <div class="form-section">
+    <div class="input-group">
+      <label for="code-input">Código de regalo</label>
+      <input
+        id="code-input"
+        class="input-field"
+        type="text"
+        inputmode="numeric"
+        maxlength="6"
+        placeholder="Ingresa el código"
+        [(ngModel)]="codeInput"
+      />
+    </div>
+    <button class="submit-btn" (click)="canjearCodigo()">Canjear código</button>
+  </div>
+
+  <!-- History Card -->
+  <div class="history-card">
+    <div class="history-title">Historial de códigos</div>
+    <ul class="history-list" *ngIf="history.length > 0; else emptyHistory">
+      <li class="history-item" *ngFor="let item of history">
+        <div class="history-meta">
+          <span class="history-code">{{ item.code }}</span>
+          <span class="history-date">{{ item.date }}</span>
+        </div>
+        <div class="history-details">
+          <span class="history-amount" *ngIf="item.amount !== null">+${{ item.amount }}</span>
+          <span class="history-status" [class.status-success]="item.statusClass === 'status-success'" [class.status-fail]="item.statusClass === 'status-fail'">{{ item.status }}</span>
+        </div>
+      </li>
+    </ul>
+    <ng-template #emptyHistory>
+      <div class="history-empty">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="9" y1="9" x2="15" y2="15"></line>
+          <line x1="15" y1="9" x2="9" y2="15"></line>
+        </svg>
+        <span>Historial vacío</span>
+      </div>
+    </ng-template>
+  </div>
+</div>

@@ -26,12 +26,11 @@ export class BackgroundComponent implements OnInit {
     'breb/breb',
     'deposit/nequi',
     'welcome',
-    "login?"
+    "login"
   ];
     private readonly nonPadding = [
-
     'breb/breb',
-
+    'profile',
   ];
 
   constructor(private router: Router) {}

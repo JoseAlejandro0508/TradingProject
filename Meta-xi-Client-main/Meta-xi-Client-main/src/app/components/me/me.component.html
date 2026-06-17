@@ -1,492 +1,376 @@
-<!-- ============================================
-     VISTA PRINCIPAL (PERFIL)
-     ============================================ -->
-<div class="me-container" *ngIf="currentView === 'main'">
-  <!-- Header Profile -->
-  <div class="card header-profile">
-    <div class="avatar-ring">
-      <img src="assets/icons/avatar.webp" alt="Avatar" />
+<!-- BALANCE CARD -->
+<div class="wallet-wrapper" *ngIf="currentView === 'main'">
+  <header class="balance-card">
+    <div class="balance-label">BALANCE DISPONIBLE PARA RETIRO:</div>
+    <div class="balance-amount">{{ balanceUSD === 'N/A' ? 'N/A' : ('$' + balanceUSD) }}</div>
+    <div class="balance-crypto">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+      {{ balanceCOP > 0 ? (balanceCOP | currency:'COP':'symbol':'1.0-0':'es') : '0 COP' }}
     </div>
-    <div class="header-info">
-      <h2>{{ username }}</h2>
-      <p>Nivel Dorado</p>
+  </header>
+
+  <!-- ACTION BUTTONS -->
+  <section class="action-group">
+    <button class="btn btn-deposit" [routerLink]="['/recharge']">Recargar Cuenta</button>
+    <button class="btn btn-withdraw" [routerLink]="['/withdrawToken']">Retirar Fondos</button>
+  </section>
+
+  <!-- ACCORDION: HISTORIAL RECARGAS -->
+  <div class="filter-accordion" [class.open]="accordionOpen['acc-deposits']">
+    <div class="filter-bar-trigger" (click)="toggleAccordion('acc-deposits')">
+      <div class="filter-left-side">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <span>Historial recargas</span>
+      </div>
+      <div class="filter-right-side">
+        <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
     </div>
-    <div class="band">
-      <img src="assets/icons/band.webp" alt="Band" />
+    <div class="accordion-content">
+      <div class="tx-block" *ngFor="let tx of depositHistory">
+        <div class="tx-header-title">
+          <span>{{ tx.title }}</span>
+          <span class="status-badge" [class.badge-approved]="tx.status === 'approved'" [class.badge-pending]="tx.status === 'pending'">
+            {{ tx.status === 'approved' ? 'Aprobado' : 'En Proceso' }}
+          </span>
+        </div>
+        <div class="tx-row"><span class="tx-label">Desde:</span><span class="tx-value">{{ tx.from }}</span></div>
+        <div class="tx-row"><span class="tx-label">Hacia:</span><span class="tx-value">{{ tx.to }}</span></div>
+        <div class="tx-row"><span class="tx-label">Fecha:</span><span class="tx-value">{{ tx.date }}</span></div>
+        <div class="tx-row"><span class="tx-label">Cantidad a enviar:</span><span class="tx-value">{{ tx.amountSent }}</span></div>
+        <div class="tx-row"><span class="tx-label">Llegó luego de comisión:</span><span class="tx-value" [style.color]="tx.receivedColor">{{ tx.amountReceived }}</span></div>
+      </div>
+      <div class="tx-block empty-state" *ngIf="depositHistory.length === 0">
+        <div class="tx-header-title">No hay recargas</div>
+      </div>
     </div>
   </div>
 
-  <!-- Balance Card -->
-  <div class="card balance-card">
-    <div class="balance-row">
-      <span class="balance-label">Balance Total (COP)</span>
-      <span class="balance-value val-cop">{{ balanceCOP }}</span>
+  <!-- ACCORDION: HISTORIAL RETIROS -->
+  <div class="filter-accordion" [class.open]="accordionOpen['acc-withdraws']">
+    <div class="filter-bar-trigger" (click)="toggleAccordion('acc-withdraws')">
+      <div class="filter-left-side">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <span>Historial retiros</span>
+      </div>
+      <div class="filter-right-side">
+        <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
     </div>
-    <div class="container">
-      <button [routerLink]="['/history']" class="neo-btn">
-        <div class="neo-btn-surface">
-          <div
-            class="icon-svg icon-history"
-            style="filter: drop-shadow(0 0 5px rgba(0, 210, 255, 0.5))"
-          ></div>
-          <span class="btn-tag">Historial</span>
+    <div class="accordion-content">
+      <div class="tx-block" *ngFor="let tx of withdrawHistory">
+        <div class="tx-header-title">
+          <span>{{ tx.title }}</span>
+          <span class="status-badge" [class.badge-approved]="tx.status === 'approved'" [class.badge-pending]="tx.status === 'pending'">
+            {{ tx.status === 'approved' ? 'Aprobado' : 'En Proceso' }}
+          </span>
         </div>
-      </button>
-    </div>
-    <!--
-    <div class="balance-row">
-      <span class="balance-label">Balance Total (USD)</span>
-      <span class="balance-value val-usd">{{ balanceUSD | number:'1.2-2':'en' }}</span>
-    </div>
-    -->
-  </div>
-
-  <!-- Actions Grid -->
-  <div class="card">
-    <div class="actions-grid">
-      <a [routerLink]="['/recharge']" class="action-item" title="Recargar">
-        <div class="icon-box">
-          <i data-lucide="piggy-bank"></i>
-        </div>
-        <span>Recargar</span>
-      </a>
-      <a [routerLink]="['/withdrawToken']" class="action-item" title="Retirar">
-        <div class="icon-box">
-          <i data-lucide="arrow-down-to-line"></i>
-        </div>
-        <span>Retirar</span>
-      </a>
-      <a [routerLink]="['/tasks']" class="action-item" title="Inversión">
-        <div class="icon-box">
-          <i data-lucide="line-chart"></i>
-        </div>
-        <span>Inversión</span>
-      </a>
-      <a [routerLink]="['/account']" class="action-item" title="Cuenta">
-        <div class="icon-box">
-          <i data-lucide="building-2"></i>
-        </div>
-        <span>Cuenta</span>
-      </a>
+        <div class="tx-row"><span class="tx-label">Desde:</span><span class="tx-value">{{ tx.from }}</span></div>
+        <div class="tx-row"><span class="tx-label">Hacia:</span><span class="tx-value">{{ tx.to }}</span></div>
+        <div class="tx-row"><span class="tx-label">Fecha:</span><span class="tx-value">{{ tx.date }}</span></div>
+        <div class="tx-row"><span class="tx-label">Cantidad a enviar:</span><span class="tx-value">{{ tx.amountSent }}</span></div>
+        <div class="tx-row"><span class="tx-label">Llegó luego de comisión:</span><span class="tx-value" [style.color]="tx.receivedColor">{{ tx.amountReceived }}</span></div>
+      </div>
+      <div class="tx-block empty-state" *ngIf="withdrawHistory.length === 0">
+        <div class="tx-header-title">No hay retiros</div>
+      </div>
     </div>
   </div>
 
-  <!-- Menu: Cambiar Contraseña -->
-  <button class="menu-btn" (click)="switchView('pass')">
-    <div class="menu-left">
-      <div class="menu-icon-box"><i data-lucide="key-round"></i></div>
-      <span>Cambiar contraseña</span>
+  <!-- ACCORDION: DETALLES DE CUENTA -->
+  <div class="filter-accordion" [class.open]="accordionOpen['acc-details']">
+    <div class="filter-bar-trigger" (click)="toggleAccordion('acc-details')">
+      <div class="filter-left-side">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><path d="M12 11h4v2h-4z"></path><path d="M22 10.32c0-.6-.4-.94-1-.94h-3.5c-.5 0-.9-.44-.9-.94V5.5c0-.5-.4-.9-.9-.9H3.3c-.5 0-.9.4-.9.9v13c0 .5.4.9.9.9h15.4c.5 0 .9-.4.9-.9V14c0-.5.4-.94.9-.94H21c.6 0 1-.34 1-.94v-1.8z"></path></svg>
+        <span>Detalles de cuenta</span>
+      </div>
+      <div class="filter-right-side">
+        <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
     </div>
-    <i
-      data-lucide="chevron-right"
-      style="color: var(--text-muted); width: 18px"
-    ></i>
-  </button>
+    <div class="accordion-content">
+      <div class="tx-block">
+        <div class="tx-header-title" style="color: var(--text-muted); font-size:12px;">Mis Ganancias</div>
+        <div class="tx-row"><span class="tx-label">Ayer:</span><span class="tx-value">{{ accountDetails.yesterday }} COP</span></div>
+        <div class="tx-row"><span class="tx-label">Hoy:</span><span class="tx-value">{{ accountDetails.today }} COP</span></div>
+        <div class="tx-row"><span class="tx-label">Este mes:</span><span class="tx-value">{{ accountDetails.month }} COP</span></div>
+        <div class="tx-row"><span class="tx-label">Ingresos por equipo:</span><span class="tx-value">{{ accountDetails.team }} COP</span></div>
+        <div class="tx-row">
+          <span class="tx-label" style="font-weight: 700;">Ingresos Totales:</span>
+          <span class="tx-value" style="color: var(--success); font-size: 14px; font-weight: 700;">{{ accountDetails.total }} COP</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <!-- Menu: Cambiar Número -->
-  <button class="menu-btn" (click)="switchView('phone')">
-    <div class="menu-left">
-      <div class="menu-icon-box"><i data-lucide="smartphone"></i></div>
-      <span>Cambiar número</span>
+  <!-- ACCORDION: TRADING BOTS -->
+  <div class="filter-accordion" [class.open]="accordionOpen['acc-bots']">
+    <div class="filter-bar-trigger" (click)="toggleAccordion('acc-bots')">
+      <div class="filter-left-side">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+        <span>TradingBots activos</span>
+      </div>
+      <div class="filter-right-side">
+        <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
     </div>
-    <i
-      data-lucide="chevron-right"
-      style="color: var(--text-muted); width: 18px"
-    ></i>
-  </button>
+    <div class="accordion-content">
+      <section class="trading-bot-panel">
+        <div class="bot-header">
+          <div class="bot-title"><span class="pulse-dot"></span> Rendimiento de Bots</div>
+          <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">TIEMPO REAL</span>
+        </div>
+        <div class="bot-grid">
+          <div class="bot-card" *ngFor="let bot of bots">
+            <div class="bot-name">{{ bot.name }}</div>
+            <div class="bot-profit">+${{ bot.profit }} USD</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
 
-  <!-- Menu: Link de Referido -->
-  <button
-    class="menu-btn"
-    (click)="copyReferralLink()"
-    title="Copiar link de referido"
-  >
-    <div class="menu-left">
-      <div class="menu-icon-box"><i data-lucide="link"></i></div>
-      <span>Link de referido</span>
+  <!-- ACCORDION: SEGURIDAD (Password & Phone) -->
+  <div class="filter-accordion" [class.open]="accordionOpen['acc-security']">
+    <div class="filter-bar-trigger" (click)="toggleAccordion('acc-security')">
+      <div class="filter-left-side">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <span>Seguridad</span>
+      </div>
+      <div class="filter-right-side">
+        <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
     </div>
-    <i data-lucide="copy" style="color: var(--text-muted); width: 18px"></i>
-  </button>
-
-  <!-- Menu: Historial -->
-  <a
-    [routerLink]="['/history']"
-    class="menu-btn"
-    title="Historial de transacciones"
-  >
-    <div class="menu-left">
-      <div class="menu-icon-box"><i data-lucide="clock"></i></div>
-      <span>Historial</span>
+    <div class="accordion-content">
+      <div class="tx-block">
+        <div class="tx-header-title">Gestionar cuenta</div>
+        <div class="tx-row">
+          <button class="btn btn-deposit" style="width:100%;" (click)="switchView('pass')">Cambiar contraseña</button>
+        </div>
+        <div class="tx-row">
+          <button class="btn btn-deposit" style="width:100%;" (click)="switchView('withdrawPass')">Contraseña de retiro</button>
+        </div>
+        <div class="tx-row">
+          <button class="btn btn-withdraw" style="width:100%;" (click)="switchView('phone')">Cambiar número</button>
+        </div>
+        <div class="tx-row">
+          <button class="btn btn-withdraw" style="width:100%;" (click)="copyReferralLink()">Copiar link de referido</button>
+        </div>
+        <div class="tx-row">
+          <button class="btn btn-withdraw" style="width:100%; color: var(--danger); border-color: rgba(255,71,87,0.3);" (click)="logout()">Desconectar</button>
+        </div>
+      </div>
     </div>
-    <i
-      data-lucide="chevron-right"
-      style="color: var(--text-muted); width: 18px"
-    ></i>
-  </a>
-
-  <!-- Logout -->
-  <button
-    class="menu-btn"
-    style="
-      justify-content: center;
-      border-color: rgba(255, 71, 87, 0.2);
-      margin-top: 20px;
-    "
-    (click)="logout()"
-  >
-    <div class="menu-left" style="color: var(--danger)">
-      <i data-lucide="log-out" style="width: 18px"></i>
-      <span>Desconectar</span>
-    </div>
-  </button>
+  </div>
 </div>
 
-<!-- ============================================
-     VISTA: CAMBIAR CONTRASEÑA
-     ============================================ -->
+
+
+
+
+<div class="chat-window" [class.open]="chatOpen">
+  <div class="chat-header">
+    <div class="chat-profile-area">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+      <div>
+        <h4 style="font-size: 14px;">Asesor Premium</h4>
+        <span style="font-size: 11px; color: var(--success)">● En línea</span>
+      </div>
+    </div>
+    <button class="btn-close-chat" (click)="toggleChat()">Cerrar</button>
+  </div>
+  <div class="chat-body" id="chatBody">
+    <div class="msg" [class.msg-system]="msg.type === 'system'" [class.msg-user]="msg.type === 'user'" *ngFor="let msg of chatMessages">
+      <div *ngIf="msg.image" style="display:flex; align-items:center; gap:6px; margin-bottom:4px; font-size:12px; opacity:0.9;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        <span>Imagen seleccionada</span>
+      </div>
+      <img *ngIf="msg.image" [src]="msg.image" alt="Imagen de usuario">
+      <span *ngIf="msg.text">{{ msg.text }}</span>
+    </div>
+  </div>
+  <div class="chat-footer">
+    <input type="file" #mediaInput accept="image/*" style="display: none;" (change)="handleMediaSelection($any($event.target).files?.[0] || null)">
+    <label [for]="'mediaInput'" class="media-label-btn" (click)="mediaInput.click()" title="Enviar Foto">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    </label>
+    <input type="text" class="chat-input" [(ngModel)]="chatInput" placeholder="Escribe tu mensaje..." (keypress)="$event.key === 'Enter' && sendMessage()">
+    <button class="btn-send" (click)="sendMessage()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+    </button>
+  </div>
+</div>
+
+<!-- PASSWORD VIEW -->
 <div class="me-container form-view" *ngIf="currentView === 'pass'" [@slideIn]>
   <div class="form-header">
     <button class="back-btn" (click)="switchView('main')">
-      <i data-lucide="arrow-left"></i>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h2>Seguridad</h2>
   </div>
-
   <div class="card">
     <form [formGroup]="passForm" (ngSubmit)="submitPassword()">
-      <!-- Contraseña Anterior -->
       <div class="form-group">
         <label>Contraseña Anterior</label>
         <div class="input-wrapper">
-          <i data-lucide="unlock"></i>
-          <input
-            [type]="passFieldTypeOld"
-            formControlName="oldPassword"
-            placeholder="Ingresa clave actual"
-            (input)="validatePassForm()"
-          />
-          <button
-            type="button"
-            class="toggle-pass"
-            (click)="togglePassVisibility('old')"
-          >
-            <svg
-              *ngIf="passFieldTypeOld === 'password'"
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-              <circle cx="12" cy="12" r="3" />
-            </svg>
-            <svg
-              *ngIf="passFieldTypeOld === 'text'"
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path
-                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"
-              />
-              <path
-                d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"
-              />
-              <line x1="1" y1="1" x2="23" y2="23" />
-            </svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute; left:16px; color:var(--text-muted);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <input [type]="passFieldTypeOld" formControlName="oldPassword" placeholder="Ingresa clave actual" (input)="validatePassForm()" />
+          <button type="button" class="toggle-pass" (click)="togglePassVisibility('old')">
+            <svg *ngIf="passFieldTypeOld === 'password'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg *ngIf="passFieldTypeOld === 'text'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
           </button>
         </div>
-        <div
-          *ngIf="
-            passForm.get('oldPassword')?.touched &&
-            passForm.get('oldPassword')?.hasError('required')
-          "
-          class="field-error"
-        >
-          La contraseña anterior es obligatoria
-        </div>
-        <div
-          *ngIf="
-            passForm.get('oldPassword')?.touched &&
-            passForm.get('oldPassword')?.hasError('minlength')
-          "
-          class="field-error"
-        >
-          Mínimo 6 caracteres
-        </div>
+        <div *ngIf="passForm.get('oldPassword')?.touched && passForm.get('oldPassword')?.hasError('required')" class="field-error">La contraseña anterior es obligatoria</div>
+        <div *ngIf="passForm.get('oldPassword')?.touched && passForm.get('oldPassword')?.hasError('minlength')" class="field-error">Mínimo 6 caracteres</div>
       </div>
-
-      <!-- Nueva Contraseña -->
       <div class="form-group">
         <label>Nueva Contraseña</label>
         <div class="input-wrapper">
-          <i data-lucide="lock"></i>
-          <input
-            [type]="passFieldTypeNew"
-            formControlName="newPassword"
-            placeholder="Mínimo 6 caracteres"
-            (input)="validatePassForm()"
-          />
-          <button
-            type="button"
-            class="toggle-pass"
-            (click)="togglePassVisibility('new')"
-          >
-            <svg
-              *ngIf="passFieldTypeNew === 'password'"
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-              <circle cx="12" cy="12" r="3" />
-            </svg>
-            <svg
-              *ngIf="passFieldTypeNew === 'text'"
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path
-                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"
-              />
-              <path
-                d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"
-              />
-              <line x1="1" y1="1" x2="23" y2="23" />
-            </svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute; left:16px; color:var(--text-muted);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <input [type]="passFieldTypeNew" formControlName="newPassword" placeholder="Mínimo 6 caracteres" (input)="validatePassForm()" />
+          <button type="button" class="toggle-pass" (click)="togglePassVisibility('new')">
+            <svg *ngIf="passFieldTypeNew === 'password'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg *ngIf="passFieldTypeNew === 'text'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
           </button>
         </div>
-        <div
-          *ngIf="
-            passForm.get('newPassword')?.touched &&
-            passForm.get('newPassword')?.hasError('required')
-          "
-          class="field-error"
-        >
-          La nueva contraseña es obligatoria
-        </div>
-        <div
-          *ngIf="
-            passForm.get('newPassword')?.touched &&
-            passForm.get('newPassword')?.hasError('minlength')
-          "
-          class="field-error"
-        >
-          Mínimo 6 caracteres
-        </div>
-        <div
-          *ngIf="passForm.get('newPassword')?.hasError('passwordStrength')"
-          class="field-error"
-        >
-          {{ passForm.get("newPassword")?.getError("passwordStrength") }}
-        </div>
+        <div *ngIf="passForm.get('newPassword')?.touched && passForm.get('newPassword')?.hasError('required')" class="field-error">La nueva contraseña es obligatoria</div>
+        <div *ngIf="passForm.get('newPassword')?.touched && passForm.get('newPassword')?.hasError('minlength')" class="field-error">Mínimo 6 caracteres</div>
+        <div *ngIf="passForm.get('newPassword')?.hasError('passwordStrength')" class="field-error">{{ passForm.get('newPassword')?.getError('passwordStrength') }}</div>
       </div>
-
-      <!-- Repetir Nueva Contraseña -->
       <div class="form-group">
         <label>Repetir Nueva Contraseña</label>
         <div class="input-wrapper">
-          <i data-lucide="shield-check"></i>
-          <input
-            [type]="passFieldTypeConfirm"
-            formControlName="confirmPassword"
-            placeholder="Confirma tu clave"
-            (input)="validatePassForm()"
-          />
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute; left:16px; color:var(--text-muted);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <input [type]="passFieldTypeConfirm" formControlName="confirmPassword" placeholder="Confirma tu clave" (input)="validatePassForm()" />
         </div>
-        <div
-          *ngIf="
-            passForm.hasError('passwordMismatch') &&
-            passForm.get('confirmPassword')?.touched
-          "
-          class="field-error"
-        >
-          Las contraseñas no coinciden
-        </div>
+        <div *ngIf="passForm.hasError('passwordMismatch') && passForm.get('confirmPassword')?.touched" class="field-error">Las contraseñas no coinciden</div>
       </div>
-
-      <!-- Captcha -->
       <div class="form-group">
         <label>Verificación de Seguridad</label>
         <div class="captcha-container">
           <div class="captcha-display">{{ captchaPass }}</div>
           <div class="input-wrapper" style="flex: 1">
-            <input
-              type="text"
-              formControlName="captchaPass"
-              class="captcha-input"
-              placeholder="Código"
-              maxlength="4"
-              (input)="validatePassForm()"
-            />
+            <input type="text" formControlName="captchaPass" class="captcha-input" placeholder="Código" maxlength="4" (input)="validatePassForm()" />
           </div>
         </div>
-        <div
-          *ngIf="
-            passForm.get('captchaPass')?.touched &&
-            passForm.get('captchaPass')?.hasError('captchaMismatch')
-          "
-          class="field-error"
-        >
-          Código incorrecto
-        </div>
+        <div *ngIf="passForm.get('captchaPass')?.touched && passForm.get('captchaPass')?.hasError('captchaMismatch')" class="field-error">Código incorrecto</div>
       </div>
-
-      <button
-        type="submit"
-        class="submit-btn"
-        [class.vivid]="passFormValid"
-        [disabled]="!passFormValid || submitting"
-      >
-        {{ submitting ? "ACTUALIZANDO..." : "ACTUALIZAR CONTRASEÑA" }}
+      <button type="submit" class="submit-btn" [class.vivid]="passFormValid" [disabled]="!passFormValid || submitting">
+        {{ submitting ? 'ACTUALIZANDO...' : 'ACTUALIZAR CONTRASEÑA' }}
       </button>
     </form>
   </div>
 </div>
 
-<!-- ============================================
-     VISTA: CAMBIAR TELÉFONO
-     ============================================ -->
+<!-- WITHDRAW PASSWORD VIEW -->
+<div class="me-container form-view" *ngIf="currentView === 'withdrawPass'" [@slideIn]>
+  <div class="form-header">
+    <button class="back-btn" (click)="switchView('main')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <h2>Seguridad de Retiro</h2>
+  </div>
+  <div class="card">
+    <form [formGroup]="withdrawPassForm" (ngSubmit)="submitWithdrawPassword()">
+      <div class="form-group">
+        <label>Contraseña de retiro anterior</label>
+        <div class="input-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute; left:16px; color:var(--text-muted);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <input [type]="withdrawPassFieldTypeOld" formControlName="oldWithdrawPassword" placeholder="Ingresa clave actual (4 dígitos)" maxlength="4" inputmode="numeric" pattern="[0-9]*" (input)="validateWithdrawPassForm()" />
+          <button type="button" class="toggle-pass" (click)="toggleWithdrawPassVisibility('old')">
+            <svg *ngIf="withdrawPassFieldTypeOld === 'password'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg *ngIf="withdrawPassFieldTypeOld === 'text'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+        <div *ngIf="withdrawPassForm.get('oldWithdrawPassword')?.touched && withdrawPassForm.get('oldWithdrawPassword')?.hasError('required')" class="field-error">La contraseña anterior es obligatoria</div>
+        <div *ngIf="withdrawPassForm.get('oldWithdrawPassword')?.touched && withdrawPassForm.get('oldWithdrawPassword')?.hasError('minlength')" class="field-error">Debe tener 4 dígitos</div>
+      </div>
+      <div class="form-group">
+        <label>Nueva contraseña de retiro</label>
+        <div class="input-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute; left:16px; color:var(--text-muted);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <input [type]="withdrawPassFieldTypeNew" formControlName="newWithdrawPassword" placeholder="Nueva clave (4 dígitos)" maxlength="4" inputmode="numeric" pattern="[0-9]*" (input)="validateWithdrawPassForm()" />
+          <button type="button" class="toggle-pass" (click)="toggleWithdrawPassVisibility('new')">
+            <svg *ngIf="withdrawPassFieldTypeNew === 'password'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg *ngIf="withdrawPassFieldTypeNew === 'text'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+        <div *ngIf="withdrawPassForm.get('newWithdrawPassword')?.touched && withdrawPassForm.get('newWithdrawPassword')?.hasError('required')" class="field-error">La nueva contraseña es obligatoria</div>
+        <div *ngIf="withdrawPassForm.get('newWithdrawPassword')?.touched && withdrawPassForm.get('newWithdrawPassword')?.hasError('minlength')" class="field-error">Debe tener 4 dígitos</div>
+        <div *ngIf="withdrawPassForm.get('newWithdrawPassword')?.touched && withdrawPassForm.get('newWithdrawPassword')?.hasError('pattern')" class="field-error">Solo números permitidos</div>
+      </div>
+      <div class="form-group">
+        <label>Repetir nueva contraseña</label>
+        <div class="input-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute; left:16px; color:var(--text-muted);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <input [type]="withdrawPassFieldTypeConfirm" formControlName="confirmWithdrawPassword" placeholder="Confirma tu clave" maxlength="4" inputmode="numeric" pattern="[0-9]*" (input)="validateWithdrawPassForm()" />
+        </div>
+        <div *ngIf="withdrawPassForm.hasError('passwordMismatch') && withdrawPassForm.get('confirmWithdrawPassword')?.touched" class="field-error">Las contraseñas no coinciden</div>
+      </div>
+      <div class="form-group">
+        <label>Verificación de Seguridad</label>
+        <div class="captcha-container">
+          <div class="captcha-display">{{ captchaWithdrawPass }}</div>
+          <div class="input-wrapper" style="flex: 1">
+            <input type="text" formControlName="captchaWithdrawPass" class="captcha-input" placeholder="Código" maxlength="4" (input)="validateWithdrawPassForm()" />
+          </div>
+        </div>
+        <div *ngIf="withdrawPassForm.get('captchaWithdrawPass')?.touched && withdrawPassForm.get('captchaWithdrawPass')?.hasError('captchaMismatch')" class="field-error">Código incorrecto</div>
+      </div>
+      <button type="submit" class="submit-btn" [class.vivid]="withdrawPassFormValid" [disabled]="!withdrawPassFormValid || submitting">
+        {{ submitting ? 'ACTUALIZANDO...' : 'ACTUALIZAR CONTRASEÑA DE RETIRO' }}
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- PHONE VIEW -->
 <div class="me-container form-view" *ngIf="currentView === 'phone'" [@slideIn]>
   <div class="form-header">
     <button class="back-btn" (click)="switchView('main')">
-      <i data-lucide="arrow-left"></i>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h2>Contacto</h2>
   </div>
-
   <div class="card">
     <form [formGroup]="phoneForm" (ngSubmit)="submitPhone()">
-      <!-- Número Anterior -->
       <div class="form-group">
         <label>Número Anterior</label>
         <div class="phone-input-group">
           <div class="prefix-box">+57</div>
           <div class="input-wrapper" style="flex: 1">
-            <i data-lucide="phone"></i>
-            <input
-              type="tel"
-              formControlName="oldPhone"
-              placeholder="Número actual"
-              maxlength="10"
-              (input)="validatePhoneForm()"
-            />
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute; left:16px; color:var(--text-muted);"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            <input type="tel" formControlName="oldPhone" placeholder="Número actual" maxlength="10" (input)="validatePhoneForm()" />
           </div>
         </div>
-        <div
-          *ngIf="
-            phoneForm.get('oldPhone')?.touched &&
-            phoneForm.get('oldPhone')?.hasError('required')
-          "
-          class="field-error"
-        >
-          El número anterior es obligatorio
-        </div>
-        <div
-          *ngIf="
-            phoneForm.get('oldPhone')?.touched &&
-            phoneForm.get('oldPhone')?.hasError('minlength')
-          "
-          class="field-error"
-        >
-          Mínimo 7 dígitos
-        </div>
+        <div *ngIf="phoneForm.get('oldPhone')?.touched && phoneForm.get('oldPhone')?.hasError('required')" class="field-error">El número anterior es obligatorio</div>
+        <div *ngIf="phoneForm.get('oldPhone')?.touched && phoneForm.get('oldPhone')?.hasError('minlength')" class="field-error">Mínimo 7 dígitos</div>
       </div>
-
-      <!-- Nuevo Número -->
       <div class="form-group">
         <label>Nuevo Número</label>
         <div class="phone-input-group">
           <div class="prefix-box">+57</div>
           <div class="input-wrapper" style="flex: 1">
-            <i data-lucide="smartphone"></i>
-            <input
-              type="tel"
-              formControlName="newPhone"
-              placeholder="Nuevo número"
-              maxlength="10"
-              (input)="validatePhoneForm()"
-            />
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute; left:16px; color:var(--text-muted);"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+            <input type="tel" formControlName="newPhone" placeholder="Nuevo número" maxlength="10" (input)="validatePhoneForm()" />
           </div>
         </div>
-        <div
-          *ngIf="
-            phoneForm.get('newPhone')?.touched &&
-            phoneForm.get('newPhone')?.hasError('required')
-          "
-          class="field-error"
-        >
-          El nuevo número es obligatorio
-        </div>
-        <div
-          *ngIf="
-            phoneForm.get('newPhone')?.touched &&
-            phoneForm.get('newPhone')?.hasError('minlength')
-          "
-          class="field-error"
-        >
-          Mínimo 7 dígitos
-        </div>
+        <div *ngIf="phoneForm.get('newPhone')?.touched && phoneForm.get('newPhone')?.hasError('required')" class="field-error">El nuevo número es obligatorio</div>
+        <div *ngIf="phoneForm.get('newPhone')?.touched && phoneForm.get('newPhone')?.hasError('minlength')" class="field-error">Mínimo 7 dígitos</div>
       </div>
-
-      <!-- Captcha -->
       <div class="form-group">
         <label>Verificación de Seguridad</label>
         <div class="captcha-container">
           <div class="captcha-display">{{ captchaPhone }}</div>
           <div class="input-wrapper" style="flex: 1">
-            <input
-              type="text"
-              formControlName="captchaPhone"
-              class="captcha-input"
-              placeholder="Código"
-              maxlength="4"
-              (input)="validatePhoneForm()"
-            />
+            <input type="text" formControlName="captchaPhone" class="captcha-input" placeholder="Código" maxlength="4" (input)="validatePhoneForm()" />
           </div>
         </div>
-        <div
-          *ngIf="
-            phoneForm.get('captchaPhone')?.touched &&
-            phoneForm.get('captchaPhone')?.hasError('captchaMismatch')
-          "
-          class="field-error"
-        >
-          Código incorrecto
-        </div>
+        <div *ngIf="phoneForm.get('captchaPhone')?.touched && phoneForm.get('captchaPhone')?.hasError('captchaMismatch')" class="field-error">Código incorrecto</div>
       </div>
-
-      <button
-        type="submit"
-        class="submit-btn"
-        [class.vivid]="phoneFormValid"
-        [disabled]="!phoneFormValid || submitting"
-      >
-        {{ submitting ? "ACTUALIZANDO..." : "VINCULAR TELÉFONO" }}
+      <button type="submit" class="submit-btn" [class.vivid]="phoneFormValid" [disabled]="!phoneFormValid || submitting">
+        {{ submitting ? 'ACTUALIZANDO...' : 'VINCULAR TELÉFONO' }}
       </button>
     </form>
   </div>

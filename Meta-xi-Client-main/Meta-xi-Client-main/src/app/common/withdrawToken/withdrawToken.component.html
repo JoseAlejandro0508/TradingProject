@@ -1,40 +1,41 @@
-
-<div class="vip-container">
-
-  <nav class="nav-header">
-    <button class="back-link"  [routerLink]="['/home']">
-      <svg viewBox="0 0 24 24" class="gold-icon"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-      <span>Atrás</span>
+<div class="container">
+  <div class="menu-title">Seleccione el método de retiro</div>
+  <div class="method-selector-wrapper">
+    <button class="btn-method-select btn-nequi" (click)="goToWithdraw('nequi')">
+      <div class="btn-method-content">
+        <div class="btn-logo-box">
+          <img src="assets/token/nequi-account.png" alt="Nequi" />
+        </div>
+        <span>Nequi</span>
+      </div>
+      <span class="arrow-icon">&#x2794;</span>
     </button>
-  </nav>
-
-  <div class="options-grid">
-    
-    <div class="glass-item border-gold" [routerLink]="['/withdraw', 'nequi']">
-      <div class="icon-box">
-        <div class="inner-glow glow-gold"></div>
-        <img  src="assets/token/nequi-account.png" alt="Nequi">
+    <button class="btn-method-select btn-daviplata" (click)="goToWithdraw('daviplata')">
+      <div class="btn-method-content">
+        <div class="btn-logo-box">
+          <img src="assets/token/daviplata.png" alt="DaviPlata" />
+        </div>
+        <span>DaviPlata</span>
       </div>
-      <span class="method-name">Nequi</span>
-      <div class="chevron-gold"></div>
-    </div>
-
-
-
-    <div class="glass-item border-green" [routerLink]="['/withdraw', 'usdt-bep20']">
-      <div class="icon-box">
-        <div class="inner-glow glow-green"></div>
-        <img src="assets/token/usdt-bep20.jpg" alt="USDT">
+      <span class="arrow-icon">&#x2794;</span>
+    </button>
+    <button class="btn-method-select btn-trc20" (click)="goToWithdraw('usdt-trc20')">
+      <div class="btn-method-content">
+        <div class="btn-logo-box">
+          <img src="assets/token/usdt-trc20.png" alt="USDT-TRC20" />
+        </div>
+        <span>USDT-TRC20</span>
       </div>
-      <span class="method-name">USDT-BEP20</span>
-      <div class="chevron-gold"></div>
-    </div>
-
-
-
-
-
-
-
+      <span class="arrow-icon">&#x2794;</span>
+    </button>
+    <button class="btn-method-select btn-bep20" (click)="goToWithdraw('usdt-bep20')">
+      <div class="btn-method-content">
+        <div class="btn-logo-box">
+          <img src="assets/token/usdt-bep20.jpg" alt="USDT-BEP20" />
+        </div>
+        <span>USDT-BEP20</span>
+      </div>
+      <span class="arrow-icon">&#x2794;</span>
+    </button>
   </div>
 </div>

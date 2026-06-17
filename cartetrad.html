@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>TradingView - Premium Wallet</title>
+    <style>
+        :root {
+            --bg-main: #0c0d14;
+            --bg-card: rgba(20, 24, 38, 0.95);
+            --border-color: rgba(255, 255, 255, 0.06);
+            --text-muted: #848e9c;
+            --text-main: #e9ecef;
+            --primary: #2962ff;
+            --primary-hover: #1e4bd6;
+            --success: #00c853;
+            --warning: #ffb300;
+            --danger: #ff3d00;
+            --chat-header-bg: #161824;
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --msg-system-bg: #161824;
+        }
+
+        /* Variables para el Modo Claro */
+        [data-theme="light"] {
+            --bg-main: #f4f6f9;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --border-color: rgba(0, 0, 0, 0.08);
+            --text-muted: #616e7c;
+            --text-main: #1f2937;
+            --primary: #2962ff;
+            --primary-hover: #1e4bd6;
+            --success: #00873a;
+            --warning: #b78103;
+            --danger: #d32f2f;
+            --chat-header-bg: #ffffff;
+            --input-bg: rgba(0, 0, 0, 0.04);
+            --msg-system-bg: #eaeaea;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: calc(16px + env(safe-area-inset-top)) 14px calc(120px + env(safe-area-inset-bottom)) 14px;
+            display: flex;
+            justify-content: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .wallet-wrapper {
+            width: 100%;
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* --- TARJETA DE BALANCE PRINCIPAL --- */
+        .balance-card {
+            background: linear-gradient(135deg, rgba(41, 98, 255, 0.06) 0%, rgba(22, 26, 41, 0.9) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(41, 98, 255, 0.15);
+            border-radius: 20px;
+            padding: 24px 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            flex-shrink: 0;
+            height: auto;
+        }
+
+        [data-theme="light"] .balance-card {
+            background: linear-gradient(135deg, rgba(41, 98, 255, 0.04) 0%, rgba(255, 255, 255, 0.95) 100%);
+            border: 1px solid rgba(41, 98, 255, 0.25);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="light"] .balance-amount {
+            color: #1f2937;
+        }
+
+        .balance-label {
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .balance-amount {
+            font-size: 34px;
+            font-weight: 700;
+            margin-top: 6px;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+        }
+
+        .balance-crypto {
+            color: var(--success);
+            font-size: 12.5px;
+            font-weight: 600;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* --- BOTONES DE ACCIÓN --- */
+        .action-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .btn {
+            height: 50px;
+            border-radius: 14px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-deposit { background-color: var(--primary); color: #fff; }
+        .btn-deposit:active { transform: scale(0.97); background-color: var(--primary-hover); }
+        
+        .btn-withdraw { 
+            background-color: #1e222d; 
+            color: #e9ecef; 
+            border: 1px solid rgba(255,255,255,0.06); 
+        }
+        [data-theme="light"] .btn-withdraw {
+            background-color: #ffffff;
+            color: #1f2937;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .btn-withdraw:active { transform: scale(0.97); }
+
+        /* --- CONTENEDORES DE FILTRO VERTICAL --- */
+        .filter-accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex-shrink: 0;
+        }
+
+        .filter-bar-trigger {
+            background: #141826;
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background 0.2s ease, border 0.2s ease;
+        }
+        [data-theme="light"] .filter-bar-trigger {
+            background: #ffffff;
+        }
+
+        .filter-bar-trigger:active {
+            background: #1c2030;
+        }
+        [data-theme="light"] .filter-bar-trigger:active {
+            background: #f1f3f5;
+        }
+
+        .filter-left-side {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        [data-theme="light"] .filter-left-side {
+            color: #1f2937;
+        }
+
+        .filter-left-side svg {
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .filter-right-side {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .arrow-icon {
+            color: var(--text-muted);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* --- CONTENIDO DESPLEGABLE --- */
+        .accordion-content {
+            display: none;
+            padding-top: 12px;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .filter-accordion.open .accordion-content {
+            display: flex;
+        }
+
+        .filter-accordion.open .arrow-icon {
+            transform: rotate(180deg);
+        }
+
+        .filter-accordion.open .filter-bar-trigger {
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+            background: #171b2a;
+        }
+        [data-theme="light"] .filter-accordion.open .filter-bar-trigger {
+            background: #f8f9fa;
+        }
+
+        /* --- DETALLES INTERNOS --- */
+        .tx-block {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: background-color 0.3s ease, border 0.3s ease;
+        }
+        [data-theme="light"] .tx-block {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .tx-header-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tx-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .tx-row:last-child { 
+            margin-bottom: 0; 
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .tx-label { color: var(--text-muted); font-weight: 500; }
+        .tx-value { color: var(--text-main); font-weight: 600; }
+        [data-theme="light"] .tx-value { color: #1f2937; }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-approved { background: rgba(0, 200, 83, 0.12); color: var(--success); }
+        .badge-pending { background: rgba(255, 179, 0, 0.12); color: var(--warning); }
+
+        .accordion-content:empty::before,
+        .bot-grid:empty::before {
+            content: "No hay datos disponibles";
+            display: block;
+            background: var(--bg-card);
+            border: 1px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            width: 100%;
+        }
+
+        /* Monitor del Bot */
+        .trading-bot-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .bot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .bot-title {
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.6; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.6; }
+        }
+
+        .bot-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .bot-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px;
+        }
+        [data-theme="light"] .bot-card {
+            background: rgba(0,0,0,0.02);
+        }
+
+        .bot-name { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+        .bot-profit { font-size: 15px; font-weight: 700; margin-top: 4px; color: var(--success); }
+
+        /* --- SOPORTE --- */
+        .support-trigger {
+            position: fixed;
+            bottom: 85px;
+            right: 16px;
+            width: 52px;
+            height: 52px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 20px rgba(41, 98, 255, 0.4);
+            z-index: 100;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+
+        .support-trigger svg { width: 22px; height: 22px; fill: none; stroke: #fff; stroke-width: 2; }
+
+        .chat-window {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: var(--bg-main);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.32, 0.94, 0.6, 1), opacity 0.2s linear, background-color 0.3s ease;
+            pointer-events: none;
+        }
+
+        .chat-window.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+        .chat-header {
+            background: var(--chat-header-bg);
+            padding: calc(16px + env(safe-area-inset-top)) 16px 16px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-profile-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-profile-area svg {
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .btn-close-chat {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        [data-theme="light"] .btn-close-chat {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .chat-body { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .msg { max-width: 85%; padding: 12px 14px; border-radius: 16px; font-size: 13.5px; line-height: 1.4; }
+        
+        .msg-system { 
+            background: var(--msg-system-bg); 
+            color: var(--text-main); 
+            align-self: flex-start; 
+            border: 1px solid var(--border-color); 
+        }
+        
+        .msg-user { background: var(--primary); color: #fff; align-self: flex-end; }
+        
+        /* Contenedor de previsualización de imágenes enviadas */
+        .msg-user img {
+            max-width: 100%;
+            max-height: 180px;
+            border-radius: 10px;
+            display: block;
+            margin-top: 4px;
+        }
+
+        .chat-footer {
+            padding: 12px 16px calc(12px + env(safe-area-inset-bottom)) 16px;
+            background: var(--chat-header-bg);
+            border-top: 1px solid var(--border-color);
+            display: flex; 
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1; 
+            background: var(--input-bg);
+            border: 1px solid var(--border-color); 
+            border-radius: 12px;
+            padding: 0 14px; 
+            height: 44px; 
+            color: var(--text-main); 
+            font-size: 14px; 
+            outline: none;
+        }
+
+        /* Estilo para la etiqueta/botón de multimedia */
+        .media-label-btn {
+            width: 44px; 
+            height: 44px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 12px; 
+            display: flex;
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer;
+            background: var(--input-bg);
+            color: var(--text-muted);
+            transition: opacity 0.2s;
+        }
+        .media-label-btn:active {
+            opacity: 0.7;
+        }
+
+        .btn-send {
+            width: 44px; 
+            height: 44px; 
+            border: none;
+            background: var(--primary); 
+            color: white;
+            border-radius: 12px; 
+            display: flex;
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer;
+        }
+
+        /* --- BOTÓN TEMPORAL DE TEMA --- */
+        .theme-toggle-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 14px;
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 100;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wallet-wrapper">
+        <!-- SECCIÓN BALANCE -->
+        <header class="balance-card">
+            <div class="balance-label">BALANCE DISPONIBLE PARA RETIRO:</div>
+            <div class="balance-amount">$48,250.75</div>
+            <div class="balance-crypto">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                +172 USD Ganado Hoy
+            </div>
+        </header>
+
+        <!-- ACCIONES RÁPIDAS -->
+        <section class="action-group">
+            <button class="btn btn-deposit" onclick="alert('Enlace de depósito activo')">Recargar Cuenta</button>
+            <button class="btn btn-withdraw" onclick="alert('Enlace de retiro activo')">Retirar Fondos</button>
+        </section>
+
+        <!-- ACORDEÓN 1: HISTORIAL RECARGAS -->
+        <div class="filter-accordion" id="acc-deposits">
+            <div class="filter-bar-trigger" onclick="toggleAccordion('acc-deposits')">
+                <div class="filter-left-side">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <span>Historial recargas</span>
+                </div>
+                <div class="filter-right-side">
+                    <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+            </div>
+
+            <div class="accordion-content">
+                <div class="tx-block">
+                    <div class="tx-header-title">
+                        <span>Depósito de Fondos</span>
+                        <span class="status-badge badge-approved">Aprobado</span>
+                    </div>
+                    <div class="tx-row"><span class="tx-label">Desde:</span><span class="tx-value">USDT (Red TRC20)</span></div>
+                    <div class="tx-row"><span class="tx-label">Hacia:</span><span class="tx-value">Cartera Principal</span></div>
+                    <div class="tx-row"><span class="tx-label">Fecha:</span><span class="tx-value">07 Jun 2026, 14:22</span></div>
+                    <div class="tx-row"><span class="tx-label">Cantidad a enviar:</span><span class="tx-value">$5,005.00 USDT</span></div>
+                    <div class="tx-row"><span class="tx-label">Llegó luego de comisión:</span><span class="tx-value" style="color:var(--success)">$5,000.00 USDT</span></div>
+                </div>
+                <div class="tx-block">
+                    <div class="tx-header-title">
+                        <span>Depósito de Fondos</span>
+                        <span class="status-badge badge-pending">En Proceso</span>
+                    </div>
+                    <div class="tx-row"><span class="tx-label">Desde:</span><span class="tx-value">USDT (Red ERC20)</span></div>
+                    <div class="tx-row"><span class="tx-label">Hacia:</span><span class="tx-value">Cartera Principal</span></div>
+                    <div class="tx-row"><span class="tx-label">Fecha:</span><span class="tx-value">07 Jun 2026, 21:05</span></div>
+                    <div class="tx-row"><span class="tx-label">Cantidad a enviar:</span><span class="tx-value">$355.00 USDT</span></div>
+                    <div class="tx-row"><span class="tx-label">Llegó luego de comisión:</span><span class="tx-value">$350.20 USDT</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACORDEÓN 2: HISTORIAL RETIROS -->
+        <div class="filter-accordion" id="acc-withdraws">
+            <div class="filter-bar-trigger" onclick="toggleAccordion('acc-withdraws')">
+                <div class="filter-left-side">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <span>Historial retiros</span>
+                </div>
+                <div class="filter-right-side">
+                    <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+            </div>
+
+            <div class="accordion-content">
+                <div class="tx-block">
+                    <div class="tx-header-title">
+                        <span>Retiro Solicitado</span>
+                        <span class="status-badge badge-approved">Aprobado</span>
+                    </div>
+                    <div class="tx-row"><span class="tx-label">Desde:</span><span class="tx-value">Cartera Principal</span></div>
+                    <div class="tx-row"><span class="tx-label">Hacia:</span><span class="tx-value">Red externa Bitcoin (BTC)</span></div>
+                    <div class="tx-row"><span class="tx-label">Fecha:</span><span class="tx-value">06 Jun 2026, 09:15</span></div>
+                    <div class="tx-row"><span class="tx-label">Cantidad a enviar:</span><span class="tx-value">$1,255.00 USD</span></div>
+                    <div class="tx-row"><span class="tx-label">Llegó luego de comisión:</span><span class="tx-value" style="color:var(--danger)">$1,250.00 USD</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACORDEÓN 3: DETALLES DE CUENTA -->
+        <div class="filter-accordion" id="acc-details">
+            <div class="filter-bar-trigger" onclick="toggleAccordion('acc-details')">
+                <div class="filter-left-side">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><path d="M12 11h4v2h-4z"></path><path d="M22 10.32c0-.6-.4-.94-1-.94h-3.5c-.5 0-.9-.44-.9-.94V5.5c0-.5-.4-.9-.9-.9H3.3c-.5 0-.9.4-.9.9v13c0 .5.4.9.9.9h15.4c.5 0 .9-.4.9-.9V14c0-.5.4-.94.9-.94H21c.6 0 1-.34 1-.94v-1.8z"></path></svg>
+                    <span>Detalles de cuenta</span>
+                </div>
+                <div class="filter-right-side">
+                    <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+            </div>
+
+            <div class="accordion-content">
+                <div class="tx-block">
+                    <div class="tx-header-title" style="color: var(--text-muted); font-size:12px;">Mis Ganancias</div>
+                    <div class="tx-row"><span class="tx-label">Ayer:</span><span class="tx-value">17,273 COP</span></div>
+                    <div class="tx-row"><span class="tx-label">Hoy:</span><span class="tx-value">1,828 COP</span></div>
+                    <div class="tx-row"><span class="tx-label">Este mes:</span><span class="tx-value">1,828 COP</span></div>
+                    <div class="tx-row"><span class="tx-label">Ingresos por equipo:</span><span class="tx-value">18,282 COP</span></div>
+                    <div class="tx-row">
+                        <span class="tx-label" style="font-weight: 700;">Ingresos Totales:</span>
+                        <span class="tx-value" style="color: var(--success); font-size: 14px; font-weight: 700;">239,876 COP</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACORDEÓN 4: TRADINGBOTS ACTIVOS -->
+        <div class="filter-accordion" id="acc-bots">
+            <div class="filter-bar-trigger" onclick="toggleAccordion('acc-bots')">
+                <div class="filter-left-side">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                    <span>TradingBots activos</span>
+                </div>
+                <div class="filter-right-side">
+                    <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+            </div>
+            
+            <div class="accordion-content">
+                <section class="trading-bot-panel">
+                    <div class="bot-header">
+                        <div class="bot-title"><span class="pulse-dot"></span> Rendimiento de Bots</div>
+                        <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">TIEMPO REAL</span>
+                    </div>
+                    <div class="bot-grid" id="botGridContainer">
+                        <div class="bot-card">
+                            <div class="bot-name">Bot Scalper BTC/USDT</div>
+                            <div class="bot-profit" id="bot1">+$94.12 USD</div>
+                        </div>
+                        <div class="bot-card">
+                            <div class="bot-name">Bot AI Swing ETH</div>
+                            <div class="bot-profit" id="bot2">+$77.88 USD</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTÓN PROVISIONAL CAMBIO DE MODO -->
+    <button class="theme-toggle-btn" onclick="toggleTheme()">Cambiar Modo (Prueba)</button>
+
+    <!-- CHAT DE SOPORTE -->
+    <div class="support-trigger" onclick="toggleChat()">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    </div>
+
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <div class="chat-profile-area">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                <div>
+                    <h4 style="font-size: 14px;">Asesor Premium</h4>
+                    <span style="font-size: 11px; color: var(--success)">● En línea</span>
+                </div>
+            </div>
+            <button class="btn-close-chat" onclick="toggleChat()">Cerrar</button>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="msg msg-system">Hola, soy tu asesor financiero de TradingView. ¿En qué puedo ayudarte con tus balances u operaciones hoy?</div>
+        </div>
+        <div class="chat-footer">
+            <!-- Input oculto real de archivos tipo imagen conectado a la galería -->
+            <input type="file" id="mediaInput" accept="image/*" style="display: none;" onchange="handleMediaSelection(this)">
+            
+            <!-- Botón visual que activa el input de galería -->
+            <label for="mediaInput" class="media-label-btn" title="Enviar Foto">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </label>
+            
+            <input type="text" class="chat-input" id="chatInput" placeholder="Escribe tu mensaje..." onkeypress="if(event.key === 'Enter') sendMessage()">
+            <button class="btn-send" onclick="sendMessage()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Lógica de apertura/cierre independiente estilo acordeón
+        function toggleAccordion(id) {
+            const element = document.getElementById(id);
+            element.classList.toggle('open');
+        }
+
+        // Simulación de los TradingBots
+        setInterval(() => {
+            const b1 = (94.12 + (Math.random() * 0.4 - 0.2)).toFixed(2);
+            const b2 = (77.88 + (Math.random() * 0.3 - 0.1)).toFixed(2);
+            const element1 = document.getElementById('bot1');
+            const element2 = document.getElementById('bot2');
+            if(element1) element1.innerText = `+$${b1} USD`;
+            if(element2) element2.innerText = `+$${b2} USD`;
+        }, 3000);
+
+        // Control del Chat
+        function toggleChat() { document.getElementById('chatWindow').classList.toggle('open'); }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const body = document.getElementById('chatBody');
+            const msg = document.createElement('div');
+            msg.classList.add('msg', 'msg-user');
+            msg.innerText = text;
+            body.appendChild(msg);
+            
+            input.value = '';
+            body.scrollTop = body.scrollHeight;
+
+            setTimeout(() => {
+                const reply = document.createElement('div');
+                reply.classList.add('msg', 'msg-system');
+                reply.innerText = "Recibido. Un asesor de cuentas premium tomará tu ticket de inmediato. ID: #TV-" + Math.floor(1000 + Math.random() * 9000);
+                body.appendChild(reply);
+                body.scrollTop = body.scrollHeight;
+            }, 1000);
+        }
+
+        // Función real encargada de procesar el archivo seleccionado desde la galería del dispositivo
+        function handleMediaSelection(inputElement) {
+            const file = inputElement.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const body = document.getElementById('chatBody');
+                
+                // Crear contenedor de mensaje de usuario
+                const msg = document.createElement('div');
+                msg.classList.add('msg', 'msg-user');
+                
+                // Insertar estructura con la imagen seleccionada codificada en Base64
+                msg.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px; font-size:12px; opacity:0.9;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        <span>Imagen seleccionada</span>
+                    </div>
+                    <img src="${e.target.result}" alt="Imagen de usuario">
+                `;
+                
+                body.appendChild(msg);
+                body.scrollTop = body.scrollHeight;
+
+                // Limpiar el input para permitir volver a subir la misma foto si se desea
+                inputElement.value = '';
+
+                // Simular respuesta del sistema
+                setTimeout(() => {
+                    const reply = document.createElement('div');
+                    reply.classList.add('msg', 'msg-system');
+                    reply.innerText = "Captura recibida con éxito. El departamento técnico está revisando los detalles del archivo.";
+                    body.appendChild(reply);
+                    body.scrollTop = body.scrollHeight;
+                }, 1200);
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        // Control temporal del Modo Claro / Oscuro
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            if (currentTheme === 'light') {
+                document.documentElement.removeAttribute('data-theme');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        }
+    </script>
+</body>
+</html>

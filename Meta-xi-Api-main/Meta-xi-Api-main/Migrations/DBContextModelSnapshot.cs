@@ -17,6 +17,261 @@ namespace Meta_xi.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
 
+            modelBuilder.Entity("Meta_xi.Application.BotPlan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double?>("BuyPercentage")
+                        .HasColumnType("REAL");
+
+                    b.Property<decimal>("DailyProfitEstimate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DurationDays")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Exchanges")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("FreeTierMaxUses")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("IconColor")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsFreeTier")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("TEXT");
+
+                    b.Property<double?>("SellPercentage")
+                        .HasColumnType("REAL");
+
+                    b.Property<int?>("StockMax")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal?>("TotalProfitEstimate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TradingPair")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<double?>("WinRate")
+                        .HasColumnType("REAL");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BotPlans");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BuyPercentage = 54.200000000000003,
+                            DailyProfitEstimate = 500m,
+                            Description = "Bot de alta frecuencia para trading de Bitcoin. Aprovecha micro-movimientos del mercado con alta efectividad. Uso gratuito limitado.",
+                            DurationDays = 7,
+                            Exchanges = "Binance,KuCoin",
+                            FreeTierMaxUses = 1,
+                            IconColor = "#00c853",
+                            ImageUrl = "/bots/free-bot.webp",
+                            IsFreeTier = true,
+                            Name = "Free Bot",
+                            Price = 0m,
+                            SellPercentage = 45.799999999999997,
+                            StockMax = 1,
+                            TotalProfitEstimate = 3500m,
+                            TradingPair = "BTC/USDT",
+                            WinRate = 0.71999999999999997
+                        },
+                        new
+                        {
+                            Id = 2,
+                            BuyPercentage = 59.100000000000001,
+                            DailyProfitEstimate = 900m,
+                            Description = "Estrategia de grid trading en Ethereum con enfoque en exchanges asiáticos. Opera en rangos de precio predefinidos.",
+                            DurationDays = 228,
+                            Exchanges = "Bybit,MEXC",
+                            IconColor = "#ffa929",
+                            ImageUrl = "/bots/byte-bot.webp",
+                            IsFreeTier = false,
+                            Name = "Byte Bot",
+                            Price = 30000m,
+                            SellPercentage = 40.899999999999999,
+                            StockMax = 2,
+                            TotalProfitEstimate = 205200m,
+                            TradingPair = "ETH/USDT",
+                            WinRate = 0.68000000000000005
+                        },
+                        new
+                        {
+                            Id = 3,
+                            BuyPercentage = 61.899999999999999,
+                            DailyProfitEstimate = 1500m,
+                            Description = "Bot institucional de alto rendimiento para Ethereum. Diseñado para mercados con alta liquidez.",
+                            DurationDays = 240,
+                            Exchanges = "OKX,Gate.io",
+                            IconColor = "#e9ecef",
+                            ImageUrl = "/bots/cronos-bot.webp",
+                            IsFreeTier = false,
+                            Name = "Cronos Bot",
+                            Price = 50000m,
+                            SellPercentage = 38.100000000000001,
+                            StockMax = 2,
+                            TotalProfitEstimate = 360000m,
+                            TradingPair = "ETH/USDT",
+                            WinRate = 0.75
+                        },
+                        new
+                        {
+                            Id = 4,
+                            BuyPercentage = 57.600000000000001,
+                            DailyProfitEstimate = 3300m,
+                            Description = "Especializado en Solana con estrategia de momentum. Ideal para capturar movimientos fuertes del mercado.",
+                            DurationDays = 260,
+                            Exchanges = "Coinbase,Kraken",
+                            IconColor = "#0052ff",
+                            ImageUrl = "/bots/abstrar-bot.webp",
+                            IsFreeTier = false,
+                            Name = "Abstrar Bot",
+                            Price = 100000m,
+                            SellPercentage = 42.399999999999999,
+                            StockMax = 2,
+                            TotalProfitEstimate = 858000m,
+                            TradingPair = "SOL/USDT",
+                            WinRate = 0.69999999999999996
+                        },
+                        new
+                        {
+                            Id = 5,
+                            BuyPercentage = 64.5,
+                            DailyProfitEstimate = 5100m,
+                            Description = "Bot premium para Bitcoin con múltiples nodos de ejecución. Máxima velocidad en operaciones de alta frecuencia.",
+                            DurationDays = 290,
+                            Exchanges = "Bitget,HTX,Binance",
+                            IconColor = "#00f0ff",
+                            ImageUrl = "/bots/atlas-bot.webp",
+                            IsFreeTier = false,
+                            Name = "Atlas Bot",
+                            Price = 150000m,
+                            SellPercentage = 35.5,
+                            StockMax = 2,
+                            TotalProfitEstimate = 1479000m,
+                            TradingPair = "BTC/USDT",
+                            WinRate = 0.78000000000000003
+                        },
+                        new
+                        {
+                            Id = 6,
+                            BuyPercentage = 52.100000000000001,
+                            DailyProfitEstimate = 10800m,
+                            Description = "Bot de arbitraje entre exchanges coreanos y globales. Aprovecha diferencias de precio en tiempo real.",
+                            DurationDays = 300,
+                            Exchanges = "Upbit,Binance",
+                            IconColor = "#004fff",
+                            ImageUrl = "/bots/nexus-bot.webp",
+                            IsFreeTier = false,
+                            Name = "Nexus Bot",
+                            Price = 300000m,
+                            SellPercentage = 47.899999999999999,
+                            StockMax = 1,
+                            TotalProfitEstimate = 3240000m,
+                            TradingPair = "ETH/USDT",
+                            WinRate = 0.76000000000000001
+                        },
+                        new
+                        {
+                            Id = 7,
+                            BuyPercentage = 56.399999999999999,
+                            DailyProfitEstimate = 18000m,
+                            Description = "Estrategia de scalping avanzada para Bitcoin. Múltiples operaciones por día con gestión de riesgo optimizada.",
+                            DurationDays = 320,
+                            Exchanges = "KuCoin,Gate.io",
+                            IconColor = "#00b57a",
+                            ImageUrl = "/bots/nova-bot.webp",
+                            IsFreeTier = false,
+                            Name = "Nova Bot",
+                            Price = 500000m,
+                            SellPercentage = 43.600000000000001,
+                            StockMax = 2,
+                            TotalProfitEstimate = 5760000m,
+                            TradingPair = "BTC/USDT",
+                            WinRate = 0.80000000000000004
+                        },
+                        new
+                        {
+                            Id = 8,
+                            BuyPercentage = 62.799999999999997,
+                            DailyProfitEstimate = 29600m,
+                            Description = "Bot de trading algorítmico de última generación. Machine learning aplicado al análisis de mercado.",
+                            DurationDays = 340,
+                            Exchanges = "Bybit,OKX",
+                            IconColor = "#ffa929",
+                            ImageUrl = "/bots/optix-bot.webp",
+                            IsFreeTier = false,
+                            Name = "Optix Bot",
+                            Price = 800000m,
+                            SellPercentage = 37.200000000000003,
+                            StockMax = 1,
+                            TotalProfitEstimate = 10064000m,
+                            TradingPair = "BTC/USDT",
+                            WinRate = 0.81999999999999995
+                        },
+                        new
+                        {
+                            Id = 9,
+                            BuyPercentage = 67.099999999999994,
+                            DailyProfitEstimate = 38000m,
+                            Description = "Sistema institucional de trading cuantitativo. Estrategias de alta frecuencia con ejecución en milisegundos.",
+                            DurationDays = 380,
+                            Exchanges = "MEXC,Coinbase,Kraken",
+                            IconColor = "#00b0ff",
+                            ImageUrl = "/bots/sigma-bot.webp",
+                            IsFreeTier = false,
+                            Name = "Sigma Bot",
+                            Price = 1000000m,
+                            SellPercentage = 32.899999999999999,
+                            StockMax = 1,
+                            TotalProfitEstimate = 14440000m,
+                            TradingPair = "BTC/USDT",
+                            WinRate = 0.84999999999999998
+                        },
+                        new
+                        {
+                            Id = 10,
+                            BuyPercentage = 69.400000000000006,
+                            DailyProfitEstimate = 62400m,
+                            Description = "El bot más avanzado de nuestra plataforma. Estrategia multi-exchange con liquidez profunda y ejecución ultra-rápida.",
+                            DurationDays = 420,
+                            Exchanges = "HTX,Upbit,Bitget",
+                            IconColor = "#1a6ed1",
+                            ImageUrl = "/bots/flux-bot.webp",
+                            IsFreeTier = false,
+                            Name = "Flux Bot",
+                            Price = 1600000m,
+                            SellPercentage = 30.600000000000001,
+                            StockMax = 1,
+                            TotalProfitEstimate = 26208000m,
+                            TradingPair = "BTC/USDT",
+                            WinRate = 0.88
+                        });
+                });
+
             modelBuilder.Entity("Meta_xi.Application.DepositHistory", b =>
                 {
                     b.Property<int>("Id")
@@ -480,11 +735,80 @@ namespace Meta_xi.Migrations
                     b.Property<int?>("WalletIdWallet")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("WithdrawPassword")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("WalletIdWallet");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Meta_xi.Application.UserActivePlan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("AccumulatedProfit")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("AcquisitionCost")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("BotPlanId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("LastTradeAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BotPlanId");
+
+                    b.ToTable("UserActivePlans");
+                });
+
+            modelBuilder.Entity("Meta_xi.Application.UserFreeBotUsage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BotPlanId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("FirstUsedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("LastUsedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UsageCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserFreeBotUsages");
                 });
 
             modelBuilder.Entity("Meta_xi.Application.UserMission", b =>
@@ -645,6 +969,17 @@ namespace Meta_xi.Migrations
                         .HasForeignKey("WalletIdWallet");
 
                     b.Navigation("Wallet");
+                });
+
+            modelBuilder.Entity("Meta_xi.Application.UserActivePlan", b =>
+                {
+                    b.HasOne("Meta_xi.Application.BotPlan", "BotPlan")
+                        .WithMany()
+                        .HasForeignKey("BotPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BotPlan");
                 });
 
             modelBuilder.Entity("Meta_xi.Application.UserMission", b =>

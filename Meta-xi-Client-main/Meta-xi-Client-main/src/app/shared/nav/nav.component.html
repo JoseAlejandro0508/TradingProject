@@ -1,70 +1,186 @@
 @if (!isLogined) {
-<nav
-  [ngClass]="{
-    'nav-background transition-colors duration-500': !isMeRoute && isScrolled,
-    'bg-transparent transition-colors duration-500': !isMeRoute && !isScrolled
-  }"
-  class="fixed top-0 z-20 w-full flex items-center justify-between box-border nav-bar px-4"
->
-  <div class="flex items-center gap-2">
-    <img src="assets/icons/logo.webp" alt="nequi" class="logo rounded-full" />
-    <section class="log-cont">
-      <div class="logo-container">
-        <svg viewBox="0 0 1100 150">
-          <text x="35%" y="50%" class="animated-text">  TRUMP INVESTING</text>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <button class="hamburger-btn" (click)="toggleSidebar()" aria-label="Abrir menú">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
         </svg>
+      </button>
+    </div>
+
+    <div class="navbar-center">
+      <svg class="tv-logo" width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M4 18h2v-6H4v6zm4 0h2V8H8v10zm4 0h2v-4h-2v4zm4 0h2V4h-2v14z" fill="#2962FF"/>
+        <path d="M18 18h2v-8h-2v8z" fill="#00C853"/>
+      </svg>
+      <span class="tv-brand">TradingView</span>
+    </div>
+
+    <div class="navbar-right">
+      <button class="support-btn" (click)="openChat()" aria-label="Soporte">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span class="support-dot"></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Sidebar -->
+  <div class="sidebar-overlay" [class.open]="sidebarOpen" (click)="closeSidebar()"></div>
+  <aside class="sidebar" [class.open]="sidebarOpen">
+    <div class="sidebar-header">
+      <span class="sidebar-title">Menú de Usuario</span>
+      <button class="theme-toggle-btn" (click)="toggleTheme()">
+        {{ themeLabel }}
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-item" (click)="navigateTo('/welcome')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="12" y1="8" x2="12" y2="16"></line>
+          <line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+        <span>Canjear bono</span>
+      </a>
+      <a class="sidebar-item" (click)="navigateTo('/recharge')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+          <line x1="1" y1="10" x2="23" y2="10"></line>
+        </svg>
+        <span>Recargar cuenta</span>
+      </a>
+      <a class="sidebar-item" (click)="navigateTo('/withdraw')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="1" x2="12" y2="23"></line>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+        </svg>
+        <span>Retirar fondos</span>
+      </a>
+      <a class="sidebar-item" (click)="navigateTo('/home')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+        <span>TradingBots</span>
+      </a>
+      <a class="sidebar-item" (click)="navigateTo('#')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <span>Mas sobre nosotros</span>
+      </a>
+      <a class="sidebar-item" (click)="navigateTo('/profile')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span>Verificar Identidad</span>
+      </a>
+      <a class="sidebar-item" (click)="navigateTo('/team')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+        <span>Sistema de referidos</span>
+      </a>
+      <a class="sidebar-item" (click)="navigateTo('/profile')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span>Contraseña de retiro</span>
+      </a>
+      <a class="sidebar-item" (click)="navigateTo('/profile')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+        <span>Guardar metodo de retiro</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="sidebar-support-btn" (click)="closeSidebar(); openChat()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span>Soporte</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Chat Support -->
+  <div class="chat-overlay" [class.open]="chatOpen">
+    <div class="chat-header">
+      <div class="chat-header-profile">
+        <div class="chat-avatar"></div>
+        <div class="chat-header-info">
+          <span class="chat-title">Asesor Premium</span>
+          <span class="chat-status">En línea</span>
+        </div>
       </div>
-    </section>
+      <button class="chat-close-btn" (click)="closeChat()" aria-label="Cerrar chat">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="chat-body">
+      @for (msg of messages; track $index) {
+        <div class="chat-message" [class.system]="msg.type === 'system'" [class.user]="msg.type === 'user'">
+          <div class="chat-bubble">{{ msg.text }}</div>
+        </div>
+      }
+    </div>
+
+    <div class="chat-footer">
+      <input type="file" id="chat-attach" class="chat-file-input" accept="image/*">
+      <button class="chat-attach-btn" (click)="$event.stopPropagation()">
+        <label for="chat-attach">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+          </svg>
+        </label>
+      </button>
+      <input type="text" class="chat-input" [(ngModel)]="newMessage" placeholder="Escribe un mensaje..." (keydown.enter)="sendMessage()">
+      <button class="chat-send-btn" (click)="sendMessage()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
   </div>
-  <!--
 
-    <button
-    (click)="toggleModal()"
-    class="flex items-center bg-[#0E2954] rounded-full gap-2 px-3 py-1 text-sm btn-alt"
-  >
-    <img [src]="address" alt="dailyquest" class="w-4 -mt-1 icono" />
-    <p>{{ text }}</p>
-  </button>
-  -->
-
-  <!-- Welcome Bonus button removed — now handled by /welcome blocking screen -->
-
+  <!-- Modal -->
   <div
-    class="premium-btn-wrapper flex items-center rounded-full gap-2 px-3 py-1 text-sm btn-alt"
-    (click)="toggleModal()"
+    *ngIf="showModal"
+    class="fixed inset-0 z-30 flex items-center justify-center bg-black/75"
   >
-    <div class="badge-new-floating">NUEVO</div>
-    <button class="btn-tareas-final">
-      <div class="liquid-border-v4"></div>
-      Tareas
-    </button>
-  </div>
-
-</nav>
-
-<!-- Modal -->
-<div
-  *ngIf="showModal"
-  class="fixed inset-0 z-30 flex items-center justify-center bg-black/75"
->
-  <!-- Ventana emergente -->
-  <div
-    class="relative bg-transparent ackdrop-blur-sm rounded-lg shadow-lg p-5 w-96 flex flex-col items-center gap-4"
-  >
-    <!-- Imagen -->
-    <img
-      src="assets/new/1.png"
-      alt="Modal Content"
-      class="rounded-lg w-full object-cover"
-    />
-
-    <!-- Botón de continuar -->
-    <button
-      (click)="GetBonus()"
-      class="bg-[#C084FC] hover:bg-[#9333EA] text-white px-6 py-2 rounded-lg shadow-md mt-[-20px]"
+    <div
+      class="relative bg-transparent ackdrop-blur-sm rounded-lg shadow-lg p-5 w-96 flex flex-col items-center gap-4"
     >
-      Continuar
-    </button>
+      <img
+        src="assets/new/1.png"
+        alt="Modal Content"
+        class="rounded-lg w-full object-cover"
+      />
+      <button
+        (click)="GetBonus()"
+        class="bg-[#C084FC] hover:bg-[#9333EA] text-white px-6 py-2 rounded-lg shadow-md mt-[-20px]"
+      >
+        Continuar
+      </button>
+    </div>
   </div>
-</div>
 }

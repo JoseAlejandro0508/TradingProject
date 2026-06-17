@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>TradingView - Sistema de Referidos</title>
+    <style>
+        :root {
+            --bg-main: #0c0d14;
+            --bg-card: rgba(20, 24, 38, 0.95);
+            --border-color: rgba(255, 255, 255, 0.06);
+            --text-muted: #848e9c;
+            --text-main: #e9ecef;
+            --primary: #2962ff;
+            --primary-hover: #1e4bd6;
+            --success: #00c853;
+            --warning: #ffb300;
+            --danger: #ff3d00;
+            --purple: #aa00ff;
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --accent-glow: rgba(41, 98, 255, 0.15);
+            --blue-badge-bg: rgba(41, 98, 255, 0.15);
+            --blue-badge-border: rgba(41, 98, 255, 0.3);
+        }
+
+        [data-theme="light"] {
+            --bg-main: #f4f6f9;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --border-color: rgba(0, 0, 0, 0.08);
+            --text-muted: #616e7c;
+            --text-main: #1f2937;
+            --primary: #2962ff;
+            --primary-hover: #1e4bd6;
+            --input-bg: rgba(0, 0, 0, 0.03);
+            --accent-glow: rgba(41, 98, 255, 0.08);
+            --blue-badge-bg: rgba(41, 98, 255, 0.08);
+            --blue-badge-border: rgba(41, 98, 255, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            padding: 16px;
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Encabezado */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 4px 0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .theme-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(16px);
+        }
+
+        /* Enlace y Código de Referencia */
+        .referral-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 16px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .referral-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .share-field {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            margin-bottom: 12px;
+        }
+
+        .share-value {
+            font-size: 13px;
+            font-weight: 500;
+            font-family: monospace;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 75%;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+
+        .copy-btn:hover {
+            color: var(--primary-hover);
+        }
+
+        /* Sección de Compartir Rápido Interno */
+        .quick-share-section {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .quick-share-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .quick-share-layout {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .quick-share-icons {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .share-icon-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .share-icon-btn:active {
+            transform: scale(0.92);
+        }
+
+        .share-icon-btn svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .si-whatsapp svg { fill: #25D366; }
+        .si-telegram svg { fill: #0088cc; }
+        .si-facebook svg { fill: #1877F2; }
+
+        /* Mini Recuadro Azul de Estadísticas */
+        .stat-badge-blue {
+            background: var(--blue-badge-bg);
+            border: 1px solid var(--blue-badge-border);
+            padding: 6px 12px;
+            border-radius: 12px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-width: 85px;
+        }
+
+        .stat-badge-blue .sb-number {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1.1;
+        }
+
+        .stat-badge-blue .sb-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-main);
+            white-space: nowrap;
+            margin-top: 1px;
+        }
+
+        /* Sistema de Acordeones */
+        .accordion-item {
+            margin-bottom: 12px;
+        }
+
+        .accordion-trigger {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 16px 18px;
+            border-radius: 18px;
+            color: var(--text-main);
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            backdrop-filter: blur(16px);
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .accordion-trigger:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .accordion-trigger .btn-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .accordion-trigger svg.chevron {
+            transition: transform 0.3s ease;
+            color: var(--text-muted);
+        }
+
+        .accordion-item.active .accordion-trigger svg.chevron {
+            transform: rotate(180deg);
+            color: var(--primary);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(20, 24, 38, 0.4);
+            border-radius: 0 0 18px 18px;
+            margin-top: -10px;
+            border: 1px solid transparent;
+            border-top: none;
+        }
+
+        [data-theme="light"] .accordion-content {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .accordion-item.active .accordion-content {
+            border-color: var(--border-color);
+            padding: 22px 16px 16px 16px;
+        }
+
+        /* Contenido: Últimos Referidos */
+        .referrals-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .ref-user-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar-mini {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--input-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .user-det .username {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .user-det .date {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .badge-level-row {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        .b-l1 { background: rgba(0, 200, 83, 0.12); color: var(--success); }
+        .b-l2 { background: rgba(255, 179, 0, 0.12); color: var(--warning); }
+        .b-l3 { background: rgba(255, 61, 0, 0.12); color: var(--danger); }
+        .b-l4 { background: rgba(170, 0, 255, 0.12); color: var(--purple); }
+
+        /* Contenido Grid de Detalles */
+        .details-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .detail-stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-stat-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .stat-value.total-highlight {
+            color: var(--success);
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        /* Árbol Genealógico */
+        .tree-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px 16px;
+            margin-top: 16px;
+            margin-bottom: 16px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .tree-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-main);
+            text-align: left;
+        }
+
+        .tree-professional-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .tree-level-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 12px 14px;
+            transition: background-color 0.2s;
+        }
+
+        .tree-level-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .tl-1 { border-left: 4px solid var(--success); }
+        .tl-2 { border-left: 4px solid var(--warning); }
+        .tl-3 { border-left: 4px solid var(--danger); }
+        .tl-4 { border-left: 4px solid var(--purple); }
+
+        .tree-left-block {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tree-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ta-1 { background: var(--success); box-shadow: 0 0 10px rgba(0, 200, 83, 0.2); }
+        .ta-2 { background: var(--warning); box-shadow: 0 0 10px rgba(255, 179, 0, 0.2); }
+        .ta-3 { background: var(--danger); box-shadow: 0 0 10px rgba(255, 61, 0, 0.2); }
+        .ta-4 { background: var(--purple); box-shadow: 0 0 10px rgba(170, 0, 255, 0.2); }
+
+        .tree-avatar svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .tree-meta-info .tree-lvl-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 2px;
+        }
+
+        .tree-meta-info .tree-lvl-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .tree-right-block {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tree-pct-pill {
+            display: inline-block;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 52px;
+        }
+        .tp-1 { background: rgba(0, 200, 83, 0.15); color: var(--success); }
+        .tp-2 { background: rgba(255, 179, 0, 0.15); color: var(--warning); }
+        .tp-3 { background: rgba(255, 61, 0, 0.15); color: var(--danger); }
+        .tp-4 { background: rgba(170, 0, 255, 0.15); color: var(--purple); }
+
+        /* Notificación Flotante de Copiado */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1c1f30;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            z-index: 1000;
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+            pointer-events: none;
+            border: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Encabezado con Modo -->
+    <div class="header">
+        <h1>Programa de Socios</h1>
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <span>Cambiar Estilo</span>
+        </button>
+    </div>
+
+    <!-- Enlaces y Código de Invitación -->
+    <div class="referral-box">
+        <div class="referral-title">Compartir enlace de invitación</div>
+        
+        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Código de Referencia</div>
+        <div class="share-field">
+            <span class="share-value" id="ref-code">TRAD-9983X</span>
+            <button class="copy-btn" onclick="copyToClipboard('ref-code', 'Código copiado')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+        </div>
+
+        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Enlace único de Registro</div>
+        <div class="share-field">
+            <span class="share-value" id="ref-link">https://tradingview.wallet/reg?ref=9983x</span>
+            <button class="copy-btn" onclick="copyToClipboard('ref-link', 'Enlace copiado')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+        </div>
+
+        <!-- Compartir Rápido Interno -->
+        <div class="quick-share-section">
+            <div class="quick-share-text">Comparta rápido tocando aquí:</div>
+            <div class="quick-share-layout">
+                <div class="quick-share-icons">
+                    <!-- WhatsApp -->
+                    <button class="share-icon-btn si-whatsapp" onclick="shareSocial('whatsapp')" title="Compartir en WhatsApp">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12.004 2c-5.51 0-9.99 4.479-9.99 9.99 0 1.764.459 3.421 1.265 4.873l-1.347 4.915 5.038-1.321c1.404.767 3.004 1.203 4.706 1.203 5.51 0 9.99-4.479 9.99-9.99s-4.48-9.99-9.99-9.99zm5.556 14.215c-.244.689-1.21 1.251-1.666 1.303-.434.05-1 .075-1.611-.121-.383-.122-.865-.297-1.486-.566-2.651-1.144-4.364-3.834-4.496-4.01-.131-.176-1.071-1.423-1.071-2.716 0-1.293.676-1.93.918-2.19.243-.261.532-.326.711-.326.177 0 .354.002.508.01.16.007.375-.061.587.451.219.53.748 1.826.812 1.957.065.13.108.283.022.456-.087.173-.131.282-.261.434-.13.153-.274.341-.392.457-.132.129-.27.269-.115.534.155.265.688 1.133 1.474 1.832.946.842 1.745 1.103 2.053 1.233.308.13.49.11.674-.102.184-.213.805-.935.918-1.257.114-.322.228-.27.382-.213.155.057 1.01.477 1.184.564.174.087.29.13.332.204.044.074.044.426-.2.114z"/>
+                        </svg>
+                    </button>
+                    <!-- Telegram -->
+                    <button class="share-icon-btn si-telegram" onclick="shareSocial('telegram')" title="Compartir en Telegram">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 12 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-1-.65-.35-1 .22-1.62.15-.16 2.71-2.48 2.76-2.7.01-.03.01-.14-.05-.2-.06-.06-.14-.04-.2-.03-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                        </svg>
+                    </button>
+                    <!-- Facebook -->
+                    <button class="share-icon-btn si-facebook" onclick="shareSocial('facebook')" title="Compartir en Facebook">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z"/>
+                        </svg>
+                    </button>
+                </div>
+                <!-- Recuadro Azul "25 Nuevos hoy" -->
+                <div class="stat-badge-blue">
+                    <span class="sb-number">25</span>
+                    <span class="sb-label">Nuevos hoy</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón Acordeón: Mostrar Últimos Referidos -->
+    <div class="accordion-item">
+        <button class="accordion-trigger" onclick="toggleAccordion(this)">
+            <div class="btn-content">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span>Mostrar Últimos Referidos</span>
+            </div>
+            <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+        <div class="accordion-content">
+            <div class="referrals-list">
+                <div class="ref-user-card">
+                    <div class="user-info">
+                        <div class="avatar-mini">JD</div>
+                        <div class="user-det">
+                            <div class="username">Juan_Diego32</div>
+                            <div class="date">Hace 12 minutos</div>
+                        </div>
+                    </div>
+                    <span class="badge-level-row b-l1">Nivel 1</span>
+                </div>
+                <div class="ref-user-card">
+                    <div class="user-info">
+                        <div class="avatar-mini">AM</div>
+                        <div class="user-det">
+                            <div class="username">AndresM_Crypto</div>
+                            <div class="date">Hace 2 horas</div>
+                        </div>
+                    </div>
+                    <span class="badge-level-row b-l2">Nivel 2</span>
+                </div>
+                <div class="ref-user-card">
+                    <div class="user-info">
+                        <div class="avatar-mini">LC</div>
+                        <div class="user-det">
+                            <div class="username">Laura_Cardenas</div>
+                            <div class="date">Ayer, 18:43</div>
+                        </div>
+                    </div>
+                    <span class="badge-level-row b-l3">Nivel 3</span>
+                </div>
+                <div class="ref-user-card">
+                    <div class="user-info">
+                        <div class="avatar-mini">MA</div>
+                        <div class="user-det">
+                            <div class="username">Mateo_Asoc</div>
+                            <div class="date">Hace 2 días</div>
+                        </div>
+                    </div>
+                    <span class="badge-level-row b-l4">Nivel 4</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón Acordeón: Detalles de referidos -->
+    <div class="accordion-item">
+        <button class="accordion-trigger" onclick="toggleAccordion(this)">
+            <div class="btn-content">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8" cy="7" r="4"></circle><polyline points="23 7 23 11 19 11"></polyline></svg>
+                <span>Detalles de referidos</span>
+            </div>
+            <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+        <div class="accordion-content">
+            <div class="details-grid">
+                <div class="detail-stat-row">
+                    <span class="stat-label">Referidos registrados hoy</span>
+                    <span class="stat-value" style="color: var(--primary);">+4 nuevos</span>
+                </div>
+                <div class="detail-stat-row">
+                    <span class="stat-label">Referidos Nivel 1 (Directos)</span>
+                    <span class="stat-value">12 usuarios</span>
+                </div>
+                <div class="detail-stat-row">
+                    <span class="stat-label">Referidos Nivel 2</span>
+                    <span class="stat-value">28 usuarios</span>
+                </div>
+                <div class="detail-stat-row">
+                    <span class="stat-label">Referidos Nivel 3</span>
+                    <span class="stat-value">64 usuarios</span>
+                </div>
+                <div class="detail-stat-row">
+                    <span class="stat-label">Referidos Nivel 4</span>
+                    <span class="stat-value">110 usuarios</span>
+                </div>
+                <div class="detail-stat-row" style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px;">
+                    <span class="stat-label" style="font-weight: 700; color: var(--text-main);">Referidos Totales</span>
+                    <span class="stat-value" style="font-weight: 700; color: var(--primary);">214 usuarios</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón Acordeón: Detalles de ganancias -->
+    <div class="accordion-item">
+        <button class="accordion-trigger" onclick="toggleAccordion(this)">
+            <div class="btn-content">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                <span>Detalles de ganancias</span>
+            </div>
+            <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+        <div class="accordion-content">
+            <div class="details-grid">
+                <div class="detail-stat-row">
+                    <span class="stat-label">Ganancia por Nivel 1 (4%)</span>
+                    <span class="stat-value">+145,200 COP</span>
+                </div>
+                <div class="detail-stat-row">
+                    <span class="stat-label">Ganancia por Nivel 2 (3%)</span>
+                    <span class="stat-value">+84,900 COP</span>
+                </div>
+                <div class="detail-stat-row">
+                    <span class="stat-label">Ganancia por Nivel 3 (2%)</span>
+                    <span class="stat-value">+32,150 COP</span>
+                </div>
+                <div class="detail-stat-row">
+                    <span class="stat-label">Ganancia por Nivel 4 (1%)</span>
+                    <span class="stat-value">+11,400 COP</span>
+                </div>
+                <div class="detail-stat-row" style="background: rgba(0, 200, 83, 0.05); padding: 8px; border-radius: 8px; border: 1px solid rgba(0, 200, 83, 0.15);">
+                    <span class="stat-label" style="font-weight: 700; color: var(--text-main);">Ganancias Totales</span>
+                    <span class="stat-value total-highlight">273,650 COP</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Árbol Genealógico Profesional de Referidos -->
+    <div class="tree-container">
+        <div class="tree-title">Estructura de Red (Árbol)</div>
+        
+        <div class="tree-professional-flow">
+            <!-- Nivel 1 -->
+            <div class="tree-level-item tl-1">
+                <div class="tree-left-block">
+                    <div class="tree-avatar ta-1">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10 20V4L7 7"/>
+                            <path d="M6 20H18"/>
+                        </svg>
+                    </div>
+                    <div class="tree-meta-info">
+                        <div class="tree-lvl-name">Nivel 1</div>
+                        <div class="tree-lvl-desc">Afiliados Directos, por cada comisión ganas el 4%</div>
+                    </div>
+                </div>
+                <div class="tree-right-block">
+                    <span class="tree-pct-pill tp-1">4%</span>
+                </div>
+            </div>
+
+            <!-- Nivel 2 -->
+            <div class="tree-level-item tl-2">
+                <div class="tree-left-block">
+                    <div class="tree-avatar ta-2">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 20h12"/>
+                            <path d="M6 10c0-3.8 3.2-6 6-6s6 2.2 6 6c0 3-4.5 6-8 10h8"/>
+                        </svg>
+                    </div>
+                    <div class="tree-meta-info">
+                        <div class="tree-lvl-name">Nivel 2</div>
+                        <div class="tree-lvl-desc">Afiliados Indirectos, por cada comisión ganas el 3%</div>
+                    </div>
+                </div>
+                <div class="tree-right-block">
+                    <span class="tree-pct-pill tp-2">3%</span>
+                </div>
+            </div>
+
+            <!-- Nivel 3 -->
+            <div class="tree-level-item tl-3">
+                <div class="tree-left-block">
+                    <div class="tree-avatar ta-3">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 20h8c2.2 0 4-1.8 4-4s-1.8-4-4-4h-2M14 12c2.2 0 4-1.8 4-4s-1.8-4-4-4H8l-2 3"/>
+                        </svg>
+                    </div>
+                    <div class="tree-meta-info">
+                        <div class="tree-lvl-name">Nivel 3</div>
+                        <div class="tree-lvl-desc">Afiliados Indirectos, por cada comisión ganas el 2%</div>
+                    </div>
+                </div>
+                <div class="tree-right-block">
+                    <span class="tree-pct-pill tp-3">2%</span>
+                </div>
+            </div>
+
+            <!-- Nivel 4 -->
+            <div class="tree-level-item tl-4">
+                <div class="tree-left-block">
+                    <div class="tree-avatar ta-4">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 4v16M18 16H6l10-12"/>
+                        </svg>
+                    </div>
+                    <div class="tree-meta-info">
+                        <div class="tree-lvl-name">Nivel 4</div>
+                        <div class="tree-lvl-desc">Afiliados Indirectos, por cada comisión ganas el 1%</div>
+                    </div>
+                </div>
+                <div class="tree-right-block">
+                    <span class="tree-pct-pill tp-4">1%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificación Flotante Toast -->
+    <div id="toast" class="toast">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00c853" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        <span id="toast-text">Copiado con éxito</span>
+    </div>
+
+    <script>
+        function toggleAccordion(button) {
+            const item = button.parentElement;
+            const content = button.nextElementSibling;
+            
+            if (item.classList.contains('active')) {
+                item.classList.remove('active');
+                content.style.maxHeight = null;
+            } else {
+                document.querySelectorAll('.accordion-item').forEach(el => {
+                    el.classList.remove('active');
+                    el.querySelector('.accordion-content').style.maxHeight = null;
+                });
+                
+                item.classList.add('active');
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        }
+
+        function copyToClipboard(elementId, textSuccess) {
+            const textToCopy = document.getElementById(elementId).innerText;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const toast = document.getElementById('toast');
+                const toastText = document.getElementById('toast-text');
+                
+                toastText.innerText = textSuccess;
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            }).catch(err => {
+                console.error('Error al copiar: ', err);
+            });
+        }
+
+        function shareSocial(platform) {
+            const link = document.getElementById('ref-link').innerText;
+            const code = document.getElementById('ref-code').innerText;
+            
+            const message = `¡Hola! Te invito a unirte a TradingView. Regístrate usando mi enlace único y mi código de invitación: ${code}\n\nEnlace de registro:\n${link}`;
+            const encodedMessage = encodeURIComponent(message);
+            const encodedUrl = encodeURIComponent(link);
+            
+            let targetUrl = '';
+            
+            switch(platform) {
+                case 'whatsapp':
+                    targetUrl = `https://wa.me/?text=${encodedMessage}`;
+                    break;
+                case 'telegram':
+                    targetUrl = `https://t.me/share/url?url=${encodedUrl}&text=${encodeURIComponent(`¡Únete a TradingView! Usa mi código de invitación: ${code}`)}`;
+                    break;
+                case 'facebook':
+                    targetUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+                    break;
+            }
+            
+            if(targetUrl) {
+                const fallbackAnchor = document.createElement('a');
+                fallbackAnchor.href = targetUrl;
+                fallbackAnchor.target = '_blank';
+                fallbackAnchor.rel = 'noopener noreferrer';
+                document.body.appendChild(fallbackAnchor);
+                fallbackAnchor.click();
+                document.body.removeChild(fallbackAnchor);
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.getAttribute('data-theme') === 'light') {
+                html.removeAttribute('data-theme');
+            } else {
+                html.setAttribute('data-theme', 'light');
+            }
+            
+            document.querySelectorAll('.accordion-item.active .accordion-content').forEach(content => {
+                content.style.maxHeight = content.scrollHeight + "px";
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>TradingView - Premium Wallet</title>
+    <style>
+        :root {
+            --bg-main: #0c0d14;
+            --bg-card: rgba(20, 24, 38, 0.95);
+            --border-color: rgba(255, 255, 255, 0.06);
+            --text-muted: #848e9c;
+            --text-main: #e9ecef;
+            --primary: #2962ff;
+            --primary-hover: #1e4bd6;
+            --success: #00c853;
+            --warning: #ffb300;
+            --danger: #ff3d00;
+            --chat-header-bg: #161824;
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --msg-system-bg: #161824;
+            --nequi-brand: #7000ff;
+            --usdt-brand: #009393;
+        }
+
+        /* Variables para el Modo Claro */
+        [data-theme="light"] {
+            --bg-main: #f4f6f9;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --border-color: rgba(0, 0, 0, 0.08);
+            --text-muted: #616e7c;
+            --text-main: #1f2937;
+            --primary: #2962ff;
+            --primary-hover: #1e4bd6;
+            --success: #00873a;
+            --warning: #b78103;
+            --danger: #d32f2f;
+            --chat-header-bg: #ffffff;
+            --input-bg: rgba(0, 0, 0, 0.04);
+            --msg-system-bg: #eaeaea;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: calc(16px + env(safe-area-inset-top)) 14px calc(120px + env(safe-area-inset-bottom)) 14px;
+            display: flex;
+            justify-content: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .wallet-wrapper {
+            width: 100%;
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* --- BOTONES DE ACCIÓN --- */
+        .action-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .btn {
+            height: 50px;
+            border-radius: 14px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-deposit { background-color: var(--primary); color: #fff; }
+        .btn-deposit:active { transform: scale(0.97); background-color: var(--primary-hover); }
+        
+        .btn-withdraw { 
+            background-color: #1e222d; 
+            color: #e9ecef; 
+            border: 1px solid rgba(255,255,255,0.06); 
+        }
+        [data-theme="light"] .btn-withdraw {
+            background-color: #ffffff;
+            color: #1f2937;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .btn-withdraw:active { transform: scale(0.97); }
+
+        /* --- SECCIÓN DE PERFIL --- */
+        .profile-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 18px;
+            margin-bottom: 16px;
+        }
+
+        .profile-avatar-wrapper {
+            position: relative;
+            width: 66px;
+            height: 66px;
+        }
+
+        .profile-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1e222d 0%, #2962ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            border: 2px solid var(--primary);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-edit-label {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            background: var(--primary);
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border: 1.5px solid var(--bg-card);
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        .profile-badge-verified {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: var(--success);
+            color: #ffffff;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--bg-card);
+            z-index: 6;
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .profile-name-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .profile-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        [data-theme="light"] .profile-name { color: #1f2937; }
+
+        .icon-edit-name {
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+        }
+        .icon-edit-name:hover { color: var(--primary); }
+
+        .profile-uid {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .profile-status-verified {
+            align-self: flex-start;
+            margin-top: 4px;
+            background: rgba(255, 179, 0, 0.1);
+            color: var(--warning);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .profile-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .profile-stat-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+        }
+        [data-theme="light"] .profile-stat-card { background: rgba(0, 0, 0, 0.02); }
+
+        .profile-stat-val {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        [data-theme="light"] .profile-stat-val { color: #1f2937; }
+
+        .profile-stat-lbl {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        .btn-referrals {
+            height: 100%;
+            min-height: 45px;
+            background-color: var(--primary);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .btn-referrals:active { transform: scale(0.97); background-color: var(--primary-hover); }
+
+        /* --- BOTÓN ESTILO FILTRO / ACORDEÓN --- */
+        .filter-bar-trigger {
+            background: #141826;
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background 0.2s ease, border 0.2s ease, opacity 0.3s;
+        }
+        [data-theme="light"] .filter-bar-trigger { background: #ffffff; }
+        .filter-bar-trigger:active { background: #1c2030; }
+        [data-theme="light"] .filter-bar-trigger:active { background: #f1f3f5; }
+
+        .filter-left-side {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        [data-theme="light"] .filter-left-side { color: #1f2937; }
+        .filter-left-side svg { color: var(--text-muted); flex-shrink: 0; }
+        .filter-right-side { display: flex; align-items: center; gap: 8px; }
+        .arrow-icon { color: var(--text-muted); }
+
+        /* Estilo para botón KYC Verificado final */
+        .kyc-verified-btn {
+            background: rgba(0, 200, 83, 0.1) !important;
+            border: 1px solid var(--success) !important;
+            cursor: not-allowed !important;
+        }
+        .kyc-verified-btn .filter-left-side, .kyc-verified-btn .filter-left-side svg {
+            color: var(--success) !important;
+        }
+
+        /* --- VENTANA / PESTAÑA DE KYC / CONTRASEÑAS --- */
+        .kyc-window, .pwd-window {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: var(--bg-main);
+            display: flex;
+            flex-direction: column;
+            z-index: 2000;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.32, 0.94, 0.6, 1), opacity 0.2s linear;
+            pointer-events: none;
+        }
+        .kyc-window.open, .pwd-window.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+        .kyc-body, .pwd-body {
+            flex: 1;
+            padding: 24px 16px;
+            overflow-y: auto;
+        }
+
+        .kyc-container, .pwd-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: opacity 0.3s ease;
+        }
+
+        .kyc-title, .pwd-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .kyc-subtitle, .pwd-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .kyc-input, .pwd-input {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0 14px;
+            height: 48px;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            width: 100%;
+        }
+        .kyc-input:focus, .pwd-input:focus {
+            border-color: var(--primary);
+        }
+
+        .kyc-select {
+            background: var(--chat-header-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0 14px;
+            height: 48px;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            width: 100%;
+            appearance: none;
+        }
+
+        /* --- BOTONES DE SELECCIÓN DE MÉTODO (NEQUI O USDT) --- */
+        .method-selector-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .method-select-card {
+            background: var(--input-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            padding: 12px 6px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 12px;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .method-select-card .method-icon-wrapper {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .method-select-card.active-nequi {
+            border-color: #da0077;
+            background: rgba(218, 0, 119, 0.05);
+        }
+
+        .method-select-card.active-usdt {
+            border-color: var(--usdt-brand);
+            background: rgba(0, 147, 147, 0.05);
+        }
+
+        .method-select-card.active-usdt-bep {
+            border-color: #f3ba2f;
+            background: rgba(243, 186, 47, 0.05);
+        }
+
+        /* --- TARJETAS GRANDES DE RETIRO --- */
+        .saved-cards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            width: 100%;
+        }
+
+        .nequi-card-display {
+            width: 100%;
+            background: linear-gradient(135deg, #da0077 0%, #1c003a 100%);
+            border-radius: 20px;
+            padding: 24px;
+            position: relative;
+            color: #ffffff;
+            box-shadow: 0 12px 28px rgba(218, 0, 119, 0.25);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 190px;
+            margin-top: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nequi-card-display::before, .usdt-card-display::before {
+            content: '';
+            position: absolute;
+            top: -50%; right: -20%;
+            width: 250px; height: 250px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .nequi-logo-text {
+            font-weight: 900;
+            font-size: 24px;
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .nequi-logo-dot {
+            width: 8px; height: 8px; background: #3fe3ff; border-radius: 50%; display: inline-block;
+        }
+
+        .nequi-card-number, .usdt-card-number {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin: 20px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            word-break: break-all;
+        }
+
+        .nequi-card-lbl, .usdt-card-lbl {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            margin-bottom: 2px;
+        }
+
+        /* DISEÑO DE LA TARJETA USDT */
+        .usdt-card-display {
+            width: 100%;
+            border-radius: 20px;
+            padding: 24px;
+            position: relative;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 190px;
+            margin-top: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .usdt-trc-gradient {
+            background: linear-gradient(135deg, #009393 0%, #061826 100%);
+            box-shadow: 0 12px 28px rgba(0, 147, 147, 0.25);
+        }
+
+        .usdt-bep-gradient {
+            background: linear-gradient(135deg, #f3ba2f 0%, #11141a 100%);
+            box-shadow: 0 12px 28px rgba(243, 186, 47, 0.2);
+        }
+
+        /* --- PANTALLA PROCESANDO IA --- */
+        .kyc-loading-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+            height: 80%;
+            gap: 20px;
+        }
+
+        .ai-scanner-box {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border: 2px dashed var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: rotateScanner 4s linear infinite;
+        }
+
+        @keyframes rotateScanner {
+            100% { transform: rotate(360deg); }
+        }
+
+        .countdown-number {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .chat-window {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: var(--bg-main);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.32, 0.94, 0.6, 1), opacity 0.2s linear;
+            pointer-events: none;
+        }
+        .chat-window.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+        .chat-header, .kyc-header, .pwd-header {
+            background: var(--chat-header-bg);
+            padding: calc(16px + env(safe-area-inset-top)) 16px 16px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-profile-area { display: flex; align-items: center; gap: 10px; }
+        .chat-profile-area svg { color: var(--text-muted); flex-shrink: 0; }
+
+        .btn-close-chat, .btn-close-kyc, .btn-close-pwd {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        [data-theme="light"] .btn-close-chat, [data-theme="light"] .btn-close-kyc, [data-theme="light"] .btn-close-pwd { background: rgba(0, 0, 0, 0.05); }
+
+        .chat-body { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .msg { max-width: 85%; padding: 12px 14px; border-radius: 16px; font-size: 13.5px; line-height: 1.4; }
+        .msg-system { background: var(--msg-system-bg); color: var(--text-main); align-self: flex-start; border: 1px solid var(--border-color); }
+        .msg-user { background: var(--primary); color: #fff; align-self: flex-end; }
+        .msg-user img { max-width: 100%; max-height: 180px; border-radius: 10px; display: block; margin-top: 4px; }
+
+        .chat-footer {
+            padding: 12px 16px calc(12px + env(safe-area-inset-bottom)) 16px;
+            background: var(--chat-header-bg);
+            border-top: 1px solid var(--border-color);
+            display: flex; 
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1; 
+            background: var(--input-bg);
+            border: 1px solid var(--border-color); 
+            border-radius: 12px;
+            padding: 0 14px; 
+            height: 44px; 
+            color: var(--text-main); 
+            font-size: 14px; 
+            outline: none;
+        }
+
+        .media-label-btn {
+            width: 44px; height: 44px; border: 1px solid var(--border-color); border-radius: 12px; display: flex;
+            align-items: center; justify-content: center; cursor: pointer; background: var(--input-bg); color: var(--text-muted);
+        }
+
+        .btn-send {
+            width: 44px; height: 44px; border: none; background: var(--primary); color: white;
+            border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+
+        /* Plaquitas de estado guardado en las tarjetas */
+        .card-status-badge {
+            font-size: 11px;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .badge-nequi {
+            background: rgba(218, 0, 119, 0.25);
+            color: #ff54b0;
+            border: 1px solid rgba(218, 0, 119, 0.4);
+        }
+        .badge-usdt-trc {
+            background: rgba(0, 200, 83, 0.2);
+            color: #2eff8b;
+            border: 1px solid rgba(0, 200, 83, 0.4);
+        }
+        .badge-usdt-bep {
+            background: rgba(243, 186, 47, 0.2);
+            color: #ffd269;
+            border: 1px solid rgba(243, 186, 47, 0.4);
+        }
+        .badge-saved-success {
+            background: rgba(0, 200, 83, 0.25) !important;
+            color: #2eff8b !important;
+            border: 1px solid rgba(0, 200, 83, 0.6) !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wallet-wrapper">
+        <!-- ACCIONES RÁPIDAS -->
+        <section class="action-group">
+            <button class="btn btn-deposit" onclick="alert('Enlace de depósito activo')">Recargar Cuenta</button>
+            <button class="btn btn-withdraw" onclick="alert('Enlace de retiro activo')">Retirar Fondos</button>
+        </section>
+
+        <!-- SECCIÓN DE PERFIL -->
+        <div class="profile-panel">
+            <div class="profile-header">
+                <div class="profile-avatar-wrapper">
+                    <label for="avatarUpload" class="avatar-edit-label" title="Cambiar foto">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path></svg>
+                    </label>
+                    <input type="file" id="avatarUpload" accept="image/*" style="display: none;" onchange="updateProfileAvatar(this)">
+                    
+                    <div class="profile-avatar" id="avatarContainer">
+                        <svg id="defaultAvatarSvg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </div>
+                    <div class="profile-badge-verified" id="kycCheckBadge">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                </div>
+                <div class="profile-info">
+                    <div class="profile-name-container">
+                        <div class="profile-name" id="profileNameText">Alex Trader Premium</div>
+                        <div class="icon-edit-name" onclick="editProfileName()" title="Editar nombre">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="profile-uid">
+                        <span>UID: 84729104</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="cursor:pointer;" onclick="alert('UID Copiado')"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    </div>
+                    <div class="profile-status-verified" id="kycStatusBadge">
+                        <span id="kycStatusText">Verificación requerida</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-stats-grid">
+                <div class="profile-stat-card">
+                    <div class="profile-stat-val">342 Días</div>
+                    <div class="profile-stat-lbl">Antigüedad</div>
+                </div>
+                <button class="btn-referrals" onclick="alert('Enlace de Referidos activo')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    Referidos
+                </button>
+            </div>
+        </div>
+
+        <!-- BOTÓN DE VERIFICACIÓN DE IDENTIDAD -->
+        <div class="filter-bar-trigger" id="kycMainBtn" onclick="openKycWindow()">
+            <div class="filter-left-side">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span id="kycBtnText">Verificación de identidad</span>
+            </div>
+            <div class="filter-right-side">
+                <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+        </div>
+
+        <!-- BOTÓN: CONTRASEÑA DE RETIRO -->
+        <div class="filter-bar-trigger" id="withdrawalPwdBtn" onclick="openWithdrawalPwdWindow()">
+            <div class="filter-left-side">
+                <span id="withdrawalPwdIconContainer" style="display: flex; align-items: center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </span>
+                <span id="withdrawalPwdBtnText">Contraseña de retiro</span>
+            </div>
+            <div class="filter-right-side">
+                <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+        </div>
+
+        <!-- BOTÓN: CAMBIAR CONTRASEÑA DE CUENTA -->
+        <div class="filter-bar-trigger" id="accountPwdBtn" onclick="openAccountPwdWindow()">
+            <div class="filter-left-side">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+                <span>Cambiar contraseña de cuenta</span>
+            </div>
+            <div class="filter-right-side">
+                <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+        </div>
+
+        <!-- BOTÓN: AGREGAR RETIRO GUARDADO -->
+        <div class="filter-bar-trigger" id="nequiTriggerBtn" onclick="openNequiWindow()">
+            <div class="filter-left-side">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                <span id="nequiBtnText">Agregar retiro guardado</span>
+            </div>
+            <div class="filter-right-side">
+                <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+        </div>
+
+        <!-- BOTÓN: SOPORTE -->
+        <div class="filter-bar-trigger" onclick="toggleChat()">
+            <div class="filter-left-side">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <span>Soporte</span>
+            </div>
+            <div class="filter-right-side">
+                <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+        </div>
+
+        <!-- BOTÓN: CAMBIAR TEMA (MODO OSCURO / CLARO) -->
+        <div class="filter-bar-trigger" onclick="toggleTheme()">
+            <div class="filter-left-side" id="themeIconContainer">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                <span id="themeBtnText">Modo oscuro (Toque para cambiar)</span>
+            </div>
+            <div class="filter-right-side">
+                <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+        </div>
+
+        <!-- BOTÓN: CERRAR SESIÓN -->
+        <div class="filter-bar-trigger" style="border-color: rgba(255, 61, 0, 0.2);" onclick="closeSessionAction()">
+            <div class="filter-left-side" style="color: var(--danger);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                <span>Cerrar sección</span>
+            </div>
+            <div class="filter-right-side">
+                <svg class="arrow-icon" style="color: var(--danger);" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR PRINCIPAL DE LA BILLETERA VACÍO (LAS TARJETA SE QUEDAN DENTRO) -->
+        <div class="saved-cards-list" id="nequiCardContainer" style="display:none;"></div>
+    </div>
+
+    <!-- PESTAÑA / VENTANA DE VERIFICACIÓN KYC -->
+    <div class="kyc-window" id="kycWindow">
+        <div class="kyc-header">
+            <div class="chat-profile-area">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <h4 style="font-size: 14px;">Portal de Identidad KYC</h4>
+            </div>
+            <button class="btn-close-kyc" onclick="closeKycWindow()">Volver</button>
+        </div>
+        
+        <div class="kyc-body">
+            <div class="kyc-container" id="kycFormContainer">
+                <div>
+                    <h3 class="kyc-title">Información para el KYC</h3>
+                    <p class="kyc-subtitle">Por favor ingresa tus datos legales para desbloquear los límites premium de la cuenta.</p>
+                </div>
+
+                <div class="input-wrapper">
+                    <label class="input-label">Nombre Completo</label>
+                    <input type="text" class="kyc-input" id="kycName" placeholder="Escribe tu nombre legal">
+                </div>
+
+                <div class="input-wrapper">
+                    <label class="input-label">Edad</label>
+                    <input type="number" class="kyc-input" id="kycAge" placeholder="Ej. 25">
+                </div>
+
+                <div class="input-wrapper">
+                    <label class="input-label">País de Residencia</label>
+                    <input type="text" class="kyc-input" id="kycCountry" placeholder="Ej. Colombia">
+                </div>
+
+                <div class="input-wrapper">
+                    <label class="input-label">Ciudad</label>
+                    <input type="text" class="kyc-input" id="kycCity" placeholder="Ej. Bogotá">
+                </div>
+
+                <div class="input-wrapper">
+                    <label class="input-label">Tipo de Documento</label>
+                    <select class="kyc-select" id="kycDocType" onchange="updateDocumentPlaceholder()">
+                        <option value="Cédula">Documento Nacional de Identidad / Cédula</option>
+                        <option value="Pasaporte">Pasaporte Internacional</option>
+                        <option value="Licencia">Licencia de Conducir</option>
+                    </select>
+                </div>
+
+                <div class="input-wrapper">
+                    <label class="input-label" id="kycDocLabel">Número de Cédula</label>
+                    <input type="text" class="kyc-input" id="kycDocNumber" placeholder="Ingresa tu número de cédula">
+                </div>
+
+                <button class="btn btn-deposit" style="width: 100%; margin-top: 12px; height: 52px;" onclick="startKycAiVerification()">Verificar Ahora</button>
+            </div>
+
+            <div class="kyc-loading-screen" id="kycLoadingScreen">
+                <div class="ai-scanner-box">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2962ff" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="M12 6v6l4 2"></path></svg>
+                </div>
+                <div>
+                    <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">Validación Biométrica Inteligente</h2>
+                    <p style="font-size: 14px; color: var(--text-muted); max-width: 280px; margin: 0 auto; line-height: 1.5;">
+                        La validación de la información la está verificar en automático nuestra IA automáticamente. Por favor no cierres la ventana.
+                    </p>
+                </div>
+                <div class="countdown-number" id="kycCountdown">3</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PESTAÑA / VENTANA DE CONFIGURAR CONTRASEÑA DE RETIRO -->
+    <div class="pwd-window" id="withdrawalPwdWindow">
+        <div class="pwd-header">
+            <div class="chat-profile-area">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <h4 id="withdrawalPwdTitleHeader" style="font-size: 14px;">Definir Clave de Retiro</h4>
+            </div>
+            <button class="btn-close-pwd" onclick="closeWithdrawalPwdWindow()">Volver</button>
+        </div>
+        <div class="pwd-body">
+            <div class="pwd-container">
+                <div>
+                    <h3 class="pwd-title" id="withdrawalPwdMainTitle">Nueva Contraseña de Retiro</h3>
+                    <p class="pwd-subtitle">Crea una clave numérica de seguridad para autorizar cada retiro de tus fondos (4 dígitos).</p>
+                </div>
+                <div class="input-wrapper">
+                    <label class="input-label" id="withdrawalPwdLabel">Nueva Contraseña (4 caracteres)</label>
+                    <input type="password" class="pwd-input" id="withdrawalPwdInput" maxlength="4" placeholder="••••" style="text-align: center; letter-spacing: 8px; font-size: 20px;">
+                </div>
+                <button class="btn btn-deposit" style="width: 100%; margin-top: 12px; height: 52px;" onclick="saveWithdrawalPassword()">Guardar Contraseña</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PESTAÑA / VENTANA DE CAMBIAR CONTRASEÑA DE LA CUENTA -->
+    <div class="pwd-window" id="accountPwdWindow">
+        <div class="pwd-header">
+            <div class="chat-profile-area">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+                <h4 style="font-size: 14px;">Seguridad de la Cuenta</h4>
+            </div>
+            <button class="btn-close-pwd" onclick="closeAccountPwdWindow()">Volver</button>
+        </div>
+        <div class="pwd-body">
+            <div class="pwd-container">
+                <div>
+                    <h3 class="pwd-title">Cambiar Contraseña de Cuenta</h3>
+                    <p class="pwd-subtitle">Actualiza la contraseña de acceso global a tu cuenta TradingView.</p>
+                </div>
+                <div class="input-wrapper">
+                    <label class="input-label">Coloca contraseña anterior</label>
+                    <input type="password" class="pwd-input" id="accOldPwd" placeholder="Introduce tu contraseña actual">
+                </div>
+                <div class="input-wrapper">
+                    <label class="input-label">Coloca nueva contraseña</label>
+                    <input type="password" class="pwd-input" id="accNewPwd" placeholder="Mínimo 6 caracteres">
+                </div>
+                <div class="input-wrapper">
+                    <label class="input-label">Repite contraseña</label>
+                    <input type="password" class="pwd-input" id="accRepeatPwd" placeholder="Confirma tu nueva contraseña">
+                </div>
+                <button class="btn btn-deposit" style="width: 100%; margin-top: 12px; height: 52px;" onclick="saveAccountPassword()">Actualizar Contraseña</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VENTANA DE MÉTODOS DE RETIRO CON PRE-VIEW DE TARJETA EN VIVO INTERNO -->
+    <div class="pwd-window" id="nequiWindow">
+        <div class="pwd-header">
+            <div class="chat-profile-area">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                <h4 style="font-size: 14px;">Métodos de Retiro Guardados</h4>
+            </div>
+            <button class="btn-close-pwd" onclick="closeNequiWindow()">Volver</button>
+        </div>
+        <div class="pwd-body">
+            <div class="pwd-container">
+                <div>
+                    <h3 class="pwd-title">Configurar Método de Retiro</h3>
+                    <p class="pwd-subtitle">Selecciona la plataforma financiera que deseas registrar. Puedes guardar todos los métodos sin ningún problema.</p>
+                </div>
+
+                <!-- SELECTOR DE PLATAFORMA -->
+                <div class="input-wrapper">
+                    <label class="input-label">¿Qué método deseas guardar?</label>
+                    <div class="method-selector-grid">
+                        <div class="method-select-card" id="selectNequiOption" onclick="switchMethodForm('nequi')">
+                            <div class="method-icon-wrapper">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#da0077" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                            </div>
+                            <span>Nequi</span>
+                        </div>
+                        <div class="method-select-card" id="selectUsdtOption" onclick="switchMethodForm('usdt')">
+                            <div class="method-icon-wrapper">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#009393" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12M9 8h6M9 12h6"></path></svg>
+                            </div>
+                            <span>USDT (TRC20)</span>
+                        </div>
+                        <div class="method-select-card" id="selectUsdtBepOption" onclick="switchMethodForm('usdt-bep')">
+                            <div class="method-icon-wrapper">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#f3ba2f" stroke-width="2"><path d="M12 2l4 4-4 4-4-4zM12 14l4 4-4 4-4-4zM6 8l4 4-4 4-4-4zM18 8l4 4-4 4-4-4z"></path></svg>
+                            </div>
+                            <span>USDT (BEP20)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTENEDOR DE LA VISTA PREVIA INTERNA EN VIVO -->
+                <div id="liveCardPreviewContainer" style="width: 100%;"></div>
+
+                <!-- FORMULARIO NEQUI -->
+                <div id="formNequiBlock" style="display: none; flex-direction: column; gap: 14px;">
+                    <div class="input-wrapper">
+                        <label class="input-label">Número de Cuenta Nequi</label>
+                        <input type="number" class="pwd-input" id="nequiNumberInput" placeholder="Ej. 3001234567" oninput="updateLiveCard()">
+                    </div>
+                    <button class="btn btn-deposit" style="width: 100%; height: 52px; background: var(--nequi-brand);" onclick="saveNequiAccount()">Agregar Cuenta Nequi</button>
+                </div>
+
+                <!-- FORMULARIO USDT TRC20 -->
+                <div id="formUsdtBlock" style="display: none; flex-direction: column; gap: 14px;">
+                    <div class="input-wrapper">
+                        <label class="input-label">Dirección de Billetera USDT (Red TRC20 únicamente)</label>
+                        <input type="text" class="pwd-input" id="usdtAddressInput" placeholder="Ej. TXa1b2c3d4e5f6g7h8i9j0..." oninput="updateLiveCard()">
+                    </div>
+                    <button class="btn btn-deposit" style="width: 100%; height: 52px; background: var(--usdt-brand);" onclick="saveUsdtAccount()">Agregar Billetera TRC20</button>
+                </div>
+
+                <!-- FORMULARIO USDT BEP20 -->
+                <div id="formUsdtBepBlock" style="display: none; flex-direction: column; gap: 14px;">
+                    <div class="input-wrapper">
+                        <label class="input-label">Dirección de Billetera USDT (Red BEP20 - BNB Smart Chain)</label>
+                        <input type="text" class="pwd-input" id="usdtBepAddressInput" placeholder="Ej. 0x71C...a1b2c3d4" oninput="updateLiveCard()">
+                    </div>
+                    <button class="btn btn-deposit" style="width: 100%; height: 52px; background: #f3ba2f; color: #11141a;" onclick="saveUsdtBepAccount()">Agregar Billetera BEP20</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- CHAT DE SOPORTE -->
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <div class="chat-profile-area">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                <div>
+                    <h4 style="font-size: 14px;">Asesor Premium</h4>
+                    <span style="font-size: 11px; color: var(--success)">● En línea</span>
+                </div>
+            </div>
+            <button class="btn-close-chat" onclick="toggleChat()">Cerrar</button>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="msg msg-system">Hola, soy tu asesor financiero de TradingView. ¿En qué puedo ayudarte con tus balances u operaciones hoy?</div>
+        </div>
+        <div class="chat-footer">
+            <input type="file" id="mediaInput" accept="image/*" style="display: none;" onchange="handleMediaSelection(this)">
+            <label for="mediaInput" class="media-label-btn" title="Enviar Foto">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </label>
+            <input type="text" class="chat-input" id="chatInput" placeholder="Escribe tu mensaje..." onkeypress="if(event.key === 'Enter') sendMessage()">
+            <button class="btn-send" onclick="sendMessage()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let isKycVerified = false;
+        let hasWithdrawalPwd = false;
+        let withdrawalPasswordValue = "";
+        let activeFormType = ""; 
+
+        // Estados guardados de cada tarjeta (false = no guardado, true = guardado)
+        let nequiSaved = false;
+        let usdtSaved = false;
+        let usdtBepSaved = false;
+
+        function updateDocumentPlaceholder() {
+            const docType = document.getElementById('kycDocType').value;
+            const docLabel = document.getElementById('kycDocLabel');
+            const docInput = document.getElementById('kycDocNumber');
+
+            if (docType === "Cédula") {
+                docLabel.innerText = "Número de Cédula";
+                docInput.placeholder = "Ingresa tu número de cédula";
+            } else if (docType === "Pasaporte") {
+                docLabel.innerText = "Número de Pasaporte";
+                docInput.placeholder = "Ingresa tu número de pasaporte";
+            } else if (docType === "Licencia") {
+                docLabel.innerText = "Número de Licencia";
+                docInput.placeholder = "Ingresa tu número de licencia";
+            }
+        }
+
+        function editProfileName() {
+            const currentName = document.getElementById('profileNameText').innerText;
+            const newName = prompt("Introduce tu nuevo nombre de perfil:", currentName);
+            if (newName && newName.trim() !== "") {
+                document.getElementById('profileNameText').innerText = newName.trim();
+            }
+        }
+
+        function updateProfileAvatar(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const container = document.getElementById('avatarContainer');
+                container.innerHTML = `<img src="${e.target.result}" alt="Avatar">`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function openKycWindow() {
+            if (isKycVerified) return;
+            document.getElementById('kycWindow').classList.add('open');
+        }
+
+        function closeKycWindow() {
+            document.getElementById('kycWindow').classList.remove('open');
+        }
+
+        function openWithdrawalPwdWindow() {
+            if (hasWithdrawalPwd) {
+                document.getElementById('withdrawalPwdTitleHeader').innerText = "Editar Clave de Retiro";
+                document.getElementById('withdrawalPwdMainTitle').innerText = "Editar Contraseña de Retiro Actual";
+                document.getElementById('withdrawalPwdLabel').innerText = "Introduce la nueva contraseña (4 caracteres)";
+            }
+            document.getElementById('withdrawalPwdInput').value = "";
+            document.getElementById('withdrawalPwdWindow').classList.add('open');
+        }
+
+        function closeWithdrawalPwdWindow() {
+            document.getElementById('withdrawalPwdWindow').classList.remove('open');
+        }
+
+        function saveWithdrawalPassword() {
+            const pwdInput = document.getElementById('withdrawalPwdInput').value;
+            if (pwdInput.length !== 4) {
+                alert("La contraseña de retiro debe tener exactamente 4 caracteres.");
+                return;
+            }
+            withdrawalPasswordValue = pwdInput;
+            hasWithdrawalPwd = true;
+            document.getElementById('withdrawalPwdIconContainer').innerHTML = `
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path></svg>
+            `;
+            document.getElementById('withdrawalPwdBtnText').innerText = "Editar contraseña de retiro";
+            alert("Contraseña de retiro guardada correctamente.");
+            closeWithdrawalPwdWindow(); 
+        }
+
+        function openAccountPwdWindow() {
+            document.getElementById('accOldPwd').value = "";
+            document.getElementById('accNewPwd').value = "";
+            document.getElementById('accRepeatPwd').value = "";
+            document.getElementById('accountPwdWindow').classList.add('open');
+        }
+
+        function closeAccountPwdWindow() {
+            document.getElementById('accountPwdWindow').classList.remove('open');
+        }
+
+        function saveAccountPassword() {
+            const oldPwd = document.getElementById('accOldPwd').value;
+            const newPwd = document.getElementById('accNewPwd').value;
+            const repeatPwd = document.getElementById('accRepeatPwd').value;
+
+            if (!oldPwd || !newPwd || !repeatPwd) {
+                alert("Por favor rellene todos los campos requeridos.");
+                return;
+            }
+            if (newPwd !== repeatPwd) {
+                alert("La nueva contraseña y su repetición no coinciden.");
+                return;
+            }
+            if (newPwd.length < 6) {
+                alert("La nueva contraseña debe tener mínimo 6 caracteres.");
+                return;
+            }
+            alert("Contraseña de la cuenta actualizada exitosamente.");
+            closeAccountPwdWindow();
+        }
+
+        function openNequiWindow() {
+            document.getElementById('selectNequiOption').classList.remove('active-nequi');
+            document.getElementById('selectUsdtOption').classList.remove('active-usdt');
+            document.getElementById('selectUsdtBepOption').classList.remove('active-usdt-bep');
+            document.getElementById('formNequiBlock').style.display = 'none';
+            document.getElementById('formUsdtBlock').style.display = 'none';
+            document.getElementById('formUsdtBepBlock').style.display = 'none';
+            document.getElementById('liveCardPreviewContainer').innerHTML = "";
+            
+            document.getElementById('nequiNumberInput').value = "";
+            document.getElementById('usdtAddressInput').value = "";
+            document.getElementById('usdtBepAddressInput').value = "";
+            activeFormType = "";
+            document.getElementById('nequiWindow').classList.add('open');
+        }
+
+        function closeNequiWindow() {
+            document.getElementById('nequiWindow').classList.remove('open');
+        }
+
+        // Cambiar entre subformularios y renderizar la tarjeta en vivo de inmediato
+        function switchMethodForm(type) {
+            activeFormType = type;
+            const nequiOpt = document.getElementById('selectNequiOption');
+            const usdtOpt = document.getElementById('selectUsdtOption');
+            const usdtBepOpt = document.getElementById('selectUsdtBepOption');
+            
+            const nequiBlock = document.getElementById('formNequiBlock');
+            const usdtBlock = document.getElementById('formUsdtBlock');
+            const usdtBepBlock = document.getElementById('formUsdtBepBlock');
+
+            nequiOpt.classList.remove('active-nequi');
+            usdtOpt.classList.remove('active-usdt');
+            usdtBepOpt.classList.remove('active-usdt-bep');
+            nequiBlock.style.display = 'none';
+            usdtBlock.style.display = 'none';
+            usdtBepBlock.style.display = 'none';
+
+            if (type === 'nequi') {
+                nequiOpt.classList.add('active-nequi');
+                nequiBlock.style.display = 'flex';
+            } else if (type === 'usdt') {
+                usdtOpt.classList.add('active-usdt');
+                usdtBlock.style.display = 'flex';
+            } else if (type === 'usdt-bep') {
+                usdtBepOpt.classList.add('active-usdt-bep');
+                usdtBepBlock.style.display = 'flex';
+            }
+
+            updateLiveCard();
+        }
+
+        // Actualiza el diseño de la tarjeta correspondiente dentro del panel en tiempo real
+        function updateLiveCard() {
+            const container = document.getElementById('liveCardPreviewContainer');
+            if (!activeFormType) {
+                container.innerHTML = "";
+                return;
+            }
+
+            if (activeFormType === 'nequi') {
+                const val = document.getElementById('nequiNumberInput').value || "3000000000";
+                const badgeClass = nequiSaved ? "badge-saved-success" : "badge-nequi";
+                const badgeText = nequiSaved ? "✓ GUARDADO" : "NEQUI PENDIENTE";
+
+                container.innerHTML = `
+                    <div class="nequi-card-display">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div class="nequi-logo-text">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3fe3ff" stroke-width="2.5" style="margin-right:2px;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                                NEQUI<span class="nequi-logo-dot"></span>
+                            </div>
+                            <span class="card-status-badge ${badgeClass}" id="liveNequiBadge">${badgeText}</span>
+                        </div>
+                        <div class="nequi-card-number">*** *** ${val.slice(-4)}</div>
+                        <div>
+                            <div class="nequi-card-lbl">Número Vinculado</div>
+                            <div style="font-size:15px; font-weight:600; letter-spacing:1px;">${val}</div>
+                        </div>
+                    </div>
+                `;
+            } else if (activeFormType === 'usdt') {
+                const val = document.getElementById('usdtAddressInput').value || "TXa1b2c3d4e5f6g7h8i9j0xxxxxxxx";
+                const badgeClass = usdtSaved ? "badge-saved-success" : "badge-usdt-trc";
+                const badgeText = usdtSaved ? "✓ GUARDADO" : "TRC20 CONFIGURANDO";
+
+                container.innerHTML = `
+                    <div class="usdt-card-display usdt-trc-gradient">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div class="nequi-logo-text" style="color: #ffffff; font-size:20px;">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2eff8b" stroke-width="2.5" style="margin-right:4px;"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12M9 8h6M9 12h6"></path></svg>
+                                USDT
+                            </div>
+                            <span class="card-status-badge ${badgeClass}" id="liveUsdtBadge">${badgeText}</span>
+                        </div>
+                        <div class="usdt-card-number" style="font-size:14px; letter-spacing:0.5px;">${val.slice(0,8)}...${val.slice(-8)}</div>
+                        <div>
+                            <div class="usdt-card-lbl">Dirección Cripto TRC20 Registrada</div>
+                            <div style="font-size:12px; font-weight:500; opacity:0.9; word-break:break-all;">${val}</div>
+                        </div>
+                    </div>
+                `;
+            } else if (activeFormType === 'usdt-bep') {
+                const val = document.getElementById('usdtBepAddressInput').value || "0x71Cxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+                const badgeClass = usdtBepSaved ? "badge-saved-success" : "badge-usdt-bep";
+                const badgeText = usdtBepSaved ? "✓ GUARDADO" : "BEP20 CONFIGURANDO";
+
+                container.innerHTML = `
+                    <div class="usdt-card-display usdt-bep-gradient">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div class="nequi-logo-text" style="color: #ffffff; font-size:20px;">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffd269" stroke-width="2.5" style="margin-right:4px;"><path d="M12 2l5 5-5 5-5-5zM12 12l5 5-5 5-5-5zM6 8l4 4-4 4-4-4zM18 8l4 4-4 4-4-4z"></path></svg>
+                                USDT
+                            </div>
+                            <span class="card-status-badge ${badgeClass}" id="liveUsdtBepBadge">${badgeText}</span>
+                        </div>
+                        <div class="usdt-card-number" style="font-size:14px; letter-spacing:0.5px;">${val.slice(0,8)}...${val.slice(-8)}</div>
+                        <div>
+                            <div class="usdt-card-lbl">Dirección Cripto BEP20 Registrada</div>
+                            <div style="font-size:12px; font-weight:500; opacity:0.9; word-break:break-all;">${val}</div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Guardar método Nequi -> Cambia placa a verde en vivo
+        function saveNequiAccount() {
+            const nequiNum = document.getElementById('nequiNumberInput').value.trim();
+            if(!nequiNum || nequiNum.length < 8) {
+                alert("Por favor introduce un número de cuenta Nequi válido.");
+                return;
+            }
+
+            nequiSaved = true;
+            updateLiveCard(); // Fuerza la actualización para pintar la placa verde
+            
+            document.getElementById('nequiTriggerBtn').querySelector('#nequiBtnText').innerText = "Editar retiro guardado";
+            alert("Método de retiro Nequi guardado exitosamente.");
+        }
+
+        // Guardar método USDT (TRC20) -> Cambia placa a verde en vivo
+        function saveUsdtAccount() {
+            const usdtAddr = document.getElementById('usdtAddressInput').value.trim();
+            if(!usdtAddr || usdtAddr.length < 20) {
+                alert("Por favor introduce una dirección de billetera USDT válida.");
+                return;
+            }
+
+            usdtSaved = true;
+            updateLiveCard(); // Fuerza la actualización para pintar la placa verde
+            
+            document.getElementById('nequiTriggerBtn').querySelector('#nequiBtnText').innerText = "Editar retiro guardado";
+            alert("Billetera USDT TRC20 vinculada exitosamente.");
+        }
+
+        // Guardar método USDT (BEP20) -> Cambia placa a verde en vivo
+        function saveUsdtBepAccount() {
+            const usdtBepAddr = document.getElementById('usdtBepAddressInput').value.trim();
+            if(!usdtBepAddr || usdtBepAddr.length < 20) {
+                alert("Por favor introduce una dirección de billetera BEP20 válida.");
+                return;
+            }
+
+            usdtBepSaved = true;
+            updateLiveCard(); // Fuerza la actualización para pintar la placa verde
+            
+            document.getElementById('nequiTriggerBtn').querySelector('#nequiBtnText').innerText = "Editar retiro guardado";
+            alert("Billetera USDT BEP20 vinculada exitosamente.");
+        }
+
+        function closeSessionAction() {
+            if(confirm("¿Estás seguro de que quieres cerrar sección?")) {
+                alert("Sesión finalizada.");
+                window.location.reload();
+            }
+        }
+
+        function startKycAiVerification() {
+            const name = document.getElementById('kycName').value.trim();
+            const age = document.getElementById('kycAge').value.trim();
+            const country = document.getElementById('kycCountry').value.trim();
+            const city = document.getElementById('kycCity').value.trim();
+            const docNum = document.getElementById('kycDocNumber').value.trim();
+
+            if (!name || !age || !country || !city || !docNum) {
+                alert("Por favor llena todos los campos obligatorios del documento.");
+                return;
+            }
+
+            document.getElementById('kycFormContainer').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('kycFormContainer').style.display = 'none';
+                document.getElementById('kycLoadingScreen').style.display = 'flex';
+                let count = 3;
+                const countdownElement = document.getElementById('kycCountdown');
+                const interval = setInterval(() => {
+                    count--;
+                    countdownElement.innerText = count;
+                    if (count === 0) {
+                        clearInterval(interval);
+                        finalizeKycSuccess();
+                    }
+                }, 1000);
+            }, 300);
+        }
+
+        function finalizeKycSuccess() {
+            isKycVerified = true;
+            const mainBtn = document.getElementById('kycMainBtn');
+            mainBtn.classList.add('kyc-verified-btn');
+            document.getElementById('kycBtnText').innerText = "Verificado El KYC";
+            
+            const badge = document.getElementById('kycStatusBadge');
+            badge.style.background = 'rgba(0, 200, 83, 0.15)';
+            badge.style.color = 'var(--success)';
+            badge.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> Verificado (KYC Pasado)`;
+
+            document.getElementById('kycCheckBadge').style.display = 'flex';
+            alert("¡Verificación aprobada automáticamente por la IA!");
+            closeKycWindow();
+        }
+
+        function toggleChat() { document.getElementById('chatWindow').classList.toggle('open'); }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const body = document.getElementById('chatBody');
+            const msg = document.createElement('div');
+            msg.classList.add('msg', 'msg-user');
+            msg.innerText = text;
+            body.appendChild(msg);
+            
+            input.value = '';
+            body.scrollTop = body.scrollHeight;
+
+            setTimeout(() => {
+                const reply = document.createElement('div');
+                reply.classList.add('msg', 'msg-system');
+                reply.innerText = "Recibido. Un asesor de cuentas premium tomará tu ticket de inmediato. ID: #TV-" + Math.floor(1000 + Math.random() * 9000);
+                body.appendChild(reply);
+                body.scrollTop = body.scrollHeight;
+            }, 1000);
+        }
+
+        function handleMediaSelection(inputElement) {
+            const file = inputElement.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const body = document.getElementById('chatBody');
+                const msg = document.createElement('div');
+                msg.classList.add('msg', 'msg-user');
+                
+                msg.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px; font-size:12px; opacity:0.9;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        <span>Imagen seleccionada</span>
+                    </div>
+                    <img src="${e.target.result}" alt="Imagen de usuario">
+                `;
+                
+                body.appendChild(msg);
+                body.scrollTop = body.scrollHeight;
+                inputElement.value = '';
+
+                setTimeout(() => {
+                    const reply = document.createElement('div');
+                    reply.classList.add('msg', 'msg-system');
+                    reply.innerText = "Captura recibida con éxito. El departamento técnico está revisando los detalles del archivo.";
+                    body.appendChild(reply);
+                    body.scrollTop = body.scrollHeight;
+                }, 1200);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const themeIconContainer = document.getElementById('themeIconContainer');
+
+            if (currentTheme === 'light') {
+                document.documentElement.removeAttribute('data-theme');
+                themeIconContainer.innerHTML = `
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    <span id="themeBtnText">Modo oscuro (Toque para cambiar)</span>
+                `;
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                themeIconContainer.innerHTML = `
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    <span id="themeBtnText">Modo claro (Toque para cambiar)</span>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<div class="deposit-wrap">
+  <!-- Back Nav -->
+  <a routerLink="/home" class="back-nav">
+    <svg class="back-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"></line>
+      <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+    <span class="nav-label">Cambiar de canal</span>
+  </a>
+
+  <!-- Balance Card -->
+  <div class="balance-card-display daviplata-gradient">
+    <div class="card-glow"></div>
+    <div class="card-badge">DAVIPLATA</div>
+    <div class="card-content">
+      <div class="lbl-card-top">Mi saldo</div>
+      <div class="main-balance-text">$ {{ displayBalance }}</div>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="form-section">
+    <label class="form-label">Monto de recarga</label>
+    <input type="text"
+           class="form-input"
+           placeholder="0"
+           [ngModel]="displayAmount"
+           (ngModelChange)="onAmountInput($event)">
+  </div>
+
+  <!-- Quick Amounts -->
+  <div class="amounts-grid">
+    @for (amt of presets; track amt.value) {
+      <button class="amount-btn"
+              [class.selected]="rawAmount === amt.value"
+              (click)="selectAmount(amt.value)">
+        ${{ amt.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Info Box -->
+  <div class="info-box">
+    <div class="info-title">Canal de recarga: DaviPlata</div>
+    <div class="info-row">
+      <span class="info-label">Monto de recarga</span>
+      <span class="info-value">{{ displayAmount ? '$ ' + displayAmount : '-' }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Monto recibido</span>
+      <span class="info-value">{{ displayAmount ? '$ ' + displayAmount : '-' }}</span>
+    </div>
+  </div>
+
+  <!-- Submit Button -->
+  <button class="btn-submit"
+          [class.active]="rawAmount >= MIN_AMOUNT"
+          [disabled]="rawAmount < MIN_AMOUNT"
+          [routerLink]="['/daviplata', 'daviplata']"
+          [queryParams]="{cantidad: rawAmount}">
+    Recargar ahora
+  </button>
+</div>

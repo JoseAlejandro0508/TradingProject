@@ -1,0 +1,17 @@
+<div class="live-trading-chart">
+  <div class="chart-grid">
+    <div class="chart-grid-line"></div>
+    <div class="chart-grid-line"></div>
+    <div class="chart-grid-line"></div>
+  </div>
+  <div class="candle-container">
+    <div
+      class="candle-bar"
+      [class.c-up]="candle.type === 'up'"
+      [class.c-down]="candle.type === 'down'"
+      [style.height]="candle.height"
+      [style.animation-delay]="candle.delay"
+      *ngFor="let candle of candles"
+    ></div>
+  </div>
+</div>

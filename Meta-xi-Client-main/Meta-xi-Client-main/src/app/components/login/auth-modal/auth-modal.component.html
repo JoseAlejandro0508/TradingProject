@@ -1,0 +1,253 @@
+<div class="auth-overlay" [class.show]="isOpen" (click)="overlayClick($event)">
+  <div class="auth-card">
+    <button class="auth-close-btn" (click)="close()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
+
+    <!-- VISTA: REGISTRO INSTITUCIONAL -->
+    <div id="view-reg" class="auth-form-view" [class.show]="mode === 'reg'" [formGroup]="regForm">
+      <h2 class="form-view-title">Crear cuenta</h2>
+      <p class="form-view-subtitle">
+        ¿Ya tienes una cuenta corporativa?
+        <span (click)="switchMode('log')">Inicia sesión</span>
+      </p>
+
+      <div class="input-group">
+        <label>Número de teléfono móvil</label>
+        <div class="phone-row">
+          <div class="country-input-box">
+            <span class="country-flag-display">{{ regFlag }}</span>
+            <input
+              type="text"
+              class="country-code-field"
+              placeholder="+"
+              maxlength="5"
+              formControlName="countryCode"
+              (input)="onCountryCodeChange('reg')"
+            />
+          </div>
+          <div class="field-wrapper phone-field-wrapper">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path
+                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"
+              />
+            </svg>
+            <input
+              type="tel"
+              class="custom-input"
+              placeholder="000 000 0000"
+              formControlName="phone"
+              (input)="onPhoneInput('reg')"
+              (keypress)="allowOnlyNumbers($event)"
+            />
+          </div>
+        </div>
+        <div class="phone-error-hint" [class.show]="regForm.get('countryCode')?.value?.length === 0 && regForm.get('phone')?.touched">
+          ❌ Debes colocar primero el código de país para poder escribir tu número.
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Verificación de seguridad SMS</label>
+        <div class="sms-container">
+          <div class="field-wrapper sms-input-wrapper">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <input
+              type="text"
+              class="custom-input"
+              placeholder="Código de 6 dígitos"
+              formControlName="smsCode"
+              (input)="onSMSInput()"
+              (keypress)="allowOnlyNumbers($event)"
+            />
+          </div>
+          <button
+            class="sms-action-btn"
+            [class.active-ready]="smsTimer === 0 && regForm.get('countryCode')?.value?.length >= 1 && regForm.get('phone')?.value?.length >= 7"
+            [class.waiting]="smsTimer > 0"
+            [disabled]="smsTimer > 0 || regForm.get('countryCode')?.value?.length < 1 || regForm.get('phone')?.value?.length < 7"
+            (click)="sendSMS()"
+          >
+            {{ smsTimer > 0 ? smsTimer + 's' : 'Enviar' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Contraseña de acceso</label>
+        <div class="field-wrapper">
+          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          <input
+            [type]="regPasswordType"
+            class="custom-input"
+            placeholder="Mínimo 8 caracteres"
+            formControlName="password"
+            (input)="onPasswordInput()"
+          />
+          <div class="password-toggle-eye" (click)="togglePasswordVisibility('reg')">
+            <svg class="eye-open" viewBox="0 0 24 24" fill="none">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="password-strength-box">
+          <div class="strength-text-label">
+            Seguridad:
+            <span [style.color]="passwordStrength.color">{{ passwordStrength.label }}</span>
+          </div>
+          <div class="strength-indicator-bars">
+            <div
+              class="strength-bar-line"
+              *ngFor="let bar of [1,2,3,4]; let i = index"
+              [style.background]="i < passwordStrength.bars ? passwordStrength.color : ''"
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Confirmar contraseña</label>
+        <div class="field-wrapper">
+          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          <input
+            [type]="regConfirmPasswordType"
+            class="custom-input"
+            placeholder="Repite la contraseña exactamente"
+            formControlName="confirmPassword"
+          />
+          <div class="password-toggle-eye" (click)="togglePasswordVisibility('regConfirm')">
+            <svg class="eye-open" viewBox="0 0 24 24" fill="none">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Código de Equipo</label>
+        <div class="field-wrapper team-code-locked">
+          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+          <input type="text" class="custom-input input-team-locked" value="TV-GLOBAL-2026" readonly />
+        </div>
+      </div>
+
+      <button
+        class="main-submit-btn"
+        [class.ready-to-go]="isRegFormValid()"
+        [disabled]="!isRegFormValid() || isSubmitting"
+        (click)="onRegisterSubmit()"
+      >
+        {{ isSubmitting ? 'Procesando...' : 'Registrarse' }}
+      </button>
+    </div>
+
+    <!-- VISTA: INICIO DE SESIÓN INSTITUCIONAL -->
+    <div id="view-log" class="auth-form-view" [class.show]="mode === 'log'" [formGroup]="logForm">
+      <h2 class="form-view-title">Iniciar sesión</h2>
+      <p class="form-view-subtitle">
+        ¿Eres nuevo en la terminal?
+        <span (click)="switchMode('reg')">Regístrate ahora</span>
+      </p>
+
+      <div class="input-group">
+        <label>Número de teléfono móvil</label>
+        <div class="phone-row">
+          <div class="country-input-box">
+            <span class="country-flag-display">{{ logFlag }}</span>
+            <input
+              type="text"
+              class="country-code-field"
+              placeholder="+"
+              maxlength="5"
+              formControlName="countryCode"
+              (input)="onCountryCodeChange('log')"
+            />
+          </div>
+          <div class="field-wrapper phone-field-wrapper">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path
+                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"
+              />
+            </svg>
+            <input
+              type="tel"
+              class="custom-input"
+              placeholder="000 000 0000"
+              formControlName="phone"
+              (input)="onPhoneInput('log')"
+              (keypress)="allowOnlyNumbers($event)"
+            />
+          </div>
+        </div>
+        <div class="phone-error-hint" [class.show]="logForm.get('countryCode')?.value?.length === 0 && logForm.get('phone')?.touched">
+          ❌ Debes colocar primero el código de país para poder escribir tu número.
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Contraseña corporativa</label>
+        <div class="field-wrapper">
+          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          <input
+            [type]="logPasswordType"
+            class="custom-input"
+            placeholder="Introduce tu contraseña"
+            formControlName="password"
+          />
+          <div class="password-toggle-eye" (click)="togglePasswordVisibility('log')">
+            <svg class="eye-open" viewBox="0 0 24 24" fill="none">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="keep-active-box">
+          <span class="keep-active-label">Mantener mi sección activa</span>
+          <input type="checkbox" class="keep-active-check" formControlName="keepActive" />
+        </div>
+      </div>
+
+      <button
+        class="main-submit-btn"
+        [class.ready-to-go]="isLoginFormValid()"
+        [disabled]="!isLoginFormValid() || isSubmitting"
+        (click)="onLoginSubmit()"
+      >
+        {{ isSubmitting ? 'Procesando...' : 'Iniciar sesión seguro' }}
+      </button>
+    </div>
+
+    <div class="system-footer">
+      <span class="flag-line" style="background:#ffeb3b"></span>
+      <span class="flag-line" style="background:#0d47a1"></span>
+      <span class="flag-line" style="background:#b71c1c"></span>
+      <span>CONEXIÓN SECURE TERMINAL MILLENNIUM</span>
+    </div>
+  </div>
+</div>

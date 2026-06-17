@@ -16,10 +16,18 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'plans',
+    loadComponent: () =>
+      import('./components/plans/plans.component').then(
+        (m) => m.PlansComponent
+      ),
+    canActivate: [authGuard]
+  },
+  {
     path: 'tasks',
     loadComponent: () =>
-      import('./components/glasses/glasses.component').then(
-        (m) => m.TasksComponent
+      import('./components/plans/plans.component').then(
+        (m) => m.PlansComponent
       ),
     canActivate: [authGuard]
   },
@@ -84,11 +92,8 @@ export const routes: Routes = [
   },
   {
     path: 'password',
-    loadComponent: () =>
-      import('./components/me/changepass/changepass.component').then(
-        (m) => m.ChangepassComponent
-      ),
-      canActivate: [authGuard]
+    redirectTo: 'me',
+    pathMatch: 'full',
   },
   {
     path: 'deposit/:token',
@@ -114,6 +119,22 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'daviplata/:token',
+    loadComponent: () =>
+      import('./common/deposit/daviplata/daviplata.component').then(
+        (m) => m.DaviplataComponent
+      ),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'usdt-trc20/:token',
+    loadComponent: () =>
+      import('./common/deposit/usdt-trc20/usdt-trc20.component').then(
+        (m) => m.UsdtTrc20Component
+      ),
+    canActivate: [authGuard]
+  },
+  {
     path: 'history',
     loadComponent: () =>
       import('./components/me/history/history.component').then(
@@ -122,10 +143,34 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'profile',
+    loadComponent: () =>
+      import('./components/profile/profile.component').then(
+        (m) => m.ProfileComponent
+      ),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'deposit',
+    loadComponent: () =>
+      import('./common/deposit/deposit.component').then(
+        (m) => m.DepositComponent
+      ),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'withdraw',
+    loadComponent: () =>
+      import('./common/withdraw/withdraw.component').then(
+        (m) => m.WithdrawComponent
+      ),
+    canActivate: [authGuard],
+  },
+  {
     path: 'welcome',
     loadComponent: () =>
-      import('./components/welcome-bonus/welcome-bonus.component').then(
-        (m) => m.WelcomeBonusComponent
+      import('./components/canjear-bono/canjear-bono.component').then(
+        (m) => m.CanjearBonoComponent
       ),
   },
   {

@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TradingView - Plataforma Élite de Análisis y Pronósticos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- VARIABLES DE DISEÑO PREMIUM OPTIMIZADAS --- */
+        :root {
+            --bg-main: #0c0e10;
+            --bg-surface: #14171a;
+            --bg-card: rgba(24, 28, 32, 0.8);
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --accent: #2962ff; /* Azul Corporativo Oficial TradingView */
+            --accent-rgb: 41, 98, 255;
+            --accent-green: #00e676;
+            --accent-red: #ff1744;
+            --border: rgba(255, 255, 255, 0.08);
+            --input-bg: #090e1a;
+            --btn-disabled-bg: rgba(255, 255, 255, 0.04);
+            --btn-disabled-text: rgba(255, 255, 255, 0.25);
+            --sms-btn-idle: #94a3b8;
+            --glass-blur: blur(20px);
+        }
+
+        [data-theme="light"] {
+            --bg-main: #f4f6f9;
+            --bg-surface: #ffffff;
+            --bg-card: rgba(240, 244, 248, 0.9);
+            --text-main: #0f1115;
+            --text-muted: #64748b;
+            --accent: #2962ff;
+            --accent-rgb: 41, 98, 255;
+            --accent-green: #16a34a;
+            --accent-red: #dc2626;
+            --border: rgba(0, 0, 0, 0.08);
+            --input-bg: #eaeef3;
+            --btn-disabled-bg: #dae1e9;
+            --btn-disabled-text: #7c8ba1;
+            --sms-btn-idle: #475569;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-main); color: var(--text-main); overflow-x: hidden; width: 100%; min-height: 100vh; transition: background-color 0.3s, color 0.3s; }
+
+        /* --- GLOW BACKGROUND EFFECTS --- */
+        .glow-sphere { position: absolute; width: 300px; height: 300px; border-radius: 50%; background: rgba(var(--accent-rgb), 0.08); filter: blur(100px); pointer-events: none; z-index: 0; }
+        .gs-1 { top: -50px; left: -100px; }
+        .gs-2 { top: 500px; right: -100px; background: rgba(0, 230, 118, 0.03); }
+
+        /* --- HEADER / NAVEGACIÓN --- */
+        header { position: fixed; top: 0; left: 0; width: 100%; height: 64px; background: var(--bg-surface); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 16px; z-index: 3000; }
+        .brand-wrapper { display: flex; align-items: center; gap: 10px; }
+        .brand-logo-svg { width: 28px; height: 28px; fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.4)); }
+        .brand-title { font-size: 1.25rem; font-weight: 800; letter-spacing: 0.5px; }
+        .brand-title span { color: var(--accent); }
+        .nav-controls { display: flex; align-items: center; gap: 14px; }
+
+        /* --- TOGGLE SWITCH DE TEMA --- */
+        .theme-switch-label { background-color: var(--accent); border: 1px solid var(--border); width: 50px; height: 26px; border-radius: 50px; position: relative; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
+        .theme-switch-label svg { width: 12px; height: 12px; z-index: 1; }
+        .theme-switch-ball { background-color: #ffffff; width: 18px; height: 18px; position: absolute; top: 3px; left: 4px; border-radius: 50%; transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 2px 4px rgba(0,0,0,0.3); z-index: 2; transform: translateX(22px); }
+        .theme-switch-checkbox { opacity: 0; position: absolute; }
+        
+        /* Reglas dinámicas al cambiar de estado */
+        .theme-switch-checkbox:not(:checked) + .theme-switch-label { background-color: #eaeef3; }
+        .theme-switch-checkbox:not(:checked) + .theme-switch-label .theme-switch-ball { transform: translateX(0px); }
+        [data-theme="light"] .theme-switch-checkbox:not(:checked) + .theme-switch-label { background-color: #eaeef3; }
+
+        .control-btn { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--text-main); display: flex; justify-content: center; align-items: center; cursor: pointer; }
+        [data-theme="light"] .control-btn { background: rgba(0,0,0,0.02); }
+        .control-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+        /* MENU DESPLEGABLE */
+        .dropdown-menu { position: fixed; top: 70px; right: 16px; width: 190px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); display: none; flex-direction: column; gap: 2px; z-index: 3010; }
+        .dropdown-item { width: 100%; padding: 10px 12px; background: transparent; border: none; border-radius: 8px; color: var(--text-main); text-align: left; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .dropdown-item:active { background: rgba(255,255,255,0.05); }
+        .dropdown-item svg { width: 16px; height: 16px; fill: var(--accent); }
+
+        /* --- INTERFAZ DE PRESENTACIÓN INTERACTIVA --- */
+        .hero-viewport { min-height: calc(100vh - 64px); margin-top: 64px; padding: 24px 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; z-index: 10; }
+        .hero-badge { background: rgba(var(--accent-rgb), 0.08); border: 1px solid rgba(var(--accent-rgb), 0.15); color: var(--accent); padding: 5px 12px; border-radius: 30px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; display: inline-flex; align-items: center; gap: 6px; }
+        .indicator-dot { width: 8px; height: 8px; border-radius: 50%; background-color: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+        
+        .hero-title { font-size: 2.1rem; font-weight: 800; line-height: 1.25; margin-bottom: 12px; text-transform: uppercase; }
+        .hero-title span { background: linear-gradient(135deg, var(--accent), var(--accent-green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* GRÁFICA DE TRADING MEJORADA Y RESALTADA CON MÁXIMO CONTRASTE */
+        .live-trading-chart { width: 100%; max-width: 380px; height: 130px; background: #090e1a; border: 1px solid rgba(41, 98, 255, 0.3); border-radius: 14px; margin: 10px 0; position: relative; overflow: hidden; display: flex; align-items: flex-end; justify-content: space-between; padding: 10px 14px; box-shadow: 0 0 20px rgba(41, 98, 255, 0.15), inset 0 0 15px rgba(41, 98, 255, 0.2); }
+        .chart-grid { position: absolute; width: 100%; height: 100%; top: 0; left: 0; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none; padding: 10px 0; }
+        .chart-grid-line { width: 100%; height: 1px; background: rgba(255, 255, 255, 0.05); }
+        [data-theme="light"] .chart-grid-line { background: rgba(0, 0, 0, 0.06); }
+        .candle-container { display: flex; align-items: flex-end; gap: 6px; width: 100%; height: 80%; justify-content: space-around; z-index: 2; }
+        .candle-bar { width: 10px; border-radius: 2px; position: relative; animation: marketMove 2.5s infinite ease-in-out alternate; }
+        .candle-bar::before { content: ''; position: absolute; width: 2px; height: 120%; background: inherit; left: 4px; bottom: -10%; z-index: -1; }
+        
+        /* Forzado de alta visibilidad para las velas */
+        .c-up { background: #00e676 !important; filter: drop-shadow(0 0 6px rgba(0, 230, 118, 0.6)) !important; }
+        .c-down { background: #ff1744 !important; filter: drop-shadow(0 0 6px rgba(255, 23, 68, 0.6)) !important; }
+        
+        @keyframes marketMove {
+            0% { height: 30%; transform: translateY(0); }
+            50% { height: 65%; transform: translateY(-5px); }
+            100% { height: 45%; transform: translateY(3px); }
+        }
+
+        /* BOTONES DE ACCESO INMEDIATO */
+        .cta-group { display: flex; flex-direction: column; width: 100%; max-width: 380px; gap: 10px; margin: 10px 0; }
+        .btn-primary-cta { width: 100%; background: linear-gradient(135deg, #1e40af, var(--accent)); border: none; padding: 14px; border-radius: 12px; color: white; font-size: 0.92rem; font-weight: 800; cursor: pointer; box-shadow: 0 4px 14px rgba(var(--accent-rgb), 0.25); text-transform: uppercase; }
+        .btn-secondary-login-cta { width: 100%; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); padding: 13px; border-radius: 12px; color: var(--text-main); font-size: 0.92rem; font-weight: 700; cursor: pointer; text-transform: uppercase; }
+        [data-theme="light"] .btn-secondary-login-cta { background: rgba(0, 0, 0, 0.03); }
+
+        /* TEXTO EXPLICATIVO OPTIMIZADO Y REESCRITO CORTO */
+        .hero-lead { font-size: 0.90rem; color: var(--text-main); line-height: 1.5; max-width: 380px; margin-top: 14px; margin-bottom: 14px; text-align: justify; font-weight: 500; background: rgba(var(--accent-rgb), 0.03); border-left: 3px solid var(--accent); padding: 14px; border-radius: 0 12px 12px 0; }
+        .hero-lead span { color: var(--accent-green); font-weight: 700; }
+
+        /* RECUADRO DE MÉTRICAS */
+        .hero-kpi-container { width: 100%; max-width: 380px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+        .kpi-row { display: flex; justify-content: space-between; align-items: center; background: var(--bg-main); padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); }
+        .kpi-label { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); }
+        .kpi-value { font-size: 0.85rem; font-weight: 700; }
+
+        .binance-gold { color: #F3BA2F; text-shadow: 0 0 4px rgba(243, 186, 47, 0.2); }
+        [data-theme="light"] .binance-gold { color: #E3a008; text-shadow: none; }
+
+        /* RECUADROS MEJORADOS Y AGRANDADOS */
+        .info-section { padding: 40px 16px; background: var(--bg-surface); border-top: 1px solid var(--border); }
+        .section-title { font-size: 1.35rem; font-weight: 800; text-transform: uppercase; text-align: center; margin-bottom: 24px; }
+        .cards-layout { display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 440px; margin: 0 auto; }
+        .info-card { background: var(--bg-main); border: 1px solid var(--border); border-radius: 18px; padding: 26px; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        [data-theme="light"] .info-card { box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+        
+        /* RECUADROS DE LAS FOTOS GRANDES */
+        .card-icon-frame { width: 125px; height: 125px; background: rgba(var(--accent-rgb), 0.05); border: 2.5px solid var(--border); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 16px auto; color: var(--accent); overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+        [data-theme="light"] .card-icon-frame { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .card-icon-frame img { width: 100%; height: 100%; object-fit: cover; }
+        .card-icon-frame svg { width: 52px; height: 52px; }
+        
+        .info-card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 10px; letter-spacing: 0.3px; }
+        
+        .member-details { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; text-align: left; background: rgba(0,0,0,0.18); padding: 14px; border-radius: 12px; border: 1px solid var(--border); }
+        [data-theme="light"] .member-details { background: rgba(0,0,0,0.03); }
+        .member-details p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.45; }
+        .member-details p strong { color: var(--text-main); font-weight: 600; }
+
+        /* --- CARRUSEL DE SOCIOS --- */
+        .partners-section { padding: 30px 0; background: var(--bg-main); border-top: 1px solid var(--border); overflow: hidden; position: relative; }
+        .partners-carousel-track { display: flex; width: calc(200px * 18); animation: scrollPartners 28s linear infinite; }
+        .partner-logo-item { width: 200px; height: 50px; display: flex; justify-content: center; align-items: center; font-size: 1.15rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; padding: 0 20px; flex-shrink: 0; }
+        
+        .p-binance { color: #F3BA2F; text-shadow: 0 0 8px rgba(243, 186, 47, 0.3); }
+        [data-theme="light"] .p-binance { color: #E3a008; text-shadow: none; }
+        .p-kucoin { color: #24AE8F; text-shadow: 0 0 8px rgba(36, 174, 143, 0.3); }
+        [data-theme="light"] .p-kucoin { color: #24AE8F; text-shadow: none; }
+        .p-crypto { color: #0052FF; text-shadow: 0 0 8px rgba(0, 82, 255, 0.3); }
+        [data-theme="light"] .p-crypto { color: #0052FF; text-shadow: none; }
+        .p-bybit { color: #FFB100; text-shadow: 0 0 8px rgba(255, 177, 0, 0.3); }
+        [data-theme="light"] .p-bybit { color: #b47b00; text-shadow: none; }
+        .p-ufc { color: #E31837; text-shadow: 0 0 8px rgba(227, 24, 55, 0.3); }
+        [data-theme="light"] .p-ufc { color: #E31837; text-shadow: none; }
+        .p-bet365 { color: #00FF87; text-shadow: 0 0 8px rgba(0, 255, 135, 0.3); }
+        [data-theme="light"] .p-bet365 { color: #00aa56; text-shadow: none; }
+        .p-okx { color: var(--text-main); }
+        .p-tradingview { color: #2962FF; text-shadow: 0 0 8px rgba(41, 98, 255, 0.3); }
+        [data-theme="light"] .p-tradingview { color: #2962FF; text-shadow: none; }
+
+        @keyframes scrollPartners {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(calc(-200px * 9)); }
+        }
+
+        /* --- CAPA DE REGISTRO E INICIO COMPLETAMENTE INSTITUCIONAL --- */
+        .auth-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(8, 10, 12, 0.88); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); z-index: 4000; display: none; align-items: flex-start; justify-content: center; padding: 16px; padding-top: 60px; overflow-y: auto; }
+        [data-theme="light"] .auth-overlay { background: rgba(244, 246, 249, 0.88); }
+        
+        .auth-card { width: 100%; max-width: 385px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px 24px; box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6); position: relative; margin-bottom: 30px; }
+        [data-theme="light"] .auth-card { box-shadow: 0 24px 50px rgba(0, 0, 0, 0.1); }
+        .auth-close-btn { position: absolute; top: 18px; right: 18px; background: none; border: none; color: var(--text-muted); cursor: pointer; transition: color 0.2s; }
+        .auth-close-btn:hover { color: var(--text-main); }
+
+        .auth-form-view { display: none; flex-direction: column; gap: 16px; }
+        .auth-form-view.show { display: flex; }
+        
+        .form-view-title { font-size: 1.4rem; font-weight: 700; color: var(--text-main); text-align: left; letter-spacing: -0.3px; }
+        .form-view-subtitle { font-size: 0.82rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 8px; text-align: left; }
+        .form-view-subtitle span { color: var(--accent); cursor: pointer; font-weight: 600; }
+
+        .input-group { display: flex; flex-direction: column; gap: 6px; position: relative; }
+        .input-group label { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; text-align: left; }
+        
+        .field-wrapper { position: relative; display: flex; align-items: center; width: 100%; background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px; transition: all 0.2s; padding: 0 14px; height: 46px; }
+        .field-wrapper:focus-within { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.15); }
+        .field-wrapper svg.field-icon { width: 16px; height: 16px; fill: none; stroke: var(--text-muted); stroke-width: 2; pointer-events: none; transition: stroke 0.2s; }
+        .field-wrapper:focus-within svg.field-icon { stroke: var(--accent); }
+        
+        .custom-input { width: 100%; background: transparent; border: none; height: 100%; color: var(--text-main); font-size: 0.9rem; font-weight: 500; outline: none; margin-left: 10px; padding-right: 24px; }
+        .custom-input::placeholder { color: rgba(255,255,255,0.25); }
+        [data-theme="light"] .custom-input::placeholder { color: rgba(0,0,0,0.35); }
+
+        /* RECUADRO FIJO DE CÓDIGO DE EQUIPO EN COLOR VERDE */
+        .field-wrapper.team-code-locked { background: rgba(22, 163, 74, 0.12); border: 1px solid rgba(22, 163, 74, 0.3); }
+        .field-wrapper.team-code-locked svg.field-icon { stroke: var(--accent-green); }
+        .custom-input.input-team-locked { color: var(--accent-green); font-weight: 700; cursor: not-allowed; }
+
+        /* ICONO DE OJO PARA VER CONTRASEÑA */
+        .password-toggle-eye { position: absolute; right: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: color 0.2s; }
+        .password-toggle-eye:hover { color: var(--text-main); }
+        .password-toggle-eye svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+        /* SELECTOR DINÁMICO DE PAÍS */
+        .phone-row { display: flex; gap: 8px; width: 100%; }
+        
+        .country-input-box { width: 85px; display: flex; align-items: center; background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px; padding: 0 8px; height: 46px; transition: border-color 0.2s; }
+        .country-input-box:focus-within { border-color: var(--accent); }
+        .country-flag-display { font-size: 1.1rem; margin-right: 4px; min-width: 20px; text-align: center; cursor: default; }
+        
+        .country-code-field { width: 100%; background: transparent; border: none; color: var(--text-main); font-size: 0.9rem; font-weight: 600; outline: none; text-align: center; }
+        .country-code-field::placeholder { color: var(--text-muted); }
+
+        .phone-field-wrapper { flex: 1; }
+
+        /* ERROR VISUAL ERROR CODIGO DE PAIS */
+        .phone-error-hint { font-size: 0.72rem; color: var(--accent-red); font-weight: 600; margin-top: 2px; text-align: left; display: none; }
+
+        /* RECUADRO SMS MEJORADO EN REGISTRO */
+        .sms-container { display: flex; width: 100%; align-items: center; position: relative; }
+        .sms-input-wrapper { flex: 1; }
+        
+        /* DISEÑO DE BOTÓN RECUADRITO ALTA VISIBILIDAD */
+        .sms-action-btn { 
+            position: absolute; 
+            right: 8px; 
+            background: var(--btn-disabled-bg); 
+            border: 1px solid var(--border); 
+            color: var(--text-muted); 
+            font-size: 0.78rem; 
+            font-weight: 700; 
+            cursor: not-allowed; 
+            transition: all 0.2s; 
+            padding: 6px 12px; 
+            border-radius: 6px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .sms-action-btn.active-ready { 
+            background: var(--accent); 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            opacity: 1;
+            box-shadow: 0 2px 6px rgba(41, 98, 255, 0.2);
+        }
+        .sms-action-btn.active-ready:hover { background: #1e40af; }
+        .sms-action-btn.waiting { pointer-events: none; background: var(--btn-disabled-bg); color: var(--text-muted); }
+
+        /* RECUADRO SESIÓN ACTIVA */
+        .keep-active-box { display: flex; align-items: center; justify-content: space-between; background: var(--input-bg); border: 1px solid var(--border); padding: 12px 14px; border-radius: 10px; margin-top: 4px; }
+        .keep-active-label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
+        .keep-active-check { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+
+        /* MEDIDOR DE SEGURIDAD */
+        .password-strength-box { display: flex; flex-direction: column; gap: 5px; margin-top: 2px; }
+        .strength-text-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; display: flex; justify-content: space-between; }
+        .strength-text-label span { font-weight: 700; text-transform: uppercase; }
+        .strength-indicator-bars { display: flex; gap: 4px; width: 100%; height: 4px; }
+        .strength-bar-line { flex: 1; background: rgba(255, 255, 255, 0.08); border-radius: 2px; transition: background 0.3s ease; }
+        [data-theme="light"] .strength-bar-line { background: rgba(0, 0, 0, 0.08); }
+
+        /* BOTON DE SUBMIT CORREGIDO PARA AMBOS MODOS */
+        .main-submit-btn { width: 100%; height: 46px; background: var(--btn-disabled-bg); border: 1px solid var(--border); color: var(--btn-disabled-text); border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: not-allowed; transition: all 0.2s; margin-top: 6px; }
+        .main-submit-btn.ready-to-go { background: var(--accent); color: white; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(41, 98, 255, 0.25); }
+        .main-submit-btn.ready-to-go:hover { background: #1e40af; }
+
+        .system-footer { text-align: center; font-size: 8px; color: var(--text-muted); margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 4px; letter-spacing: 0.3px; }
+        .flag-line { width: 6px; height: 3px; display: inline-block; }
+
+        footer { background: var(--bg-main); border-top: 1px solid var(--border); padding: 20px 16px; text-align: center; font-size: 0.7rem; color: var(--text-muted); }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="glow-sphere gs-1"></div>
+    <div class="glow-sphere gs-2"></div>
+    
+    <!-- BARRA DE NAVEGACIÓN PERMANENTE ARRIBA -->
+    <header>
+        <div class="brand-wrapper">
+            <svg class="brand-logo-svg" viewBox="0 0 24 24">
+                <path d="M4 18l6-6 4 4 6-10" />
+            </svg>
+            <div class="brand-title">Trading<span>View</span></div>
+        </div>
+        <div class="nav-controls">
+            <div class="theme-switch-wrapper">
+                <input type="checkbox" class="theme-switch-checkbox" id="theme-toggle-check" checked onclick="toggleThemeMode()">
+                <label class="theme-switch-label" for="theme-toggle-check">
+                    <svg style="fill: #ffb020;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                    <svg style="fill: #2962ff;" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                    <div class="theme-switch-ball"></div>
+                </label>
+            </div>
+            <button class="control-btn" onclick="toggleDropdownMenu(event)">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="dropdown-menu" id="account-dropdown">
+        <button class="dropdown-item" onclick="openAuthModal('reg')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+            Registrarse
+        </button>
+        <button class="dropdown-item" onclick="openAuthModal('log')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            Iniciar Sesión
+        </button>
+    </div>
+
+    <!-- INTERFAZ DE PRESENTACIÓN -->
+    <main class="hero-viewport">
+        <div class="hero-badge">
+            <div class="indicator-dot"></div> Terminal de Análisis Élite v4.2
+        </div>
+        <h1 class="hero-title">Inteligencia de <span>Trading</span></h1>
+        
+        <!-- GRÁFICA DE TRADING EN MOVIMIENTO -->
+        <div class="live-trading-chart">
+            <div class="chart-grid">
+                <div class="chart-grid-line"></div>
+                <div class="chart-grid-line"></div>
+                <div class="chart-grid-line"></div>
+            </div>
+            <div class="candle-container">
+                <div class="candle-bar c-up" style="height: 40%; animation-delay: 0.1s;"></div>
+                <div class="candle-bar c-down" style="height: 70%; animation-delay: 0.4s;"></div>
+                <div class="candle-bar c-up" style="height: 55%; animation-delay: 0.2s;"></div>
+                <div class="candle-bar c-up" style="height: 85%; animation-delay: 0.7s;"></div>
+                <div class="candle-bar c-down" style="height: 35%; animation-delay: 0.3s;"></div>
+                <div class="candle-bar c-up" style="height: 60%; animation-delay: 0.9s;"></div>
+                <div class="candle-bar c-down" style="height: 50%; animation-delay: 0.5s;"></div>
+                <div class="candle-bar c-up" style="height: 75%; animation-delay: 1.1s;"></div>
+            </div>
+        </div>
+
+        <!-- BOTONES POSICIONADOS ESTRATÉGICAMENTE -->
+        <div class="cta-group">
+            <button class="btn-primary-cta" onclick="openAuthModal('reg')">Registrarme</button>
+            <button class="btn-secondary-login-cta" onclick="openAuthModal('log')">Iniciar sesión</button>
+        </div>
+        
+        <!-- TEXTO EXPLICATIVO MEJORADO Y REUBICADO -->
+        <p class="hero-lead">Multiplica tu capital de forma segura y automatizada. Al activar un plan, tus fondos trabajan en <span>TradingBots algorítmicos</span> que ejecutan compras y ventas en los mercados financieros globales más grandes. Operamos bajo estrictas medidas de protección programada 24/7, garantizando una generación de <span>ingresos pasivos estables</span>, transparentes y bajo tu total control.</p>
+
+        <!-- RECUADRO DE MÉTRICAS MOVIDO ABAJO DEL TEXTO -->
+        <div class="hero-kpi-container">
+            <div class="kpi-row">
+                <div class="kpi-label">Nuevos Usuarios</div>
+                <div class="kpi-value" style="display:flex; align-items:center; gap:6px;">
+                    376 <div class="indicator-dot"></div>
+                </div>
+            </div>
+            <div class="kpi-row">
+                <div class="kpi-label">Principal Socio</div>
+                <div class="kpi-value binance-gold">Binance</div>
+            </div>
+            <div class="kpi-row">
+                <div class="kpi-label">Operaciones hoy</div>
+                <div class="kpi-value" id="live-counter" style="color: var(--accent-green);">+689</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- SECCIÓN DE INFRAESTRUCTURA -->
+    <section class="info-section">
+        <h2 class="section-title">Infraestructura</h2>
+        <div class="cards-layout">
+            <div class="info-card">
+                <div class="card-icon-frame">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <h3>Director Ejecutivo (CEO)</h3>
+                <div class="member-details">
+                    <p><strong>Nombre:</strong> Alexander Vance</p>
+                    <p><strong>País:</strong> Colombia</p>
+                    <p><strong>Edad:</strong> 34 años</p>
+                    <p><strong>Profesión:</strong> Ingeniero Financiero & Emprendedor</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon-frame">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <h3>Principal Inversor</h3>
+                <div class="member-details">
+                    <p><strong>Nombre:</strong> Mateo Sterling</p>
+                    <p><strong>País:</strong> Suiza</p>
+                    <p><strong>Edad:</strong> 42 años</p>
+                    <p><strong>Profesión:</strong> Gestor de Fondos de Cobertura</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon-frame">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <h3>Equipo de Programación</h3>
+                <div class="member-details">
+                    <p><strong>Nombre:</strong> DevCore Solutions</p>
+                    <p><strong>País:</strong> Global / Remoto</p>
+                    <p><strong>Edad:</strong> Corp.</p>
+                    <p><strong>Profesión:</strong> Ingenieros de Software Full-Stack</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon-frame">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <h3>Editor de Contenido</h3>
+                <div class="member-details">
+                    <p><strong>Nombre:</strong> Lucas Silva</p>
+                    <p><strong>País:</strong> Argentina</p>
+                    <p><strong>Edad:</strong> 28 años</p>
+                    <p><strong>Profesión:</strong> Diseñador Multimedia & Editor</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon-frame">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <h3>Agente de Marketing</h3>
+                <div class="member-details">
+                    <p><strong>Nombre:</strong> Elena Rostova</p>
+                    <p><strong>País:</strong> España</p>
+                    <p><strong>Edad:</strong> 31 años</p>
+                    <p><strong>Profesión:</strong> Estratega de Crecimiento Digital</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon-frame">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21.21 15.89A10 10 0 1 1 8 2.83M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                </div>
+                <h3>Datos de TradingView</h3>
+                <div class="member-details">
+                    <p><strong>Cantidad de Usuarios:</strong> 1.5M+ Activos</p>
+                    <p><strong>Cantidad de Inversores:</strong> 24 Firmas Globales</p>
+                    <p><strong>Volumen Diario:</strong> Alto Flujo de Capital</p>
+                    <p><strong>Nodos de Red:</strong> 12 Servidores Perimetrales</p>
+                    <p><strong>Estado del Sistema:</strong> Operando 24/7</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN DE SOCIOS -->
+    <section class="partners-section">
+        <div class="partners-carousel-track">
+            <div class="partner-logo-item p-binance">Binance</div>
+            <div class="partner-logo-item p-kucoin">Kucoin</div>
+            <div class="partner-logo-item p-crypto">Crypto.com</div>
+            <div class="partner-logo-item p-bybit">Bybit</div>
+            <div class="partner-logo-item p-ufc">UFC</div>
+            <div class="partner-logo-item p-bet365">Bet365</div>
+            <div class="partner-logo-item p-okx">OKX</div>
+            <div class="partner-logo-item p-tradingview">TradingView</div>
+            
+            <div class="partner-logo-item p-binance">Binance</div>
+            <div class="partner-logo-item p-kucoin">Kucoin</div>
+            <div class="partner-logo-item p-crypto">Crypto.com</div>
+            <div class="partner-logo-item p-bybit">Bybit</div>
+            <div class="partner-logo-item p-ufc">UFC</div>
+            <div class="partner-logo-item p-bet365">Bet365</div>
+            <div class="partner-logo-item p-okx">OKX</div>
+            <div class="partner-logo-item p-tradingview">TradingView</div>
+        </div>
+    </section>
+
+    <!-- CAPA GLOBAL DE AUTENTICACIÓN INSTITUCIONAL -->
+    <div class="auth-overlay" id="auth-modal-layer" onclick="handleOverlayClick(event)">
+        <div class="auth-card">
+            <button class="auth-close-btn" onclick="closeAuthModal()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+
+            <!-- VISTA: REGISTRO INSTITUCIONAL -->
+            <div id="view-reg" class="auth-form-view">
+                <h2 class="form-view-title">Crear cuenta</h2>
+                <p class="form-view-subtitle">¿Ya tienes una cuenta corporativa? <span onclick="toggleInternalView('log')">Inicia sesión</span></p>
+
+                <div class="input-group">
+                    <label>Número de teléfono móvil</label>
+                    <div class="phone-row">
+                        <div class="country-input-box">
+                            <span class="country-flag-display" id="reg-flag-display">🌐</span>
+                            <input type="text" id="reg-country-code" class="country-code-field" placeholder="+" maxlength="5" oninput="handleCountryCodeInput('reg')">
+                        </div>
+                        <div class="field-wrapper phone-field-wrapper">
+                            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            <input type="tel" id="reg-phone" class="custom-input" placeholder="000 000 0000">
+                        </div>
+                    </div>
+                    <div class="phone-error-hint" id="reg-phone-error">❌ Debes colocar primero el código de país para poder escribir tu número.</div>
+                </div>
+
+                <div class="input-group">
+                    <label>Verificación de seguridad SMS</label>
+                    <div class="sms-container">
+                        <div class="field-wrapper sms-input-wrapper">
+                            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            <input type="number" id="reg-sms" class="custom-input" placeholder="Código de 6 dígitos" oninput="if(this.value.length>6) this.value=this.value.slice(0,6);">
+                        </div>
+                        <button class="sms-action-btn" id="sms-btn-reg" disabled onclick="sendSMSVerification('reg')">Enviar</button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Contraseña de acceso</label>
+                    <div class="field-wrapper">
+                        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <input type="password" id="reg-pass" class="custom-input" placeholder="Mínimo 8 caracteres" oninput="evaluatePasswordStrength()">
+                        <div class="password-toggle-eye" onclick="togglePasswordVisibility('reg-pass')">
+                            <svg class="eye-open" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </div>
+                    </div>
+                    
+                    <!-- BARRA DE SEGURIDAD EN TIEMPO REAL OPTIMIZADA -->
+                    <div class="password-strength-box">
+                        <div class="strength-text-label">Seguridad: <span id="strength-label-text" style="color: var(--text-muted);">Vacía</span></div>
+                        <div class="strength-indicator-bars">
+                            <div class="strength-bar-line" id="s-bar-1"></div>
+                            <div class="strength-bar-line" id="s-bar-2"></div>
+                            <div class="strength-bar-line" id="s-bar-3"></div>
+                            <div class="strength-bar-line" id="s-bar-4"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Confirmar contraseña</label>
+                    <div class="field-wrapper">
+                        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <input type="password" id="reg-pass-confirm" class="custom-input" placeholder="Repite la contraseña exactamente">
+                        <div class="password-toggle-eye" onclick="togglePasswordVisibility('reg-pass-confirm')">
+                            <svg class="eye-open" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RECUADRO INEDITABLE: CÓDIGO DE EQUIPO -->
+                <div class="input-group">
+                    <label>Código de Equipo</label>
+                    <div class="field-wrapper team-code-locked">
+                        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        <input type="text" id="reg-team-code" class="custom-input input-team-locked" value="TV-GLOBAL-2026" readonly>
+                    </div>
+                </div>
+
+                <button class="main-submit-btn" id="btn-submit-reg" disabled onclick="executeSubmit('reg')">Registrarse</button>
+            </div>
+
+            <!-- VISTA: INICIO DE SESIÓN INSTITUCIONAL -->
+            <div id="view-log" class="auth-form-view">
+                <h2 class="form-view-title">Iniciar sesión</h2>
+                <p class="form-view-subtitle">¿Eres nuevo en la terminal? <span onclick="toggleInternalView('reg')">Regístrate ahora</span></p>
+                
+                <div class="input-group">
+                    <label>Número de teléfono móvil</label>
+                    <div class="phone-row">
+                        <div class="country-input-box">
+                            <span class="country-flag-display" id="log-flag-display">🌐</span>
+                            <input type="text" id="log-country-code" class="country-code-field" placeholder="+" maxlength="5" oninput="handleCountryCodeInput('log')">
+                        </div>
+                        <div class="field-wrapper phone-field-wrapper">
+                            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            <input type="tel" id="log-phone" class="custom-input" placeholder="000 000 0000">
+                        </div>
+                    </div>
+                    <div class="phone-error-hint" id="log-phone-error">❌ Debes colocar primero el código de país para poder escribir tu número.</div>
+                </div>
+
+                <div class="input-group">
+                    <label>Contraseña corporativa</label>
+                    <div class="field-wrapper">
+                        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <input type="password" id="log-pass" class="custom-input" placeholder="Introduce tu contraseña">
+                        <div class="password-toggle-eye" onclick="togglePasswordVisibility('log-pass')">
+                            <svg class="eye-open" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RECUADRO: MANTENER SECCIÓN ACTIVA -->
+                <div class="input-group">
+                    <div class="keep-active-box">
+                        <span class="keep-active-label">Mantener mi sección activa</span>
+                        <input type="checkbox" id="keep-active-session" class="keep-active-check">
+                    </div>
+                </div>
+
+                <button class="main-submit-btn" id="btn-submit-log" disabled onclick="executeSubmit('log')">Iniciar sesión seguro</button>
+            </div>
+
+            <div class="system-footer">
+                <span class="flag-line" style="background:#ffeb3b"></span>
+                <span class="flag-line" style="background:#0d47a1"></span>
+                <span class="flag-line" style="background:#b71c1c"></span>
+                <span>CONEXIÓN SECURE TERMINAL MILLENNIUM</span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 TradingView. Protección perimetral avanzada y análisis técnico.</p>
+    </footer>
+
+    <script>
+        const flagDatabase = {
+            '57': '🇨🇴', '53': '🇨🇺', '34': '🇪🇸', '54': '🇦🇷', '52': '🇲🇽', '51': '🇵🇪', 
+            '55': '🇧🇷', '56': '🇨🇱', '58': '🇻🇪', '1': '🇺🇸', '44': '🇬🇧', '41': '🇨🇭', '593': '🇪🇨'
+        };
+
+        let currentPasswordStrengthStatus = "insegura"; 
+
+        document.addEventListener("DOMContentLoaded", function() {
+            let currentOperations = 689;
+            const counterElement = document.getElementById("live-counter");
+            
+            setInterval(() => {
+                currentOperations++;
+                counterElement.textContent = "+" + currentOperations;
+            }, 2000);
+        });
+
+        function toggleThemeMode() {
+            const dark = document.getElementById('theme-toggle-check').checked;
+            document.body.setAttribute('data-theme', dark ? 'dark' : 'light');
+        }
+
+        function toggleDropdownMenu(e) {
+            e.stopPropagation();
+            const m = document.getElementById('account-dropdown');
+            m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        document.addEventListener('click', () => { document.getElementById('account-dropdown').style.display = 'none'; });
+
+        function openAuthModal(mode) {
+            document.getElementById('auth-modal-layer').style.display = 'flex';
+            toggleInternalView(mode);
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal-layer').style.display = 'none';
+        }
+
+        function handleOverlayClick(e) {
+            if(e.target.id === 'auth-modal-layer') closeAuthModal();
+        }
+
+        function toggleInternalView(mode) {
+            document.querySelectorAll('.auth-form-view').forEach(v => v.classList.remove('show'));
+            if(mode === 'reg') document.getElementById('view-reg').classList.add('show');
+            if(mode === 'log') document.getElementById('view-log').classList.add('show');
+            validateForm('reg');
+            validateForm('log');
+        }
+
+        function togglePasswordVisibility(fieldId) {
+            const field = document.getElementById(fieldId);
+            field.type = field.type === "password" ? "text" : "password";
+        }
+
+        function handleCountryCodeInput(type) {
+            const codeInput = document.getElementById(`${type}-country-code`);
+            const flagDisplay = document.getElementById(`${type}-flag-display`);
+            const errorHint = document.getElementById(`${type}-phone-error`);
+            
+            let val = codeInput.value.replace(/\D/g, "");
+            
+            if(val.length > 0) {
+                codeInput.value = "+" + val;
+                errorHint.style.display = "none";
+            } else {
+                codeInput.value = "";
+            }
+
+            if(flagDatabase[val]) {
+                flagDisplay.textContent = flagDatabase[val];
+            } else {
+                flagDisplay.textContent = "🌐"; 
+            }
+            
+            if(type === 'reg') checkSMSButtonState();
+            validateForm(type);
+        }
+
+        let tReg = 0;
+
+        function checkSMSButtonState() {
+            const codeVal = document.getElementById(`reg-country-code`).value.replace(/\D/g, "");
+            const phoneVal = document.getElementById(`reg-phone`).value.replace(/\D/g, "");
+            const btn = document.getElementById(`sms-btn-reg`);
+            
+            const isTimerActive = tReg > 0;
+
+            if(codeVal.length >= 1 && phoneVal.length >= 7 && !isTimerActive) {
+                btn.classList.add('active-ready');
+                btn.disabled = false;
+            } else {
+                btn.classList.remove('active-ready');
+                btn.disabled = true;
+            }
+        }
+
+        function setupPhoneInputValidation(id, type) {
+            const input = document.getElementById(id);
+            const errorHint = document.getElementById(`${type}-phone-error`);
+
+            input.addEventListener('input', (e) => {
+                const codeVal = document.getElementById(`${type}-country-code`).value.replace(/\D/g, "");
+                
+                if(codeVal.length === 0) {
+                    e.target.value = ""; 
+                    errorHint.style.display = "block"; 
+                    document.getElementById(`${type}-country-code`).focus(); 
+                    return;
+                }
+
+                errorHint.style.display = "none";
+                let v = e.target.value.replace(/\D/g, "");
+                e.target.value = v;
+                if(type === 'reg') checkSMSButtonState();
+                validateForm(type);
+            });
+        }
+
+        function evaluatePasswordStrength() {
+            const pass = document.getElementById('reg-pass').value;
+            const labelText = document.getElementById('strength-label-text');
+            const b1 = document.getElementById('s-bar-1');
+            const b2 = document.getElementById('s-bar-2');
+            const b3 = document.getElementById('s-bar-3');
+            const b4 = document.getElementById('s-bar-4');
+
+            [b1, b2, b3, b4].forEach(b => b.style.background = "");
+
+            if(pass.length === 0) {
+                labelText.textContent = "Vacía";
+                labelText.style.color = "var(--text-muted)";
+                currentPasswordStrengthStatus = "insegura";
+                validateForm('reg');
+                return;
+            }
+
+            if(pass.length < 6) {
+                labelText.textContent = "Insegura";
+                labelText.style.color = "var(--accent-red)";
+                b1.style.background = "var(--accent-red)";
+                currentPasswordStrengthStatus = "insegura";
+            } 
+            else if(pass.length >= 6 && pass.length < 8) {
+                labelText.textContent = "Segura";
+                labelText.style.color = "#ff9800"; 
+                b1.style.background = "#ff9800";
+                b2.style.background = "#ff9800";
+                currentPasswordStrengthStatus = "segura";
+            } 
+            else if(pass.length === 8) {
+                labelText.textContent = "Bien segura";
+                labelText.style.color = "#b0ff00"; 
+                b1.style.background = "#b0ff00";
+                b2.style.background = "#b0ff00";
+                b3.style.background = "#b0ff00";
+                currentPasswordStrengthStatus = "bien segura";
+            } 
+            else if(pass.length > 8) {
+                labelText.textContent = "Muy segura";
+                labelText.style.color = "var(--accent-green)";
+                b1.style.background = "var(--accent-green)";
+                b2.style.background = "var(--accent-green)";
+                b3.style.background = "var(--accent-green)";
+                b4.style.background = "var(--accent-green)";
+                currentPasswordStrengthStatus = "muy segura";
+            }
+
+            validateForm('reg');
+        }
+
+        function sendSMSVerification(type) {
+            const btn = document.getElementById(`sms-btn-${type}`);
+            btn.classList.remove('active-ready');
+            btn.classList.add('waiting');
+            btn.disabled = true;
+            btn.innerText = "...";
+
+            setTimeout(() => {
+                const generatedCode = Math.floor(100000 + Math.random() * 900000);
+                document.getElementById(`${type}-sms`).value = generatedCode;
+                
+                tReg = 60; 
+                startTimer();
+                validateForm(type);
+            }, 1500);
+        }
+
+        function startTimer() {
+            const b = document.getElementById(`sms-btn-reg`);
+            b.classList.remove('active-ready'); b.classList.add('waiting'); b.disabled = true;
+            const clock = setInterval(() => {
+                if(tReg <= 0) { 
+                    clearInterval(clock); 
+                    b.innerText = "Enviar"; 
+                    b.classList.remove('waiting'); 
+                    checkSMSButtonState(); 
+                    return; 
+                }
+                b.innerText = `${tReg}s`; tReg--;
+            }, 1000);
+        }
+
+        function validateForm(type) {
+            const countryCode = document.getElementById(`${type}-country-code`).value;
+            const phone = document.getElementById(`${type}-phone`).value;
+            const pass = document.getElementById(`${type}-pass`).value;
+            const sub = document.getElementById(`btn-submit-${type}`);
+
+            const isPhoneValid = countryCode.length >= 2 && phone.length >= 7;
+            const isBasePassValid = pass.length >= 8; 
+
+            if(type === 'reg') {
+                const sms = document.getElementById(`reg-sms`).value;
+                const conf = document.getElementById('reg-pass-confirm').value;
+
+                const isSMSValid = sms.length === 6;
+                const isConfValid = conf.length >= 8 && conf === pass;
+                const isStrengthValid = (currentPasswordStrengthStatus === "bien segura" || currentPasswordStrengthStatus === "muy segura");
+
+                if(isPhoneValid && isSMSValid && isBasePassValid && isConfValid && isStrengthValid) {
+                    sub.classList.add('ready-to-go'); sub.disabled = false;
+                } else {
+                    sub.classList.remove('ready-to-go'); sub.disabled = true;
+                }
+            } else {
+                if(isPhoneValid && pass.length >= 1) {
+                    sub.classList.add('ready-to-go'); sub.disabled = false;
+                } else {
+                    sub.classList.remove('ready-to-go'); sub.disabled = true;
+                }
+            }
+        }
+
+        function executeSubmit(type) {
+            alert(type === 'reg' ? 'Registro exitoso en los servidores perimetrales.' : 'Conexión establecida correctamente de manera segura.');
+            closeAuthModal();
+        }
+
+        window.onload = () => {
+            setupPhoneInputValidation('reg-phone', 'reg');
+            setupPhoneInputValidation('log-phone', 'log');
+            
+            document.getElementById('reg-pass-confirm').addEventListener('input', () => validateForm('reg'));
+            document.getElementById('reg-sms').addEventListener('input', () => validateForm('reg'));
+            document.getElementById('log-pass').addEventListener('input', () => validateForm('log'));
+        };
+    </script>
+</body>
+</html>

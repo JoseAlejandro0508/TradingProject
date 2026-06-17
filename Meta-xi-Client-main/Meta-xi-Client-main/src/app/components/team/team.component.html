@@ -1,124 +1,257 @@
 <div class="container">
 
   <!-- ═══════════════════════════════════════════
-       REFERRAL SECTION (Código + Enlace)
+       HEADER
        ═══════════════════════════════════════════ -->
-  <div class="glass-panel referral-stack">
-    <div class="ref-box">
-      <label>
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-        Código VIP
-      </label>
-      <div class="copy-pill">
-        <span>{{ referralCode }}</span>
-        <button class="btn-icon" [class.copied]="codeCopied" (click)="copyCode()">
-          <svg *ngIf="!codeCopied" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-          <svg *ngIf="codeCopied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-        </button>
-      </div>
+  <div class="header">
+    <h1>Programa de Socios</h1>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       REFERRAL BOX (Enlace + Código)
+       ═══════════════════════════════════════════ -->
+  <div class="referral-box">
+    <div class="referral-title">Compartir enlace de invitación</div>
+
+    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Código de Referencia</div>
+    <div class="share-field">
+      <span class="share-value">{{ referralCode }}</span>
+      <button class="copy-btn" (click)="copyCode()" title="Copiar código">
+        <svg *ngIf="!codeCopied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        <svg *ngIf="codeCopied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </button>
     </div>
 
-    <div class="ref-box">
-      <label>
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-        Enlace de invitación
-      </label>
-      <div class="copy-pill">
-        <span>{{ referralLink }}</span>
-        <button class="btn-icon" [class.copied]="linkCopied" (click)="copyLink()">
-          <svg *ngIf="!linkCopied" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-          <svg *ngIf="linkCopied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-        </button>
+    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Enlace único de Registro</div>
+    <div class="share-field">
+      <span class="share-value">{{ referralLink }}</span>
+      <button class="copy-btn" (click)="copyLink()" title="Copiar enlace">
+        <svg *ngIf="!linkCopied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        <svg *ngIf="linkCopied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </button>
+    </div>
+
+    <!-- Compartir Rápido Interno -->
+    <div class="quick-share-section">
+      <div class="quick-share-text">Comparta rápido tocando aquí:</div>
+      <div class="quick-share-layout">
+        <div class="quick-share-icons">
+          <!-- WhatsApp -->
+          <button class="share-icon-btn si-whatsapp" (click)="shareSocial('whatsapp')" title="Compartir en WhatsApp">
+            <svg viewBox="0 0 24 24">
+              <path d="M12.004 2c-5.51 0-9.99 4.479-9.99 9.99 0 1.764.459 3.421 1.265 4.873l-1.347 4.915 5.038-1.321c1.404.767 3.004 1.203 4.706 1.203 5.51 0 9.99-4.479 9.99-9.99s-4.48-9.99-9.99-9.99zm5.556 14.215c-.244.689-1.21 1.251-1.666 1.303-.434.05-1 .075-1.611-.121-.383-.122-.865-.297-1.486-.566-2.651-1.144-4.364-3.834-4.496-4.01-.131-.176-1.071-1.423-1.071-2.716 0-1.293.676-1.93.918-2.19.243-.261.532-.326.711-.326.177 0 .354.002.508.01.16.007.375-.061.587.451.219.53.748 1.826.812 1.957.065.13.108.283.022.456-.087.173-.131.282-.261.434-.13.153-.274.341-.392.457-.132.129-.27.269-.115.534.155.265.688 1.133 1.474 1.832.946.842 1.745 1.103 2.053 1.233.308.13.49.11.674-.102.184-.213.805-.935.918-1.257.114-.322.228-.27.382-.213.155.057 1.01.477 1.184.564.174.087.29.13.332.204.044.074.044.426-.2.114z"/>
+            </svg>
+          </button>
+          <!-- Telegram -->
+          <button class="share-icon-btn si-telegram" (click)="shareSocial('telegram')" title="Compartir en Telegram">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 12 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-1-.65-.35-1 .22-1.62.15-.16 2.71-2.48 2.76-2.7.01-.03.01-.14-.05-.2-.06-.06-.14-.04-.2-.03-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+            </svg>
+          </button>
+          <!-- Facebook -->
+          <button class="share-icon-btn si-facebook" (click)="shareSocial('facebook')" title="Compartir en Facebook">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z"/>
+            </svg>
+          </button>
+        </div>
+        <!-- Recuadro Azul "Nuevos hoy" -->
+        <div class="stat-badge-blue">
+          <span class="sb-number">{{ newTeamToday }}</span>
+          <span class="sb-label">Nuevos hoy</span>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- ═══════════════════════════════════════════
-       STATS SECTION
+       ACCORDION: Últimos Referidos
        ═══════════════════════════════════════════ -->
-  <div class="glass-panel">
-    <div class="stats-header">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 4px var(--gold-glow));"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-      Resumen del Equipo
-    </div>
-    <div class="stats-grid">
-      <div class="stat-item">
-        <span class="stat-label">Tamaño Total</span>
-        <div class="stat-value">{{ teamSize }}</div>
+  <div class="accordion-item" [class.active]="accordionOpen === 'referidos'">
+    <button class="accordion-trigger" (click)="toggleAccordion('referidos')">
+      <div class="btn-content">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span>Mostrar Últimos Referidos</span>
       </div>
-      <div class="stat-item">
-        <span class="stat-label">Nuevos (Hoy)</span>
-        <div class="stat-value" style="color: var(--green-primary);">+{{ newTeamToday }}</div>
-      </div>
-      <div class="stat-item">
-        <span class="stat-label">Recargas</span>
-        <div class="stat-value">{{ teamRecharge  }} <small>COP</small></div>
-      </div>
-      <div class="stat-item">
-        <span class="stat-label">Retiros</span>
-        <div class="stat-value">{{ teamWithdraw }} <small>COP</small></div>
+      <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </button>
+    <div class="accordion-content" [style.max-height.px]="accordionOpen === 'referidos' ? referidosContentHeight : 0">
+      <div class="referrals-list">
+        <div class="ref-user-card" *ngFor="let ref of latestReferrals">
+          <div class="user-info">
+            <div class="avatar-mini">{{ ref.initials }}</div>
+            <div class="user-det">
+              <div class="username">{{ ref.username }}</div>
+              <div class="date">{{ ref.date }}</div>
+            </div>
+          </div>
+          <span class="badge-level-row" [class.b-l1]="ref.level === 1" [class.b-l2]="ref.level === 2" [class.b-l3]="ref.level === 3" [class.b-l4]="ref.level === 4">Nivel {{ ref.level }}</span>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- ═══════════════════════════════════════════
-       LEVELS SECTION
+       ACCORDION: Detalles de Referidos
        ═══════════════════════════════════════════ -->
-  <div class="levels-container">
-
-    <!-- Nivel VIP 1 — Dorado -->
-    <div class="level-row gold" role="button" tabindex="0">
-      <div class="level-info">
-        <div class="level-name">
-          <svg class="svg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-          Nivel VIP 1
-        </div>
-        <div class="level-stats">
-          <span class="l-stat">Registros: <b>{{ lvl1Register }}</b></span>
-          <span class="l-stat">Ganancia: <b>{{ lvl1Income }}</b> <small style="color:var(--gold-primary); font-size:9px; margin-left:2px;">COP</small></span>
-        </div>
+  <div class="accordion-item" [class.active]="accordionOpen === 'detalles'">
+    <button class="accordion-trigger" (click)="toggleAccordion('detalles')">
+      <div class="btn-content">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8" cy="7" r="4"></circle><polyline points="23 7 23 11 19 11"></polyline></svg>
+        <span>Detalles de referidos</span>
       </div>
-      <div class="commission-badge">
-        <span class="l-stat">Comisión</span>
-        <span class="comm-val" style="color: var(--gold-primary);">8%</span>
+      <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </button>
+    <div class="accordion-content" [style.max-height.px]="accordionOpen === 'detalles' ? detallesContentHeight : 0">
+      <div class="details-grid">
+        <div class="detail-stat-row">
+          <span class="stat-label">Referidos registrados hoy</span>
+          <span class="stat-value" style="color: var(--primary);">+{{ newTeamToday }} nuevos</span>
+        </div>
+        <div class="detail-stat-row">
+          <span class="stat-label">Referidos Nivel 1 (Directos)</span>
+          <span class="stat-value">{{ lvl1Register }} usuarios</span>
+        </div>
+        <div class="detail-stat-row">
+          <span class="stat-label">Referidos Nivel 2</span>
+          <span class="stat-value">{{ lvl2Register }} usuarios</span>
+        </div>
+        <div class="detail-stat-row">
+          <span class="stat-label">Referidos Nivel 3</span>
+          <span class="stat-value">{{ lvl3Register }} usuarios</span>
+        </div>
+        <div class="detail-stat-row" style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px;">
+          <span class="stat-label" style="font-weight: 700; color: var(--text-main);">Referidos Totales</span>
+          <span class="stat-value" style="font-weight: 700; color: var(--primary);">{{ teamSize }} usuarios</span>
+        </div>
       </div>
     </div>
-
-    <!-- Nivel VIP 2 — Blanco -->
-    <div class="level-row white" role="button" tabindex="0">
-      <div class="level-info">
-        <div class="level-name">
-          <svg class="svg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-          Nivel VIP 2
-        </div>
-        <div class="level-stats">
-          <span class="l-stat">Registros: <b>{{ lvl2Register }}</b></span>
-          <span class="l-stat">Ganancia: <b>{{ lvl2Income }}</b> <small style="color:var(--white-pure); font-size:9px; margin-left:2px;">COP</small></span>
-        </div>
-      </div>
-      <div class="commission-badge">
-        <span class="l-stat">Comisión</span>
-        <span class="comm-val">5%</span>
-      </div>
-    </div>
-
-    <!-- Nivel VIP 3 — Verde -->
-    <div class="level-row green" role="button" tabindex="0">
-      <div class="level-info">
-        <div class="level-name">
-          <svg class="svg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-          Nivel VIP 3
-        </div>
-        <div class="level-stats">
-          <span class="l-stat">Registros: <b>{{ lvl3Register }}</b></span>
-          <span class="l-stat">Ganancia: <b>{{ lvl3Income  }}</b> <small style="color:var(--green-primary); font-size:9px; margin-left:2px;">COP</small></span>
-        </div>
-      </div>
-      <div class="commission-badge">
-        <span class="l-stat">Comisión</span>
-        <span class="comm-val" style="color: var(--green-primary);">2%</span>
-      </div>
-    </div>
-
   </div>
+
+  <!-- ═══════════════════════════════════════════
+       ACCORDION: Detalles de Ganancias
+       ═══════════════════════════════════════════ -->
+  <div class="accordion-item" [class.active]="accordionOpen === 'ganancias'">
+    <button class="accordion-trigger" (click)="toggleAccordion('ganancias')">
+      <div class="btn-content">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+        <span>Detalles de ganancias</span>
+      </div>
+      <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </button>
+    <div class="accordion-content" [style.max-height.px]="accordionOpen === 'ganancias' ? gananciasContentHeight : 0">
+      <div class="details-grid">
+        <div class="detail-stat-row">
+          <span class="stat-label">Ganancia por Nivel 1 (4%)</span>
+          <span class="stat-value">+{{ lvl1Income | number }} COP</span>
+        </div>
+        <div class="detail-stat-row">
+          <span class="stat-label">Ganancia por Nivel 2 (3%)</span>
+          <span class="stat-value">+{{ lvl2Income | number }} COP</span>
+        </div>
+        <div class="detail-stat-row">
+          <span class="stat-label">Ganancia por Nivel 3 (2%)</span>
+          <span class="stat-value">+{{ lvl3Income | number }} COP</span>
+        </div>
+        <div class="detail-stat-row">
+          <span class="stat-label">Ganancia por Nivel 4 (1%)</span>
+          <span class="stat-value">+{{ lvl4Income | number }} COP</span>
+        </div>
+        <div class="detail-stat-row" style="background: rgba(0, 200, 83, 0.05); padding: 8px; border-radius: 8px; border: 1px solid rgba(0, 200, 83, 0.15);">
+          <span class="stat-label" style="font-weight: 700; color: var(--text-main);">Ganancias Totales</span>
+          <span class="stat-value total-highlight">{{ totalIncome | number }} COP</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       ÁRBOL GENEALÓGICO
+       ═══════════════════════════════════════════ -->
+  <div class="tree-container">
+    <div class="tree-title">Estructura de Red (Árbol)</div>
+
+    <div class="tree-professional-flow">
+      <!-- Nivel 1 -->
+      <div class="tree-level-item tl-1">
+        <div class="tree-left-block">
+          <div class="tree-avatar ta-1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 20V4L7 7"/>
+              <path d="M6 20H18"/>
+            </svg>
+          </div>
+          <div class="tree-meta-info">
+            <div class="tree-lvl-name">Nivel 1</div>
+            <div class="tree-lvl-desc">Afiliados Directos, por cada comisión ganas el 4%</div>
+          </div>
+        </div>
+        <div class="tree-right-block">
+          <span class="tree-pct-pill tp-1">4%</span>
+        </div>
+      </div>
+
+      <!-- Nivel 2 -->
+      <div class="tree-level-item tl-2">
+        <div class="tree-left-block">
+          <div class="tree-avatar ta-2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 20h12"/>
+              <path d="M6 10c0-3.8 3.2-6 6-6s6 2.2 6 6c0 3-4.5 6-8 10h8"/>
+            </svg>
+          </div>
+          <div class="tree-meta-info">
+            <div class="tree-lvl-name">Nivel 2</div>
+            <div class="tree-lvl-desc">Afiliados Indirectos, por cada comisión ganas el 3%</div>
+          </div>
+        </div>
+        <div class="tree-right-block">
+          <span class="tree-pct-pill tp-2">3%</span>
+        </div>
+      </div>
+
+      <!-- Nivel 3 -->
+      <div class="tree-level-item tl-3">
+        <div class="tree-left-block">
+          <div class="tree-avatar ta-3">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 20h8c2.2 0 4-1.8 4-4s-1.8-4-4-4h-2M14 12c2.2 0 4-1.8 4-4s-1.8-4-4-4H8l-2 3"/>
+            </svg>
+          </div>
+          <div class="tree-meta-info">
+            <div class="tree-lvl-name">Nivel 3</div>
+            <div class="tree-lvl-desc">Afiliados Indirectos, por cada comisión ganas el 2%</div>
+          </div>
+        </div>
+        <div class="tree-right-block">
+          <span class="tree-pct-pill tp-3">2%</span>
+        </div>
+      </div>
+
+      <!-- Nivel 4 -->
+      <div class="tree-level-item tl-4">
+        <div class="tree-left-block">
+          <div class="tree-avatar ta-4">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 4v16M18 16H6l10-12"/>
+            </svg>
+          </div>
+          <div class="tree-meta-info">
+            <div class="tree-lvl-name">Nivel 4</div>
+            <div class="tree-lvl-desc">Afiliados Indirectos, por cada comisión ganas el 1%</div>
+          </div>
+        </div>
+        <div class="tree-right-block">
+          <span class="tree-pct-pill tp-4">1%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Notificación Flotante Toast -->
+<div class="toast" [class.show]="toastVisible">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00c853" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+  <span>{{ toastMessage }}</span>
 </div>

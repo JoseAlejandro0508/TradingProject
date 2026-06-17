@@ -1,65 +1,63 @@
-
 <div class="deposit-wrap">
-    <!-- Back Nav -->
-    <a routerLink="/home" class="back-nav">
-        <div class="arrow-gold"></div>
-        <span class="nav-label">Volver</span>
-    </a>
+  <!-- Back Nav -->
+  <a routerLink="/home" class="back-nav">
+    <svg class="back-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"></line>
+      <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+    <span class="nav-label">Cambiar de canal</span>
+  </a>
 
-    <!-- Gold Master Card Frame -->
-    <div class="master-card">
-        <div class="inner-container">
-
-            <!-- Balance -->
-            <div class="balance-header">
-                <span class="balance-title">Balance de cuenta</span>
-                <span class="balance-val">$ {{ displayBalance }}</span>
-            </div>
-
-            <!-- Input -->
-            <input type="text"
-                   class="input-box"
-                   placeholder="0"
-                   [ngModel]="displayAmount"
-                   (ngModelChange)="onAmountInput($event)">
-
-            <!-- Preset Amounts -->
-            <div class="amounts-grid">
-                @for (amt of presets; track amt.value) {
-                    <button class="amount-btn"
-                            [class.selected]="rawAmount === amt.value"
-                            (click)="selectAmount(amt.value)">
-                        ${{ amt.label }}
-                    </button>
-                }
-            </div>
-
-            <!-- Payment Method (Nequi fijo) -->
-            <div class="payment-method-row">
-                <div class="icon-box-vip">
-                    <div class="inner-glow-emu"></div>
-                    <img src="assets/token/nequi-account.png" class="method-img" alt="Nequi">
-                </div>
-                <span class="method-name-text">Nequi Digital</span>
-                <div class="chevron-gold"></div>
-            </div>
-
-            <!-- Confirm Button -->
-            <button class="btn-confirm"
-                    [class.active]="rawAmount >= MIN_AMOUNT"
-                    [disabled]="rawAmount < MIN_AMOUNT"
-                    [routerLink]="['/nequi', 'nequi']"
-                    [queryParams]="{cantidad: rawAmount}">
-                Confirmar Recarga
-            </button>
-
-        </div>
+  <!-- Balance Card -->
+  <div class="balance-card-display nequi-gradient">
+    <div class="card-glow"></div>
+    <div class="card-badge">NEQUI</div>
+    <div class="card-content">
+      <div class="lbl-card-top">Mi saldo</div>
+      <div class="main-balance-text">$ {{ displayBalance }}</div>
     </div>
+  </div>
 
-    <!-- Legal Info -->
-    <div class="legal-info">
-        1. Recarga mínima: <b class="emerald">50,000 COP</b> para activar botón.<br>
-        2. Al confirmar, capture su Código QR generado.<br>
-        3. Acreditación automática en <b class="emerald">1-10 minutos</b>.
+  <!-- Form -->
+  <div class="form-section">
+    <label class="form-label">Monto de recarga</label>
+    <input type="text"
+           class="form-input"
+           placeholder="0"
+           [ngModel]="displayAmount"
+           (ngModelChange)="onAmountInput($event)">
+  </div>
+
+  <!-- Quick Amounts -->
+  <div class="amounts-grid">
+    @for (amt of presets; track amt.value) {
+      <button class="amount-btn"
+              [class.selected]="rawAmount === amt.value"
+              (click)="selectAmount(amt.value)">
+        ${{ amt.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Info Box -->
+  <div class="info-box">
+    <div class="info-title">Canal de recarga: Nequi</div>
+    <div class="info-row">
+      <span class="info-label">Monto de recarga</span>
+      <span class="info-value">{{ displayAmount ? '$ ' + displayAmount : '-' }}</span>
     </div>
+    <div class="info-row">
+      <span class="info-label">Monto recibido</span>
+      <span class="info-value">{{ displayAmount ? '$ ' + displayAmount : '-' }}</span>
+    </div>
+  </div>
+
+  <!-- Submit Button -->
+  <button class="btn-submit"
+          [class.active]="rawAmount >= MIN_AMOUNT"
+          [disabled]="rawAmount < MIN_AMOUNT"
+          [routerLink]="['/nequi', 'nequi']"
+          [queryParams]="{cantidad: rawAmount}">
+    Recargar ahora
+  </button>
 </div>

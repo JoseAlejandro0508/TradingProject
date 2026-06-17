@@ -5,6 +5,8 @@ import { AddressComponent } from './address/address.component';
 import { InfoComponent } from './info/info.component';
 import { NequiComponent } from './nequi/nequi.component';
 import { UsdtBep20Component } from './usdt-bep20/usdt-bep20.component';
+import { DaviplataComponent } from './daviplata/daviplata.component';
+import { UsdtTrc20Component } from './usdt-trc20/usdt-trc20.component';
 import { BrebComponent } from  './breb/breb.component';
 
 @Component({
@@ -17,6 +19,8 @@ import { BrebComponent } from  './breb/breb.component';
     InfoComponent,
     NequiComponent,
     UsdtBep20Component,
+    DaviplataComponent,
+    UsdtTrc20Component,
     BrebComponent,
   ],
   templateUrl: './deposit.component.html',

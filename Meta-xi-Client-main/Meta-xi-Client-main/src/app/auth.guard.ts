@@ -27,7 +27,7 @@ export const authGuard: CanActivateFn = async () => {
   try {
     const url = `${environment.apiUrl}/Wallet/CheckWelcomeBonus/${username}`;
     const response: any = await firstValueFrom(http.get(url));
-    
+    return true
     if (response && response.claimed === true) {
       return true;
     } else {

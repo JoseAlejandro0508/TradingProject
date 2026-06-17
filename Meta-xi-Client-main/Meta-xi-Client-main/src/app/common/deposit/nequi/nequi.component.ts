@@ -30,12 +30,14 @@ export class NequiComponent implements OnInit {
   displayAmount = '';
 
   presets: PresetAmount[] = [
-    { value: 50000, label: '50,000' },
-    { value: 120000, label: '120,000' },
-    { value: 250000, label: '250,000' },
-    { value: 500000, label: '500,000' },
-    { value: 1000000, label: '1,000,000' },
-    { value: 1500000, label: '1,500,000' },
+    { value: 20000, label: '20.000' },
+    { value: 100000, label: '100.000' },
+    { value: 200000, label: '200.000' },
+    { value: 600000, label: '600.000' },
+    { value: 1000000, label: '1.000.000' },
+    { value: 3000000, label: '3.000.000' },
+    { value: 5000000, label: '5.000.000' },
+    { value: 10000000, label: '10.000.000' },
   ];
 
   constructor(private http: HttpClient) {}

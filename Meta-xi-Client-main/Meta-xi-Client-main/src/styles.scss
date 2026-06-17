@@ -1,56 +1,270 @@
-
-// Custom Theming for Angular Material
-// For more information: https://material.angular.io/guide/theming
-@use '@angular/material' as mat;
-// Plus imports for other components in your app.
-
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
-@include mat.core();
-
-// Define the palettes for your theme using the Material Design palettes available in palette.scss
-// (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// hue. Available color palettes: https://material.io/design/color/
-$rd-primary: mat.define-palette(mat.$indigo-palette);
-$rd-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
-
-// The warn palette is optional (defaults to red).
-$rd-warn: mat.define-palette(mat.$red-palette);
-
-// Create the theme object. A theme consists of configurations for individual
-// theming systems such as "color" or "typography".
-$rd-theme: mat.define-light-theme((
-  color: (
-    primary: $rd-primary,
-    accent: $rd-accent,
-    warn: $rd-warn,
-  ),
-  typography: mat.define-typography-config(),
-  density: 0
-));
-
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
-@include mat.all-component-themes($rd-theme);
-@import  'ngx-toastr/toastr' ;
+@import 'ngx-toastr/toastr';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* --- VARIABLES DE DISEÑO PREMIUM OPTIMIZADAS --- */
+:root {
+  --bg-main: #0c0e10;
+  --bg-surface: #14171a;
+  --bg-card: rgba(24, 28, 32, 0.8);
+  --text-main: #ffffff;
+  --text-muted: #94a3b8;
+  --accent: #2962ff;
+  --accent-rgb: 41, 98, 255;
+  --accent-green: #00e676;
+  --accent-red: #ff1744;
+  --border: rgba(255, 255, 255, 0.08);
+  --input-bg: #090e1a;
+  --btn-disabled-bg: rgba(255, 255, 255, 0.04);
+  --btn-disabled-text: rgba(255, 255, 255, 0.25);
+  --sms-btn-idle: #94a3b8;
+  --glass-blur: blur(20px);
+
+  /* Profile / Template integration variables */
+  --primary: var(--accent);
+  --primary-hover: #1e4bd6;
+  --success: var(--accent-green);
+  --warning: #ffb300;
+  --danger: var(--accent-red);
+  --border-color: var(--border);
+  --chat-header-bg: #161824;
+  --msg-system-bg: #161824;
+  --nequi-brand: #7000ff;
+  --usdt-brand: #009393;
+
+  /* Recharge / Deposit UI tokens */
+  --btn-bg: rgba(255, 255, 255, 0.03);
+  --btn-hover: rgba(255, 255, 255, 0.06);
+  --btn-logo-bg: rgba(255, 255, 255, 0.04);
+  --card-container-bg: rgba(255, 255, 255, 0.02);
+  --input-focus-ring: rgba(41, 98, 255, 0.15);
+  --sidebar-bg: rgba(18, 22, 26, 0.95);
+  --overlay-bg: rgba(0, 0, 0, 0.85);
+
+  /* Gift / Canjear Bono UI tokens */
+  --gold: #ffca28;
+  --gold-dark: #ff8f00;
+  --gold-light: #fff59d;
+  --pink-accent: #ff33b4;
+  --gift-body-grad: linear-gradient(135deg, rgba(140, 50, 255, 0.65) 0%, rgba(50, 20, 190, 0.75) 100%);
+  --gift-lid-grad: linear-gradient(135deg, #ff2a85 0%, #7e1fff 100%);
+}
+
+[data-theme="light"] {
+  --bg-main: #f4f6f9;
+  --bg-surface: #ffffff;
+  --bg-card: rgba(240, 244, 248, 0.9);
+  --text-main: #0f1115;
+  --text-muted: #64748b;
+  --accent: #2962ff;
+  --accent-rgb: 41, 98, 255;
+  --accent-green: #16a34a;
+  --accent-red: #dc2626;
+  --border: rgba(0, 0, 0, 0.08);
+  --input-bg: #eaeef3;
+  --btn-disabled-bg: #dae1e9;
+  --btn-disabled-text: #7c8ba1;
+  --sms-btn-idle: #475569;
+
+  /* Profile / Template integration variables */
+  --primary-hover: #1e4bd6;
+  --success: #00873a;
+  --warning: #b78103;
+  --danger: #dc2626;
+  --chat-header-bg: #ffffff;
+  --msg-system-bg: #eaeaea;
+
+  /* Recharge / Deposit UI tokens */
+  --btn-bg: #ffffff;
+  --btn-hover: rgba(0, 0, 0, 0.02);
+  --btn-logo-bg: rgba(0, 0, 0, 0.04);
+  --card-container-bg: rgba(0, 0, 0, 0.01);
+  --input-focus-ring: rgba(41, 98, 255, 0.08);
+  --sidebar-bg: rgba(255, 255, 255, 0.95);
+  --overlay-bg: rgba(0, 0, 0, 0.6);
+
+  /* Gift / Canjear Bono UI tokens */
+  --gold: #ffca28;
+  --gold-dark: #ff8f00;
+  --gold-light: #fff59d;
+  --pink-accent: #ff33b4;
+  --gift-body-grad: linear-gradient(135deg, rgba(140, 50, 255, 0.65) 0%, rgba(50, 20, 190, 0.75) 100%);
+  --gift-lid-grad: linear-gradient(135deg, #ff2a85 0%, #7e1fff 100%);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
-  //  background: linear-gradient(to left, #CE5959 0%, #19376D 80%);
-    color: #eee;
-    font-family: DM Sans, Helvetica Neue, Helvetica, sans-serif;
-    margin: 0;
-    height: 100%;
-    //overflow: hidden;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  overflow-x: hidden;
+  width: 100%;
+  min-height: 100vh;
+  transition: background-color 0.3s, color 0.3s;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
 }
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
 .grad {
-    background: linear-gradient(60deg, #fcecb9, #efc26f);
+  background: linear-gradient(60deg, #fcecb9, #efc26f);
 }
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
+/* --- GLOW BACKGROUND EFFECTS --- */
+.glow-sphere {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: rgba(var(--accent-rgb), 0.08);
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 0;
+}
 
+.gs-1 {
+  top: -50px;
+  left: -100px;
+}
+
+.gs-2 {
+  top: 500px;
+  right: -100px;
+  background: rgba(0, 230, 118, 0.03);
+}
+
+/* --- PARTNER LOGO COLORS --- */
+.p-binance {
+  color: #F3BA2F;
+  text-shadow: 0 0 8px rgba(243, 186, 47, 0.3);
+}
+
+[data-theme="light"] .p-binance {
+  color: #E3a008;
+  text-shadow: none;
+}
+
+.p-kucoin {
+  color: #24AE8F;
+  text-shadow: 0 0 8px rgba(36, 174, 143, 0.3);
+}
+
+[data-theme="light"] .p-kucoin {
+  text-shadow: none;
+}
+
+.p-crypto {
+  color: #0052FF;
+  text-shadow: 0 0 8px rgba(0, 82, 255, 0.3);
+}
+
+[data-theme="light"] .p-crypto {
+  text-shadow: none;
+}
+
+.p-bybit {
+  color: #FFB100;
+  text-shadow: 0 0 8px rgba(255, 177, 0, 0.3);
+}
+
+[data-theme="light"] .p-bybit {
+  color: #b47b00;
+  text-shadow: none;
+}
+
+.p-ufc {
+  color: #E31837;
+  text-shadow: 0 0 8px rgba(227, 24, 55, 0.3);
+}
+
+[data-theme="light"] .p-ufc {
+  text-shadow: none;
+}
+
+.p-bet365 {
+  color: #00FF87;
+  text-shadow: 0 0 8px rgba(0, 255, 135, 0.3);
+}
+
+[data-theme="light"] .p-bet365 {
+  color: #00aa56;
+  text-shadow: none;
+}
+
+.p-okx {
+  color: var(--text-main);
+}
+
+.p-tradingview {
+  color: #2962FF;
+  text-shadow: 0 0 8px rgba(41, 98, 255, 0.3);
+}
+
+[data-theme="light"] .p-tradingview {
+  text-shadow: none;
+}
+
+/* --- BINANCE GOLD --- */
+.binance-gold {
+  color: #F3BA2F;
+  text-shadow: 0 0 4px rgba(243, 186, 47, 0.2);
+}
+
+[data-theme="light"] .binance-gold {
+  color: #E3a008;
+  text-shadow: none;
+}
+
+/* --- ANIMATIONS --- */
+@keyframes marketMove {
+  0% {
+    height: 30%;
+    transform: translateY(0);
+  }
+  50% {
+    height: 65%;
+    transform: translateY(-5px);
+  }
+  100% {
+    height: 45%;
+    transform: translateY(3px);
+  }
+}
+
+@keyframes scrollPartners {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-200px * 9));
+  }
+}
+
+@keyframes glint {
+  0% {
+    left: -150%;
+  }
+  15% {
+    left: 150%;
+  }
+  100% {
+    left: 150%;
+  }
+}
+
+@keyframes premiumShake {
+  10%, 90% { transform: translate3d(-2px, 0, 0) scale(1.15); }
+  20%, 80% { transform: translate3d(4px, 0, 0) scale(1.15); }
+  30%, 50%, 70% { transform: translate3d(-6px, 0, 0) scale(1.15); }
+  40%, 60% { transform: translate3d(6px, 0, 0) scale(1.15); }
+}

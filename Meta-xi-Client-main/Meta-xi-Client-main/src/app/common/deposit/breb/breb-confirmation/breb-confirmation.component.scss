@@ -3,30 +3,30 @@
 // =========================================================
 
 :host {
-
   z-index: 1001;
-  background-color: #84e8a8;
+  background: var(--bg-main);
   display: flex;
   justify-content: center;
   align-items: flex-start;
   min-height: 100vh;
   padding-left: 0;
   padding-right: 0;
-  position:fixed;
+  position: fixed;
   width: 100vw;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 // ─── Card ──────────────────────────────────
 .card {
   padding-top: 3%;
-  background-color: #ffffff;
+  background: var(--bg-card);
   width: 92%;
   max-width: 380px;
   border-radius: 25px;
   padding: 25px 20px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   text-align: center;
+  border: 1px solid var(--border-color);
 }
 
 // ─── PANTALLA 1: PAGO ────────────────────
@@ -49,59 +49,61 @@
 .logo-text {
   font-size: 24px;
   font-weight: 700;
-  color: #240046;
+  color: var(--text-main);
   letter-spacing: 1.5px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .label-gray {
   font-size: 14px;
-  color: #333;
+  color: var(--text-muted);
   margin-bottom: 5px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .order-number {
   font-size: 13px;
-  color: #666;
+  color: var(--text-muted);
   margin-bottom: 15px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .amount-text {
-  color: #d32f2f;
+  color: var(--accent-red);
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 10px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .timer-text {
   font-size: 14px;
-  color: #333;
+  color: var(--text-main);
   margin-bottom: 15px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .divider {
   border: none;
-  border-top: 1px solid #eeeeee;
+  border-top: 1px solid var(--border-color);
   margin-bottom: 10px;
 }
 
 .qr-instruction {
   font-size: 10px;
-  color: #b0b0b0;
+  color: var(--text-muted);
   margin-bottom: 15px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .qr-placeholder {
   width: 180px;
   height: 180px;
   margin: 0 auto 20px auto;
-  border: 1px solid #f0f0f0;
+  border: 1px solid var(--border-color);
   padding: 5px;
+  background: var(--bg-surface);
+  border-radius: 12px;
 
   img {
     width: 100%;
@@ -111,36 +113,37 @@
 
 // ─── Reference Input ──────────────────────
 .reference-container {
-  background-color: #1c1f21;
+  background: var(--bg-surface);
   display: flex;
   align-items: center;
   padding: 12px 15px;
   border-radius: 4px;
   margin-bottom: 15px;
   text-align: left;
+  border: 1px solid var(--border-color);
 }
 
 .reference-container label {
-  color: #ffffff;
+  color: var(--text-main);
   font-size: 14px;
   margin-right: 10px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   white-space: nowrap;
 }
 
 .reference-container input {
   background: transparent;
   border: none;
-  color: #888;
+  color: var(--text-muted);
   outline: none;
   font-size: 14px;
   width: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 // ─── Buttons ──────────────────────────────
 .btn-green {
-  background-color: #00c853;
+  background: var(--primary);
   color: white;
   border: none;
   width: 100%;
@@ -150,11 +153,11 @@
   font-weight: 600;
   cursor: pointer;
   margin-bottom: 20px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   transition: 0.3s;
 
   &:disabled {
-    background-color: #999;
+    background: var(--btn-disabled-bg);
     opacity: 0.7;
     cursor: not-allowed;
   }
@@ -165,14 +168,14 @@
 }
 
 .btn-back {
-  background-color: #00c853;
+  background: var(--primary);
   color: white;
   border: none;
   padding: 12px 60px;
   border-radius: 8px;
   font-size: 16px;
   cursor: pointer;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   transition: 0.3s;
 
   &:active {
@@ -182,27 +185,27 @@
 
 // ─── Attention Card ────────────────────────
 .attention-card {
-  border: 1px solid #ffd8cf;
-  background-color: #fff9f8;
+  border: 1px solid var(--border-color);
+  background: var(--card-container-bg);
   border-radius: 12px;
   padding: 15px;
   text-align: left;
 }
 
 .attention-title {
-  color: #d32f2f;
+  color: var(--accent-red);
   font-weight: bold;
   font-size: 15px;
   margin-bottom: 8px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .attention-list {
   list-style: none;
   font-size: 12px;
-  color: #444;
+  color: var(--text-main);
   line-height: 1.5;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   padding: 0;
   margin: 0;
 
@@ -219,7 +222,7 @@
 .clock-icon {
   width: 60px;
   height: 60px;
-  background-color: #38b6ff;
+  background: var(--primary);
   border-radius: 50%;
   margin: 0 auto 30px auto;
   position: relative;
@@ -253,16 +256,16 @@
 
 .waiting-title {
   font-size: 20px;
-  color: #333;
+  color: var(--text-main);
   margin-bottom: 10px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .waiting-text {
   font-size: 14px;
-  color: #666;
+  color: var(--text-muted);
   margin-bottom: 40px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 // ─── Expired Overlay ──────────────────────
@@ -280,7 +283,7 @@
 }
 
 .expired-card {
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 25px;
   padding: 40px 30px;
   display: flex;
@@ -289,12 +292,13 @@
   text-align: center;
   width: 90%;
   max-width: 380px;
+  border: 1px solid var(--border-color);
 }
 
 .expired-icon {
   width: 80px;
   height: 80px;
-  background: #ff4444;
+  background: var(--accent-red);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -308,15 +312,15 @@
 .expired-title {
   font-size: 22px;
   font-weight: 800;
-  color: #333;
+  color: var(--text-main);
   margin-bottom: 10px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .expired-text {
-  color: #666;
+  color: var(--text-muted);
   font-size: 14px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   line-height: 1.5;
   margin-bottom: 20px;
 }

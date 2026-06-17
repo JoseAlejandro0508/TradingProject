@@ -1,0 +1,120 @@
+<div class="active-bot-card" [class.paused]="activePlan.status === 'Paused'">
+  <!-- Header -->
+  <div class="card-header">
+    <div class="bot-identity">
+      <div class="bot-icon-wrapper">
+        <img 
+          [src]="activePlan.botPlanImageUrl || 'assets/bots/default-bot.png'" 
+          alt="{{ activePlan.botPlanName }}"
+          class="bot-icon"
+          (error)="handleImageError($event)"
+        />
+      </div>
+      <div class="bot-title-group">
+        <h3 class="bot-name">{{ activePlan.botPlanName }}</h3>
+        <div class="live-badge" [class.paused]="activePlan.status === 'Paused'">
+          <span class="pulse"></span>
+          <span>{{ activePlan.status === 'Active' ? 'EN VIVO' : 'PAUSADO' }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="pair-badge">
+      {{ activePlan.tradingPair }}
+    </div>
+  </div>
+
+  <!-- Acquisition Info -->
+  <div class="acquisition-info" *ngIf="activePlan.acquisitionCost !== undefined">
+    <span class="label">Costo de adquisición:</span>
+    <span class="value">{{ formattedAcquisitionCost }}</span>
+  </div>
+
+  <!-- Profits Grid -->
+  <div class="profits-grid">
+    <div class="profit-box daily">
+      <span class="profit-icon">📅</span>
+      <span class="profit-label">Diario</span>
+      <span class="profit-value">{{ dailyProfit }}</span>
+    </div>
+    <div class="profit-box weekly">
+      <span class="profit-icon">📊</span>
+      <span class="profit-label">Semanal</span>
+      <span class="profit-value">{{ weeklyProfit }}</span>
+    </div>
+    <div class="profit-box monthly">
+      <span class="profit-icon">📈</span>
+      <span class="profit-label">Mensual</span>
+      <span class="profit-value">{{ monthlyProfit }}</span>
+    </div>
+  </div>
+
+  <!-- Progress Section -->
+  <div class="progress-sections">
+    <!-- Time Remaining Progress -->
+    <div class="progress-block">
+      <div class="progress-header">
+        <span class="progress-title">⏱️ Tiempo Restante</span>
+        <span class="progress-stats">{{ daysRemaining }} / {{ totalDays }} días</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div 
+          class="progress-bar-fill time"
+          [style.width.%]="timeProgressPercent"
+        ></div>
+      </div>
+      <span class="progress-percent">{{ timeProgressPercent }}% completado</span>
+    </div>
+
+    <!-- Money Collected Progress -->
+    <div class="progress-block">
+      <div class="progress-header">
+        <span class="progress-title">💰 Ganancias Acumuladas</span>
+        <span class="progress-stats">{{ formattedAccumulated }} / {{ formattedExpected }}</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div 
+          class="progress-bar-fill money"
+          [style.width.%]="moneyProgressPercent"
+        ></div>
+      </div>
+      <span class="progress-percent">{{ moneyProgressPercent }}% recolectado</span>
+    </div>
+  </div>
+
+  <!-- Dates -->
+  <div class="dates-row">
+    <div class="date-item">
+      <span class="date-label">Inicio:</span>
+      <span class="date-value">{{ activePlan.startedAt | date:'dd/MM/yyyy' }}</span>
+    </div>
+    <div class="date-item">
+      <span class="date-label">Expira:</span>
+      <span class="date-value">{{ activePlan.expiresAt | date:'dd/MM/yyyy' }}</span>
+    </div>
+  </div>
+
+  <!-- Pause/Resume Actions -->
+  <div class="bot-actions-row">
+    <button *ngIf="activePlan.status === 'Active'" 
+            class="btn-action-pause"
+            (click)="onPause()"
+            [disabled]="isPausing">
+      <svg *ngIf="!isPausing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <rect x="6" y="4" width="4" height="16"></rect>
+        <rect x="14" y="4" width="4" height="16"></rect>
+      </svg>
+      <span *ngIf="isPausing">Pausando...</span>
+      <span *ngIf="!isPausing">Pausar Bot</span>
+    </button>
+    <button *ngIf="activePlan.status === 'Paused'" 
+            class="btn-action-resume"
+            (click)="onResume()"
+            [disabled]="isResuming">
+      <svg *ngIf="!isResuming" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+      </svg>
+      <span *ngIf="isResuming">Reanudando...</span>
+      <span *ngIf="!isResuming">Reanudar Bot</span>
+    </button>
+  </div>
+</div>

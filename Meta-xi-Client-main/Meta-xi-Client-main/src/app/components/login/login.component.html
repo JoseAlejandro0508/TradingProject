@@ -1,31 +1,132 @@
-<div class="background-container">
-  <img src="/assets/others/indexverse.webp" class="background-image">
-  <div class="deep-overlay"></div>
+<div class="glow-sphere gs-1"></div>
+<div class="glow-sphere gs-2"></div>
+
+<!-- HEADER / NAVEGACIÓN -->
+<header>
+  <div class="brand-wrapper">
+    <svg class="brand-logo-svg" viewBox="0 0 24 24">
+      <path d="M4 18l6-6 4 4 6-10" />
+    </svg>
+    <div class="brand-title">Trading<span>View</span></div>
+  </div>
+  <div class="nav-controls">
+    <app-theme-toggle></app-theme-toggle>
+    <button class="control-btn" (click)="toggleDropdown(); $event.stopPropagation()">
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="1" />
+        <circle cx="12" cy="5" r="1" />
+        <circle cx="12" cy="19" r="1" />
+      </svg>
+    </button>
+  </div>
+</header>
+
+<div class="dropdown-menu" [class.show]="dropdownOpen" (click)="$event.stopPropagation()">
+  <button class="dropdown-item" (click)="openAuthModal('reg')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="8.5" cy="7" r="4" />
+      <line x1="20" y1="8" x2="20" y2="14" />
+      <line x1="23" y1="11" x2="17" y2="11" />
+    </svg>
+    Registrarse
+  </button>
+  <button class="dropdown-item" (click)="openAuthModal('log')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+      <polyline points="10 17 15 12 10 7" />
+      <line x1="15" y1="12" x2="3" y2="12" />
+    </svg>
+    Iniciar Sesión
+  </button>
 </div>
 
-<div class="split-viewport">
-  <div class="image-spacer"></div>
+<!-- INTERFAZ DE PRESENTACIÓN -->
+<main class="hero-viewport" (click)="closeDropdown()">
+  <div class="hero-badge">
+    <div class="indicator-dot"></div>
+    Terminal de Análisis Élite v4.2
+  </div>
+  <h1 class="hero-title">Inteligencia de <span>Trading</span></h1>
 
-  <div class="form-area">
-    <div class="tab-wrapper">
-      <button
-        class="tab-btn"
-        [class.active]="activeTab === 'registro'"
-        [class.shimmer-vip]="activeTab === 'registro'"
-        (click)="showForm('registro')">
-        Registro
-      </button>
-      <button
-        class="tab-btn"
-        [class.active]="activeTab === 'login'"
-        [class.shimmer-vip]="activeTab === 'login'"
-        (click)="showForm('login')">
-        Sección
-      </button>
+  <app-trading-chart></app-trading-chart>
+
+  <div class="cta-group">
+    <button class="btn-primary-cta" (click)="openAuthModal('reg')">Registrarme</button>
+    <button class="btn-secondary-login-cta" (click)="openAuthModal('log')">Iniciar sesión</button>
+  </div>
+
+  <p class="hero-lead">
+    Multiplica tu capital de forma segura y automatizada. Al activar un plan, tus fondos trabajan en
+    <span>TradingBots algorítmicos</span>
+    que ejecutan compras y ventas en los mercados financieros globales más grandes. Operamos bajo estrictas medidas de protección programada 24/7, garantizando una generación de
+    <span>ingresos pasivos estables</span>, transparentes y bajo tu total control.
+  </p>
+
+  <div class="hero-kpi-container">
+    <div class="kpi-row">
+      <div class="kpi-label">Nuevos Usuarios</div>
+      <div class="kpi-value" style="display: flex; align-items: center; gap: 6px;">
+        376 <div class="indicator-dot"></div>
+      </div>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-label">Principal Socio</div>
+      <div class="kpi-value binance-gold">Binance</div>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-label">Operaciones hoy</div>
+      <div class="kpi-value" style="color: var(--accent-green);">+{{ liveCounter }}</div>
+    </div>
+  </div>
+</main>
+
+<!-- SECCIÓN DE INFRAESTRUCTURA -->
+<section class="info-section">
+  <h2 class="section-title">Infraestructura</h2>
+  <div class="cards-layout">
+    <div class="info-card" *ngFor="let member of members">
+      <div class="card-icon-frame">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </div>
+      <h3>{{ member.role }}</h3>
+      <div class="member-details">
+        <p><strong>Nombre:</strong> {{ member.name }}</p>
+        <p><strong>País:</strong> {{ member.country }}</p>
+        <p><strong>Edad:</strong> {{ member.age }}</p>
+        <p><strong>Profesión:</strong> {{ member.profession }}</p>
+      </div>
     </div>
 
-    <app-form [activeTab]="activeTab"></app-form>
-
-    <div class="form-footer">VIP Access Secure | 2026</div>
+    <div class="info-card">
+      <div class="card-icon-frame">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M21.21 15.89A10 10 0 1 1 8 2.83M22 12A10 10 0 0 0 12 2v10z" />
+        </svg>
+      </div>
+      <h3>{{ teamData.title }}</h3>
+      <div class="member-details">
+        <p *ngFor="let item of teamData.items">
+          <strong>{{ item.label }}:</strong> {{ item.value }}
+        </p>
+      </div>
+    </div>
   </div>
-</div>
+</section>
+
+<!-- SECCIÓN DE SOCIOS -->
+<app-partners-carousel></app-partners-carousel>
+
+<!-- CAPA GLOBAL DE AUTENTICACIÓN -->
+<app-auth-modal
+  [mode]="authMode"
+  [isOpen]="authOpen"
+  (closeModal)="closeAuthModal()"
+></app-auth-modal>
+
+<footer>
+  <p>&copy; 2026 TradingView. Protección perimetral avanzada y análisis técnico.</p>
+</footer>

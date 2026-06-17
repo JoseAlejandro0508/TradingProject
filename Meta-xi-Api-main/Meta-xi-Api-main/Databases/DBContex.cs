@@ -18,8 +18,11 @@ public class DBContext : DbContext
     public required DbSet<TaskRegister> TaskRegisters { get ; set ; }
     public required DbSet<DepositHistory> DepositHistories { get ; set ; }
     public required DbSet<WithdrawalHistory> WithdrawalHistories { get ; set ; }
-    public required DbSet<Mission> Missions { get ; set ; }
-    public required DbSet<UserMission> UserMissions { get ; set ; }
+    public required DbSet<Mission> Missions { get; set; }
+    public required DbSet<UserMission> UserMissions { get; set; }
+    public required DbSet<BotPlan> BotPlans { get; set; }
+    public required DbSet<UserActivePlan> UserActivePlans { get; set; }
+    public required DbSet<UserFreeBotUsage> UserFreeBotUsages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -36,6 +39,11 @@ public class DBContext : DbContext
             .HasOne(um => um.Mission)
             .WithMany()
             .HasForeignKey(um => um.MissionId);
+
+        modelBuilder.Entity<UserActivePlan>()
+            .HasOne(uap => uap.BotPlan)
+            .WithMany()
+            .HasForeignKey(uap => uap.BotPlanId);
 
         modelBuilder.Entity<Plan>().HasData(
             new Plan { IDPlan = 1, Name = "Trump Turnberry", Price = 50000, MaxQuantity = 100, DaysActive = 30, DailyBenefit = 4000, TotalBenefit = 120000, Description = "Un resort de golf icónico y legendario en la costa escocesa. Turismo de lujo internacional.", DailyProfitPercentage = 8, ImageUrl = "/plans/trump-turnberry.webp" },
@@ -61,6 +69,201 @@ public class DBContext : DbContext
             new Mission { Id = 10, Title = "Invita 350 nuevos amigos", Type = MissionType.Premium, Ref = 350, Gift = 60000, ImageUrl = "/missions/invite-350.webp" },
             new Mission { Id = 11, Title = "Invita 450 nuevos amigos", Type = MissionType.Premium, Ref = 450, Gift = 80000, ImageUrl = "/missions/invite-450.webp" },
             new Mission { Id = 12, Title = "Invita 500 nuevos amigos", Type = MissionType.Premium, Ref = 500, Gift = 100000, ImageUrl = "/missions/invite-500.webp" }
+        );
+
+        // Seed default bot plans - Exact data from investradin.html template
+        modelBuilder.Entity<BotPlan>().HasData(
+            // Bot 0: Free Bot
+            new BotPlan { 
+                Id = 1, 
+                Name = "Free Bot", 
+                Description = "Bot de alta frecuencia para trading de Bitcoin. Aprovecha micro-movimientos del mercado con alta efectividad. Uso gratuito limitado.", 
+                Price = 0, 
+                DailyProfitEstimate = 500, 
+                DurationDays = 7, 
+                TradingPair = "BTC/USDT", 
+                WinRate = 0.72, 
+                IsFreeTier = true, 
+                FreeTierMaxUses = 1, 
+                ImageUrl = "/bots/free-bot.webp",
+                Exchanges = "Binance,KuCoin",
+                StockMax = 1,
+                BuyPercentage = 54.2,
+                SellPercentage = 45.8,
+                IconColor = "#00c853",
+                TotalProfitEstimate = 3500
+            },
+            // Bot 1: Byte Bot
+            new BotPlan { 
+                Id = 2, 
+                Name = "Byte Bot", 
+                Description = "Estrategia de grid trading en Ethereum con enfoque en exchanges asiáticos. Opera en rangos de precio predefinidos.", 
+                Price = 30000, 
+                DailyProfitEstimate = 900, 
+                DurationDays = 228, 
+                TradingPair = "ETH/USDT", 
+                WinRate = 0.68, 
+                IsFreeTier = false, 
+                ImageUrl = "/bots/byte-bot.webp",
+                Exchanges = "Bybit,MEXC",
+                StockMax = 2,
+                BuyPercentage = 59.1,
+                SellPercentage = 40.9,
+                IconColor = "#ffa929",
+                TotalProfitEstimate = 205200
+            },
+            // Bot 2: Cronos Bot
+            new BotPlan { 
+                Id = 3, 
+                Name = "Cronos Bot", 
+                Description = "Bot institucional de alto rendimiento para Ethereum. Diseñado para mercados con alta liquidez.", 
+                Price = 50000, 
+                DailyProfitEstimate = 1500, 
+                DurationDays = 240, 
+                TradingPair = "ETH/USDT", 
+                WinRate = 0.75, 
+                IsFreeTier = false, 
+                ImageUrl = "/bots/cronos-bot.webp",
+                Exchanges = "OKX,Gate.io",
+                StockMax = 2,
+                BuyPercentage = 61.9,
+                SellPercentage = 38.1,
+                IconColor = "#e9ecef",
+                TotalProfitEstimate = 360000
+            },
+            // Bot 3: Abstrar Bot
+            new BotPlan { 
+                Id = 4, 
+                Name = "Abstrar Bot", 
+                Description = "Especializado en Solana con estrategia de momentum. Ideal para capturar movimientos fuertes del mercado.", 
+                Price = 100000, 
+                DailyProfitEstimate = 3300, 
+                DurationDays = 260, 
+                TradingPair = "SOL/USDT", 
+                WinRate = 0.70, 
+                IsFreeTier = false, 
+                ImageUrl = "/bots/abstrar-bot.webp",
+                Exchanges = "Coinbase,Kraken",
+                StockMax = 2,
+                BuyPercentage = 57.6,
+                SellPercentage = 42.4,
+                IconColor = "#0052ff",
+                TotalProfitEstimate = 858000
+            },
+            // Bot 4: Atlas Bot
+            new BotPlan { 
+                Id = 5, 
+                Name = "Atlas Bot", 
+                Description = "Bot premium para Bitcoin con múltiples nodos de ejecución. Máxima velocidad en operaciones de alta frecuencia.", 
+                Price = 150000, 
+                DailyProfitEstimate = 5100, 
+                DurationDays = 290, 
+                TradingPair = "BTC/USDT", 
+                WinRate = 0.78, 
+                IsFreeTier = false, 
+                ImageUrl = "/bots/atlas-bot.webp",
+                Exchanges = "Bitget,HTX,Binance",
+                StockMax = 2,
+                BuyPercentage = 64.5,
+                SellPercentage = 35.5,
+                IconColor = "#00f0ff",
+                TotalProfitEstimate = 1479000
+            },
+            // Bot 5: Nexus Bot
+            new BotPlan { 
+                Id = 6, 
+                Name = "Nexus Bot", 
+                Description = "Bot de arbitraje entre exchanges coreanos y globales. Aprovecha diferencias de precio en tiempo real.", 
+                Price = 300000, 
+                DailyProfitEstimate = 10800, 
+                DurationDays = 300, 
+                TradingPair = "ETH/USDT", 
+                WinRate = 0.76, 
+                IsFreeTier = false, 
+                ImageUrl = "/bots/nexus-bot.webp",
+                Exchanges = "Upbit,Binance",
+                StockMax = 1,
+                BuyPercentage = 52.1,
+                SellPercentage = 47.9,
+                IconColor = "#004fff",
+                TotalProfitEstimate = 3240000
+            },
+            // Bot 6: Nova Bot
+            new BotPlan { 
+                Id = 7, 
+                Name = "Nova Bot", 
+                Description = "Estrategia de scalping avanzada para Bitcoin. Múltiples operaciones por día con gestión de riesgo optimizada.", 
+                Price = 500000, 
+                DailyProfitEstimate = 18000, 
+                DurationDays = 320, 
+                TradingPair = "BTC/USDT", 
+                WinRate = 0.80, 
+                IsFreeTier = false, 
+                ImageUrl = "/bots/nova-bot.webp",
+                Exchanges = "KuCoin,Gate.io",
+                StockMax = 2,
+                BuyPercentage = 56.4,
+                SellPercentage = 43.6,
+                IconColor = "#00b57a",
+                TotalProfitEstimate = 5760000
+            },
+            // Bot 7: Optix Bot
+            new BotPlan { 
+                Id = 8, 
+                Name = "Optix Bot", 
+                Description = "Bot de trading algorítmico de última generación. Machine learning aplicado al análisis de mercado.", 
+                Price = 800000, 
+                DailyProfitEstimate = 29600, 
+                DurationDays = 340, 
+                TradingPair = "BTC/USDT", 
+                WinRate = 0.82, 
+                IsFreeTier = false, 
+                ImageUrl = "/bots/optix-bot.webp",
+                Exchanges = "Bybit,OKX",
+                StockMax = 1,
+                BuyPercentage = 62.8,
+                SellPercentage = 37.2,
+                IconColor = "#ffa929",
+                TotalProfitEstimate = 10064000
+            },
+            // Bot 8: Sigma Bot
+            new BotPlan { 
+                Id = 9, 
+                Name = "Sigma Bot", 
+                Description = "Sistema institucional de trading cuantitativo. Estrategias de alta frecuencia con ejecución en milisegundos.", 
+                Price = 1000000, 
+                DailyProfitEstimate = 38000, 
+                DurationDays = 380, 
+                TradingPair = "BTC/USDT", 
+                WinRate = 0.85, 
+                IsFreeTier = false, 
+                ImageUrl = "/bots/sigma-bot.webp",
+                Exchanges = "MEXC,Coinbase,Kraken",
+                StockMax = 1,
+                BuyPercentage = 67.1,
+                SellPercentage = 32.9,
+                IconColor = "#00b0ff",
+                TotalProfitEstimate = 14440000
+            },
+            // Bot 9: Flux Bot
+            new BotPlan { 
+                Id = 10, 
+                Name = "Flux Bot", 
+                Description = "El bot más avanzado de nuestra plataforma. Estrategia multi-exchange con liquidez profunda y ejecución ultra-rápida.", 
+                Price = 1600000, 
+                DailyProfitEstimate = 62400, 
+                DurationDays = 420, 
+                TradingPair = "BTC/USDT", 
+                WinRate = 0.88, 
+                IsFreeTier = false, 
+                ImageUrl = "/bots/flux-bot.webp",
+                Exchanges = "HTX,Upbit,Bitget",
+                StockMax = 1,
+                BuyPercentage = 69.4,
+                SellPercentage = 30.6,
+                IconColor = "#1a6ed1",
+                TotalProfitEstimate = 26208000
+            }
         );
     }
 

@@ -1,0 +1,11 @@
+<section class="partners-section">
+  <div class="partners-carousel-track">
+    <div
+      class="partner-logo-item"
+      [class]="partner.className"
+      *ngFor="let partner of trackItems"
+    >
+      {{ partner.name }}
+    </div>
+  </div>
+</section>

@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NotificationService } from '../../services/products/notification.service';
 import { TelegramService } from '../../services/products/Telegram.service';
+import { ThemeService } from '../../services/theme.service';
 import { environment } from '../../../environments/environment';
 
 interface WithdrawResponse {
@@ -34,6 +35,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
   accountNumber: string = '';
   password: string = '';
   captchaInput: string = '';
+  linkedNumber: string = '';
 
   // ─── Captcha ───────────────────────────────
   activeCaptcha = '0000';
@@ -55,25 +57,35 @@ export class WithdrawComponent implements OnInit, OnDestroy {
   showScheduleModal = false;
   scheduleInfo: any = null;
 
+  // ─── Password Modal ──────────────────────────
+  showPasswordModal = false;
+  modalPassword = '';
+  showPassword = false;
+
+  // ─── Quick Amounts ───────────────────────────
+  readonly QUICK_AMOUNTS_COP = [10000, 20000, 30000, 50000, 100000, 500000, 1000000, 5000000];
+  readonly QUICK_AMOUNTS_USDT = [5, 10, 20, 50, 100, 200, 500, 1000];
+
   // ─── Constants (base values in COP) ──────────
   private readonly MIN_AMOUNT_COP = 20000;
   private readonly MAX_AMOUNT_COP = 10000000;
   private readonly USDT_CONVERSION_RATE = 3600; // COP to USDT
-  private readonly FEE_RATE = 0.12; // 8% commission
+  private readonly FEE_RATE = 0.15; // 15% commission
 
   // ─── Computed Min/Max based on currency ──────
   get MIN_AMOUNT(): number {
-    return this.isNequi ? this.MIN_AMOUNT_COP : this.MIN_AMOUNT_COP / this.USDT_CONVERSION_RATE;
+    return this.isCOP ? this.MIN_AMOUNT_COP : this.MIN_AMOUNT_COP / this.USDT_CONVERSION_RATE;
   }
 
   get MAX_AMOUNT(): number {
-    return this.isNequi ? this.MAX_AMOUNT_COP : this.MAX_AMOUNT_COP / this.USDT_CONVERSION_RATE;
+    return this.isCOP ? this.MAX_AMOUNT_COP : this.MAX_AMOUNT_COP / this.USDT_CONVERSION_RATE;
   }
 
   constructor(
     private http: HttpClient,
     private notification: NotificationService,
-    private telegram: TelegramService
+    private telegram: TelegramService,
+    private themeService: ThemeService
   ) {}
 
   ngOnInit(): void {
@@ -86,24 +98,58 @@ export class WithdrawComponent implements OnInit, OnDestroy {
   }
 
   // ─── Getters ────────────────────────────────
+  get isCOP(): boolean {
+    return this.token === 'nequi' || this.token === 'daviplata';
+  }
+
   get isNequi(): boolean {
     return this.token === 'nequi';
   }
 
   get methodName(): string {
-    return this.isNequi ? 'NEQUI' : 'USDT';
+    if (this.token === 'nequi') return 'NEQUI';
+    if (this.token === 'daviplata') return 'DAVIPLATA';
+    if (this.token === 'usdt-trc20') return 'USDT-TRC20';
+    return 'USDT-BEP20';
   }
 
   get currency(): string {
-    return this.isNequi ? 'COP' : 'USDT';
+    return this.isCOP ? 'COP' : 'USDT';
   }
 
   get feePercent(): number {
     return Math.round(this.FEE_RATE * 100);
   }
 
+  get quickAmounts(): number[] {
+    return this.isCOP ? this.QUICK_AMOUNTS_COP : this.QUICK_AMOUNTS_USDT;
+  }
+
+  get rawAmount(): number {
+    return this.amount ?? 0;
+  }
+
+  get displayAmount(): string {
+    return this.amount ? this.amount.toLocaleString('en-US') : '';
+  }
+
+  get debitedAmount(): string {
+    const val = this.amount ?? 0;
+    return val > 0 ? `$${this.formatAmount(val)}` : '$0.00';
+  }
+
+  get feeAmount(): string {
+    const fee = this.withdrawalFee;
+    return fee > 0 ? `$${this.formatAmount(fee)}` : '$0.00';
+  }
+
+  get receivedAmount(): string {
+    const received = this.amountToReceive;
+    return received > 0 ? `$${this.formatAmount(received)}` : '$0.00';
+  }
+
   private formatAmount(value: number): string {
-    if (this.isNequi) {
+    if (this.isCOP) {
       // COP: no decimals, Colombian format
       return Math.round(value).toLocaleString('es-CO');
     } else {
@@ -128,9 +174,53 @@ export class WithdrawComponent implements OnInit, OnDestroy {
     return this.formatAmount(this.amountToReceive);
   }
 
+  // ─── Amount Input ───────────────────────────
+  onAmountInput(value: string): void {
+    const digits = value.replace(/\D/g, '');
+    this.amount = digits ? parseInt(digits, 10) : null;
+    this.validate();
+  }
+
+  setAmount(num: number): void {
+    this.amount = num;
+    this.validate();
+  }
+
+  setMaxAmount(): void {
+    this.amount = parseFloat(this.balance);
+    this.validate();
+  }
+
+  // ─── Password Modal ───────────────────────────
+  openPasswordModal(): void {
+    if (this.rawAmount <= 0) return;
+    this.showPasswordModal = true;
+  }
+
+  closePasswordModal(): void {
+    this.showPasswordModal = false;
+    this.modalPassword = '';
+    this.showPassword = false;
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  confirmWithdrawal(): void {
+    if (this.modalPassword.length !== 4) {
+      alert('La contraseña de retiro debe tener exactamente 4 dígitos.');
+      return;
+    }
+    this.password = this.modalPassword;
+    this.validate();
+    this.closePasswordModal();
+    this.requestWithdrawal();
+  }
+
   // ─── Balance API ────────────────────────────
   private async getBalance(): Promise<void> {
-    const coin = this.isNequi ? 'COP' : 'USDT';
+    const coin = this.isCOP ? 'COP' : 'USDT';
     const url = `${environment.apiUrl}/Wallet/GetBalance/${this.username}?coin=${coin}`;
     try {
       const response: any = await firstValueFrom(this.http.get(url));
@@ -180,12 +270,11 @@ export class WithdrawComponent implements OnInit, OnDestroy {
         this.insuficient = false;
         this.amountHintColor = 'var(--red-alert, #ff3333)';
       }
-      if(Number(this.balance) < amt ){
+      if (Number(this.balance) < amt) {
         this.amountValid = false;
         this.amountInvalid = true;
         this.insuficient = true;
         this.amountHintColor = 'var(--red-alert, #ff3333)';
-
       } else {
         this.amountValid = true;
         this.amountInvalid = false;
@@ -210,9 +299,6 @@ export class WithdrawComponent implements OnInit, OnDestroy {
 
     // Captcha validation
     const capValid = this.captchaInput === this.activeCaptcha;
-    if (this.captchaInput.length > 0) {
-      // Dynamic validation handled by CSS classes in template
-    }
 
     // Button unlock logic
     const allFilled = String(this.amount ?? '').length > 0
@@ -242,21 +328,27 @@ export class WithdrawComponent implements OnInit, OnDestroy {
 
   // ─── Withdrawal Request ─────────────────────
   async requestWithdrawal(): Promise<void> {
-     if (!this.canSubmit || this.submitting) return;
+    if (!this.canSubmit || this.submitting) return;
 
     // Check schedule first
-   const canWithdraw = await this.checkWithdrawalHours();
+    const canWithdraw = await this.checkWithdrawalHours();
     if (!canWithdraw) {
       this.submitting = false;
       return;
     }
 
+    // Verify withdrawal password first
+    const passwordValid = await this.verifyWithdrawPassword();
+    if (!passwordValid) {
+      this.submitting = false;
+      return;
+    }
+
     this.submitting = true;
-    
 
     // Convert amount to COP for backend if currency is USDT
-    const amountToSend = this.isNequi 
-      ? (this.amount ?? 0) 
+    const amountToSend = this.isCOP
+      ? (this.amount ?? 0)
       : ((this.amount ?? 0) * this.USDT_CONVERSION_RATE);
 
     // Call backend FIRST to deduct balance and record withdrawal
@@ -294,17 +386,17 @@ export class WithdrawComponent implements OnInit, OnDestroy {
     this.submitting = false;
   }
 
-  private async verifyPassword(): Promise<boolean> {
-    const url = `${environment.apiUrl}/User/VerifyPassword`;
+  private async verifyWithdrawPassword(): Promise<boolean> {
+    const url = `${environment.apiUrl}/User/VerifyWithdrawPassword`;
     // The app stores phone number in localStorage as 'username'
     // API supports both Email and PhoneNumber lookup
-    const body = { Email: this.username, Password: this.password ,PhoneNumber:this.username};
+    const body = { Email: this.username, Password: this.password, PhoneNumber: this.username };
     try {
       await firstValueFrom(this.http.post(url, body));
       return true;
     } catch (error: any) {
-      const msg = error?.error?.message || error?.error || 'Error al verificar contraseña';
-      this.notification.errorMessage(typeof msg === 'string' ? msg : 'Error al verificar contraseña');
+      const msg = error?.error?.message || error?.error || 'Error al verificar contraseña de retiro';
+      this.notification.errorMessage(typeof msg === 'string' ? msg : 'Error al verificar contraseña de retiro');
       return false;
     }
   }

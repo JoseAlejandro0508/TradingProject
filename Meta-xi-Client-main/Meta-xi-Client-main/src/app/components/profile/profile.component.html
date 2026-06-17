@@ -1,0 +1,398 @@
+<div class="wallet-wrapper" [attr.data-theme]="themeService.getTheme()">
+
+  <!-- ACCIONES RÁPIDAS -->
+  <section class="action-group">
+    <button class="btn btn-deposit" (click)="goToDeposit()">Recargar Cuenta</button>
+    <button class="btn btn-withdraw" (click)="goToWithdraw()">Retirar Fondos</button>
+  </section>
+
+  <!-- SECCIÓN DE PERFIL -->
+  <div class="profile-panel">
+    <div class="profile-header">
+      <div class="profile-avatar-wrapper">
+        <label for="avatarUpload" class="avatar-edit-label" title="Cambiar foto">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path></svg>
+        </label>
+        <input type="file" id="avatarUpload" accept="image/*" style="display: none;" (change)="updateProfileAvatar($event)">
+
+        <div class="profile-avatar" id="avatarContainer">
+          <ng-container *ngIf="!avatarImage; else avatarImg">
+            <svg id="defaultAvatarSvg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          </ng-container>
+          <ng-template #avatarImg>
+            <img [src]="avatarImage" alt="Avatar">
+          </ng-template>
+        </div>
+        <div class="profile-badge-verified" id="kycCheckBadge" [style.display]="isKycVerified ? 'flex' : 'none'">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+      </div>
+      <div class="profile-info">
+        <div class="profile-name-container">
+          <div class="profile-name" id="profileNameText">{{ profileName }}</div>
+          <div class="icon-edit-name" (click)="editProfileName()" title="Editar nombre">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path></svg>
+          </div>
+        </div>
+        <div class="profile-uid">
+          <span>UID: {{ profileUid }}</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="cursor:pointer;" (click)="copyUid()"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        </div>
+        <div class="profile-status-verified" id="kycStatusBadge" [style.background]="isKycVerified ? 'rgba(0, 200, 83, 0.15)' : 'rgba(255, 179, 0, 0.1)'" [style.color]="isKycVerified ? 'var(--success)' : 'var(--warning)'">
+          <span id="kycStatusText">
+            <ng-container *ngIf="isKycVerified">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </ng-container>
+            {{ kycStatusText }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-stats-grid">
+      <div class="profile-stat-card">
+        <div class="profile-stat-val">342 Días</div>
+        <div class="profile-stat-lbl">Antigüedad</div>
+      </div>
+      <button class="btn-referrals" (click)="goToReferrals()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        Referidos
+      </button>
+    </div>
+  </div>
+
+  <!-- BOTÓN DE VERIFICACIÓN DE IDENTIDAD -->
+  <div class="filter-bar-trigger" id="kycMainBtn" (click)="openKycWindow()" [class.kyc-verified-btn]="isKycVerified">
+    <div class="filter-left-side">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+      <span id="kycBtnText">{{ kycBtnText }}</span>
+    </div>
+    <div class="filter-right-side">
+      <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </div>
+  </div>
+
+  <!-- BOTÓN: CONTRASEÑA DE RETIRO -->
+  <div class="filter-bar-trigger" id="withdrawalPwdBtn" (click)="openWithdrawalPwdWindow()">
+    <div class="filter-left-side">
+      <span id="withdrawalPwdIconContainer" style="display: flex; align-items: center;">
+        <ng-container *ngIf="!hasWithdrawalPwd; else checkIcon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </ng-container>
+        <ng-template #checkIcon>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path></svg>
+        </ng-template>
+      </span>
+      <span id="withdrawalPwdBtnText">{{ hasWithdrawalPwd ? 'Editar contraseña de retiro' : 'Contraseña de retiro' }}</span>
+    </div>
+    <div class="filter-right-side">
+      <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </div>
+  </div>
+
+  <!-- BOTÓN: CAMBIAR CONTRASEÑA DE CUENTA -->
+  <div class="filter-bar-trigger" id="accountPwdBtn" (click)="openAccountPwdWindow()">
+    <div class="filter-left-side">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+      <span>Cambiar contraseña de cuenta</span>
+    </div>
+    <div class="filter-right-side">
+      <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </div>
+  </div>
+
+  <!-- BOTÓN: AGREGAR RETIRO GUARDADO -->
+  <div class="filter-bar-trigger" id="nequiTriggerBtn" (click)="openNequiWindow()">
+    <div class="filter-left-side">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+      <span id="nequiBtnText">{{ nequiBtnText }}</span>
+    </div>
+    <div class="filter-right-side">
+      <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </div>
+  </div>
+
+  <!-- BOTÓN: SOPORTE -->
+  <div class="filter-bar-trigger" (click)="toggleChat()">
+    <div class="filter-left-side">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      <span>Soporte</span>
+    </div>
+    <div class="filter-right-side">
+      <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </div>
+  </div>
+
+  <!-- BOTÓN: CAMBIAR TEMA (MODO OSCURO / CLARO) -->
+  <div class="filter-bar-trigger" (click)="toggleTheme()">
+    <div class="filter-left-side" id="themeIconContainer">
+      <ng-container *ngIf="themeService.getTheme() === 'dark'; else lightIcon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <span id="themeBtnText">{{ themeBtnText }}</span>
+      </ng-container>
+      <ng-template #lightIcon>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <span id="themeBtnText">{{ themeBtnText }}</span>
+      </ng-template>
+    </div>
+    <div class="filter-right-side">
+      <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </div>
+  </div>
+
+  <!-- BOTÓN: CERRAR SESIÓN -->
+  <div class="filter-bar-trigger" style="border-color: rgba(255, 61, 0, 0.2);" (click)="closeSessionAction()">
+    <div class="filter-left-side" style="color: var(--danger);">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      <span>Cerrar sección</span>
+    </div>
+    <div class="filter-right-side">
+      <svg class="arrow-icon" style="color: var(--danger);" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </div>
+  </div>
+
+  <!-- CONTENEDOR PRINCIPAL DE LA BILLETERA VACÍO (LAS TARJETA SE QUEDAN DENTRO) -->
+  <div class="saved-cards-list" id="nequiCardContainer" style="display:none;"></div>
+</div>
+
+<!-- PESTAÑA / VENTANA DE VERIFICACIÓN KYC -->
+<div class="kyc-window" id="kycWindow" [class.open]="kycWindowOpen">
+  <div class="kyc-header">
+    <div class="chat-profile-area">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      <h4 style="font-size: 14px;">Portal de Identidad KYC</h4>
+    </div>
+    <button class="btn-close-kyc" (click)="closeKycWindow()">Volver</button>
+  </div>
+
+  <div class="kyc-body">
+    <div class="kyc-container" id="kycFormContainer" [style.display]="kycLoading ? 'none' : 'flex'">
+      <div>
+        <h3 class="kyc-title">Información para el KYC</h3>
+        <p class="kyc-subtitle">Por favor ingresa tus datos legales para desbloquear los límites premium de la cuenta.</p>
+      </div>
+
+      <div class="input-wrapper">
+        <label class="input-label">Nombre Completo</label>
+        <input type="text" class="kyc-input" id="kycName" placeholder="Escribe tu nombre legal" [(ngModel)]="kycName">
+      </div>
+
+      <div class="input-wrapper">
+        <label class="input-label">Edad</label>
+        <input type="number" class="kyc-input" id="kycAge" placeholder="Ej. 25" [(ngModel)]="kycAge">
+      </div>
+
+      <div class="input-wrapper">
+        <label class="input-label">País de Residencia</label>
+        <input type="text" class="kyc-input" id="kycCountry" placeholder="Ej. Colombia" [(ngModel)]="kycCountry">
+      </div>
+
+      <div class="input-wrapper">
+        <label class="input-label">Ciudad</label>
+        <input type="text" class="kyc-input" id="kycCity" placeholder="Ej. Bogotá" [(ngModel)]="kycCity">
+      </div>
+
+      <div class="input-wrapper">
+        <label class="input-label">Tipo de Documento</label>
+        <select class="kyc-select" id="kycDocType" [(ngModel)]="kycDocType" (change)="updateDocumentPlaceholder()">
+          <option value="Cédula">Documento Nacional de Identidad / Cédula</option>
+          <option value="Pasaporte">Pasaporte Internacional</option>
+          <option value="Licencia">Licencia de Conducir</option>
+        </select>
+      </div>
+
+      <div class="input-wrapper">
+        <label class="input-label" id="kycDocLabel">{{ kycDocLabel }}</label>
+        <input type="text" class="kyc-input" id="kycDocNumber" [placeholder]="kycDocPlaceholder" [(ngModel)]="kycDocNumber">
+      </div>
+
+      <button class="btn btn-deposit" style="width: 100%; margin-top: 12px; height: 52px;" (click)="startKycAiVerification()">Verificar Ahora</button>
+    </div>
+
+    <div class="kyc-loading-screen" id="kycLoadingScreen" [style.display]="kycLoading ? 'flex' : 'none'">
+      <div class="ai-scanner-box">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2962ff" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="M12 6v6l4 2"></path></svg>
+      </div>
+      <div>
+        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">Validación Biométrica Inteligente</h2>
+        <p style="font-size: 14px; color: var(--text-muted); max-width: 280px; margin: 0 auto; line-height: 1.5;">
+          La validación de la información la está verificar en automático nuestra IA automáticamente. Por favor no cierres la ventana.
+        </p>
+      </div>
+      <div class="countdown-number" id="kycCountdown">{{ kycCountdown }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- PESTAÑA / VENTANA DE CONFIGURAR CONTRASEÑA DE RETIRO -->
+<div class="pwd-window" id="withdrawalPwdWindow" [class.open]="withdrawalPwdWindowOpen">
+  <div class="pwd-header">
+    <div class="chat-profile-area">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      <h4 id="withdrawalPwdTitleHeader" style="font-size: 14px;">{{ withdrawalPwdTitleHeader }}</h4>
+    </div>
+    <button class="btn-close-pwd" (click)="closeWithdrawalPwdWindow()">Volver</button>
+  </div>
+  <div class="pwd-body">
+    <div class="pwd-container">
+      <div>
+        <h3 class="pwd-title" id="withdrawalPwdMainTitle">{{ withdrawalPwdMainTitle }}</h3>
+        <p class="pwd-subtitle">Crea una clave numérica de seguridad para autorizar cada retiro de tus fondos (4 dígitos).</p>
+      </div>
+      <div class="input-wrapper" *ngIf="hasWithdrawalPwd">
+        <label class="input-label">Contraseña anterior</label>
+        <input type="password" class="pwd-input" id="withdrawalPwdOldInput" maxlength="4" placeholder="••••" style="text-align: center; letter-spacing: 8px; font-size: 20px;" [(ngModel)]="withdrawalPwdOldInput">
+      </div>
+      <div class="input-wrapper">
+        <label class="input-label" id="withdrawalPwdLabel">{{ withdrawalPwdLabel }}</label>
+        <input type="password" class="pwd-input" id="withdrawalPwdInput" maxlength="4" placeholder="••••" style="text-align: center; letter-spacing: 8px; font-size: 20px;" [(ngModel)]="withdrawalPwdInput">
+      </div>
+      <button class="btn btn-deposit" style="width: 100%; margin-top: 12px; height: 52px;" (click)="saveWithdrawalPassword()">Guardar Contraseña</button>
+    </div>
+  </div>
+</div>
+
+<!-- PESTAÑA / VENTANA DE CAMBIAR CONTRASEÑA DE LA CUENTA -->
+<div class="pwd-window" id="accountPwdWindow" [class.open]="accountPwdWindowOpen">
+  <div class="pwd-header">
+    <div class="chat-profile-area">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+      <h4 style="font-size: 14px;">Seguridad de la Cuenta</h4>
+    </div>
+    <button class="btn-close-pwd" (click)="closeAccountPwdWindow()">Volver</button>
+  </div>
+  <div class="pwd-body">
+    <div class="pwd-container">
+      <div>
+        <h3 class="pwd-title">Cambiar Contraseña de Cuenta</h3>
+        <p class="pwd-subtitle">Actualiza la contraseña de acceso global a tu cuenta TradingView.</p>
+      </div>
+      <div class="input-wrapper">
+        <label class="input-label">Coloca contraseña anterior</label>
+        <input type="password" class="pwd-input" id="accOldPwd" placeholder="Introduce tu contraseña actual" [(ngModel)]="accOldPwd">
+      </div>
+      <div class="input-wrapper">
+        <label class="input-label">Coloca nueva contraseña</label>
+        <input type="password" class="pwd-input" id="accNewPwd" placeholder="Mínimo 6 caracteres" [(ngModel)]="accNewPwd">
+      </div>
+      <div class="input-wrapper">
+        <label class="input-label">Repite contraseña</label>
+        <input type="password" class="pwd-input" id="accRepeatPwd" placeholder="Confirma tu nueva contraseña" [(ngModel)]="accRepeatPwd">
+      </div>
+      <button class="btn btn-deposit" style="width: 100%; margin-top: 12px; height: 52px;" (click)="saveAccountPassword()">Actualizar Contraseña</button>
+    </div>
+  </div>
+</div>
+
+<!-- VENTANA DE MÉTODOS DE RETIRO CON PRE-VIEW DE TARJETA EN VIVO INTERNO -->
+<div class="pwd-window" id="nequiWindow" [class.open]="nequiWindowOpen">
+  <div class="pwd-header">
+    <div class="chat-profile-area">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+      <h4 style="font-size: 14px;">Métodos de Retiro Guardados</h4>
+    </div>
+    <button class="btn-close-pwd" (click)="closeNequiWindow()">Volver</button>
+  </div>
+  <div class="pwd-body">
+    <div class="pwd-container">
+      <div>
+        <h3 class="pwd-title">Configurar Método de Retiro</h3>
+        <p class="pwd-subtitle">Selecciona la plataforma financiera que deseas registrar. Puedes guardar todos los métodos sin ningún problema.</p>
+      </div>
+
+      <!-- SELECTOR DE PLATAFORMA -->
+      <div class="input-wrapper">
+        <label class="input-label">¿Qué método deseas guardar?</label>
+        <div class="method-selector-grid">
+          <div class="method-select-card" id="selectNequiOption" (click)="switchMethodForm('nequi')" [class.active-nequi]="activeFormType === 'nequi'">
+            <div class="method-icon-wrapper">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#da0077" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+            </div>
+            <span>Nequi</span>
+          </div>
+          <div class="method-select-card" id="selectUsdtOption" (click)="switchMethodForm('usdt')" [class.active-usdt]="activeFormType === 'usdt'">
+            <div class="method-icon-wrapper">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#009393" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12M9 8h6M9 12h6"></path></svg>
+            </div>
+            <span>USDT (TRC20)</span>
+          </div>
+          <div class="method-select-card" id="selectUsdtBepOption" (click)="switchMethodForm('usdt-bep')" [class.active-usdt-bep]="activeFormType === 'usdt-bep'">
+            <div class="method-icon-wrapper">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#f3ba2f" stroke-width="2"><path d="M12 2l4 4-4 4-4-4zM12 14l4 4-4 4-4-4zM6 8l4 4-4 4-4-4zM18 8l4 4-4 4-4-4z"></path></svg>
+            </div>
+            <span>USDT (BEP20)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTENEDOR DE LA VISTA PREVIA INTERNA EN VIVO -->
+      <div id="liveCardPreviewContainer" style="width: 100%;" [innerHTML]="liveCardPreview"></div>
+
+      <!-- FORMULARIO NEQUI -->
+      <div id="formNequiBlock" style="flex-direction: column; gap: 14px;" [style.display]="activeFormType === 'nequi' ? 'flex' : 'none'">
+        <div class="input-wrapper">
+          <label class="input-label">Número de Cuenta Nequi</label>
+          <input type="number" class="pwd-input" id="nequiNumberInput" placeholder="Ej. 3001234567" [(ngModel)]="nequiNumberInput">
+        </div>
+        <button class="btn btn-deposit" style="width: 100%; height: 52px; background: var(--nequi-brand);" (click)="saveNequiAccount()">Agregar Cuenta Nequi</button>
+      </div>
+
+      <!-- FORMULARIO USDT TRC20 -->
+      <div id="formUsdtBlock" style="flex-direction: column; gap: 14px;" [style.display]="activeFormType === 'usdt' ? 'flex' : 'none'">
+        <div class="input-wrapper">
+          <label class="input-label">Dirección de Billetera USDT (Red TRC20 únicamente)</label>
+          <input type="text" class="pwd-input" id="usdtAddressInput" placeholder="Ej. TXa1b2c3d4e5f6g7h8i9j0..." [(ngModel)]="usdtAddressInput">
+        </div>
+        <button class="btn btn-deposit" style="width: 100%; height: 52px; background: var(--usdt-brand);" (click)="saveUsdtAccount()">Agregar Billetera TRC20</button>
+      </div>
+
+      <!-- FORMULARIO USDT BEP20 -->
+      <div id="formUsdtBepBlock" style="flex-direction: column; gap: 14px;" [style.display]="activeFormType === 'usdt-bep' ? 'flex' : 'none'">
+        <div class="input-wrapper">
+          <label class="input-label">Dirección de Billetera USDT (Red BEP20 - BNB Smart Chain)</label>
+          <input type="text" class="pwd-input" id="usdtBepAddressInput" placeholder="Ej. 0x71C...a1b2c3d4" [(ngModel)]="usdtBepAddressInput">
+        </div>
+        <button class="btn btn-deposit" style="width: 100%; height: 52px; background: #f3ba2f; color: #11141a;" (click)="saveUsdtBepAccount()">Agregar Billetera BEP20</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- CHAT DE SOPORTE -->
+<div class="chat-window" id="chatWindow" [class.open]="chatWindowOpen">
+  <div class="chat-header">
+    <div class="chat-profile-area">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+      <div>
+        <h4 style="font-size: 14px;">Asesor Premium</h4>
+        <span style="font-size: 11px; color: var(--success)">● En línea</span>
+      </div>
+    </div>
+    <button class="btn-close-chat" (click)="toggleChat()">Cerrar</button>
+  </div>
+  <div class="chat-body" id="chatBody">
+    <div *ngFor="let msg of chatMessages" class="msg" [class.msg-system]="msg.type === 'system'" [class.msg-user]="msg.type === 'user'">
+      <ng-container *ngIf="msg.image; else textMsg">
+        <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px; font-size:12px; opacity:0.9;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          <span>{{ msg.meta }}</span>
+        </div>
+        <img [src]="msg.image" alt="Imagen de usuario" style="max-width: 100%; max-height: 180px; border-radius: 10px; display: block; margin-top: 4px;">
+      </ng-container>
+      <ng-template #textMsg>
+        {{ msg.text }}
+      </ng-template>
+    </div>
+  </div>
+  <div class="chat-footer">
+    <input type="file" id="mediaInput" accept="image/*" style="display: none;" (change)="handleMediaSelection($event)">
+    <label for="mediaInput" class="media-label-btn" title="Enviar Foto">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    </label>
+    <input type="text" class="chat-input" id="chatInput" placeholder="Escribe tu mensaje..." [(ngModel)]="chatInput" (keypress)="onChatKeyPress($event)">
+    <button class="btn-send" (click)="sendMessage()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+    </button>
+  </div>
+</div>

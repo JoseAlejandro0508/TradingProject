@@ -4,6 +4,13 @@ import { firstValueFrom } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment';
 
+interface LatestReferral {
+  initials: string;
+  username: string;
+  date: string;
+  level: number;
+}
+
 @Component({
   selector: 'app-team',
   standalone: true,
@@ -33,12 +40,31 @@ export class TeamComponent implements OnInit {
   lvl2Income = 0;
   lvl3Register = 0;
   lvl3Income = 0;
+  lvl4Income = 0;
+  totalIncome = 0;
+
+  // ─── Accordion ──────────────────────────────────
+  accordionOpen: string | null = null;
+  referidosContentHeight = 500;
+  detallesContentHeight = 500;
+  gananciasContentHeight = 500;
+
+  // ─── Toast ──────────────────────────────────────
+  toastVisible = false;
+  toastMessage = 'Copiado con éxito';
+
+  // ─── Latest Referrals (mock data until API available) ─
+  latestReferrals: LatestReferral[] = [
+    { initials: 'JD', username: 'Juan_Diego32', date: 'Hace 12 minutos', level: 1 },
+    { initials: 'AM', username: 'AndresM_Crypto', date: 'Hace 2 horas', level: 2 },
+    { initials: 'LC', username: 'Laura_Cardenas', date: 'Ayer, 18:43', level: 3 },
+    { initials: 'MA', username: 'Mateo_Asoc', date: 'Hace 2 días', level: 4 },
+  ];
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.loadReferralData();
-  
     this.loadLevelData();
   }
 
@@ -65,20 +91,6 @@ export class TeamComponent implements OnInit {
     }
   }
 
-  // ─── API: Team Parameters ──────────────────────
-  private async loadTeamStats(): Promise<void> {
-    const url = `${environment.apiUrl}/Refer/GetTeamParameters/${this.username}`;
-    try {
-      const response: any = await firstValueFrom(this.http.get(url));
-      this.teamSize = response.teamSize || 0;
-      this.teamRecharge = response.teamRecharge || 0;
-      this.newTeamToday = response.newTeamToday || 0;
-      this.teamWithdraw = response.teamWithdraw || 0;
-    } catch (error: any) {
-      console.error('Error al obtener parámetros del equipo:', error);
-    }
-  }
-
   // ─── API: Level Data ────────────────────────────
   private async loadLevelData(): Promise<void> {
     const url = `${environment.apiUrl}/Refer/GetReferrer/${this.username}`;
@@ -90,12 +102,23 @@ export class TeamComponent implements OnInit {
       this.lvl2Income = response.earnLVL2 || 0;
       this.lvl3Register = response.countLVL3 || 0;
       this.lvl3Income = response.earnLVL3 || 0;
+      this.lvl4Income = response.earnLVL4 || 0;
+      this.totalIncome = this.lvl1Income + this.lvl2Income + this.lvl3Income + this.lvl4Income;
       this.teamSize = response.countTotal || 0;
       this.newTeamToday = response.countToday || 0;
       this.teamRecharge = response.teamRecharge || 0;
       this.teamWithdraw = response.teamWithdraw || 0;
     } catch (error: any) {
       console.error('Error al obtener datos de niveles:', error);
+    }
+  }
+
+  // ─── Accordion ──────────────────────────────────
+  toggleAccordion(name: string): void {
+    if (this.accordionOpen === name) {
+      this.accordionOpen = null;
+    } else {
+      this.accordionOpen = name;
     }
   }
 
@@ -110,10 +133,12 @@ export class TeamComponent implements OnInit {
     try {
       await navigator.clipboard.writeText(this.referralCode);
       this.codeCopied = true;
+      this.showToast('Código copiado');
       setTimeout(() => (this.codeCopied = false), 2000);
     } catch {
       this.fallbackCopy(this.referralCode);
       this.codeCopied = true;
+      this.showToast('Código copiado');
       setTimeout(() => (this.codeCopied = false), 2000);
     }
   }
@@ -129,10 +154,12 @@ export class TeamComponent implements OnInit {
     try {
       await navigator.clipboard.writeText(this.referralLink);
       this.linkCopied = true;
+      this.showToast('Enlace copiado');
       setTimeout(() => (this.linkCopied = false), 2000);
     } catch {
       this.fallbackCopy(this.referralLink);
       this.linkCopied = true;
+      this.showToast('Enlace copiado');
       setTimeout(() => (this.linkCopied = false), 2000);
     }
   }
@@ -144,5 +171,43 @@ export class TeamComponent implements OnInit {
     textArea.select();
     document.execCommand('copy');
     document.body.removeChild(textArea);
+  }
+
+  // ─── Toast ─────────────────────────────────────
+  private showToast(message: string): void {
+    this.toastMessage = message;
+    this.toastVisible = true;
+    setTimeout(() => (this.toastVisible = false), 2000);
+  }
+
+  // ─── Social Sharing ────────────────────────────
+  shareSocial(platform: string): void {
+    const message = `¡Hola! Te invito a unirte a TradingView. Regístrate usando mi enlace único y mi código de invitación: ${this.referralCode}\n\nEnlace de registro:\n${this.referralLink}`;
+    const encodedMessage = encodeURIComponent(message);
+    const encodedUrl = encodeURIComponent(this.referralLink);
+
+    let targetUrl = '';
+
+    switch (platform) {
+      case 'whatsapp':
+        targetUrl = `https://wa.me/?text=${encodedMessage}`;
+        break;
+      case 'telegram':
+        targetUrl = `https://t.me/share/url?url=${encodedUrl}&text=${encodeURIComponent(`¡Únete a TradingView! Usa mi código de invitación: ${this.referralCode}`)}`;
+        break;
+      case 'facebook':
+        targetUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+        break;
+    }
+
+    if (targetUrl) {
+      const fallbackAnchor = document.createElement('a');
+      fallbackAnchor.href = targetUrl;
+      fallbackAnchor.target = '_blank';
+      fallbackAnchor.rel = 'noopener noreferrer';
+      document.body.appendChild(fallbackAnchor);
+      fallbackAnchor.click();
+      document.body.removeChild(fallbackAnchor);
+    }
   }
 }
