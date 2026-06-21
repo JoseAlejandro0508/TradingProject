@@ -16,7 +16,7 @@ services:
     volumes:
       - sqlite-data:/app/Data
     ports:
-      - "5071:5071"
+      - "5000:5071"
     networks:
       - meta-xi-net
 
@@ -30,7 +30,7 @@ services:
     container_name: meta-xi-client
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - "8000:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
@@ -50,7 +50,7 @@ services:
     environment:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - ADMIN_IDS=${ADMIN_IDS}
-      - API_BASE_URL=http://api:5071
+      - API_BASE_URL=http://api:5000
       - ADMIN_API_KEY=${ADMIN_API_KEY}
     depends_on:
       - api
