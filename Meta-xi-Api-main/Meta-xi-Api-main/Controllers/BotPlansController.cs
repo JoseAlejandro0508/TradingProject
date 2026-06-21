@@ -35,8 +35,8 @@ public class BotPlansController : ControllerBase
                 IsFreeTier = bp.IsFreeTier,
                 FreeTierMaxUses = bp.FreeTierMaxUses,
                 ImageUrl = bp.ImageUrl,
-                Exchanges = !string.IsNullOrEmpty(bp.Exchanges) 
-                    ? bp.Exchanges.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() 
+                Exchanges = !string.IsNullOrEmpty(bp.Exchanges)
+                    ? bp.Exchanges.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()
                     : new List<string>(),
                 StockMax = bp.StockMax ?? 1,
                 BuyPercentage = bp.BuyPercentage ?? 50,
@@ -83,6 +83,61 @@ public class BotPlansController : ControllerBase
 
         return Ok(activePlans);
     }
+    public class ClaimFreeBotRequest
+    {
+        public required string Username { get; set; }
+
+    }
+    /// <summary>
+    /// Calim free bot earn
+    /// </summary>
+    [HttpPost("ClaimFreeBotEarn")]
+    public async Task<IActionResult> ClaimFreeBotEarn([FromBody] ClaimFreeBotRequest request)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Username || u.PhoneNumber == request.Username);
+        if (user == null)
+        {
+            return NotFound(new { message = "Usuario no encontrado" });
+        }
+
+        var userPlan = await _context.UserActivePlans
+            .Where(uap => uap.Username == request.Username)
+            .Include(uap => uap.BotPlan)
+            .FirstOrDefaultAsync(uap => uap.BotPlan.IsFreeTier && (uap.LastTradeAt == null || uap.LastTradeAt < uap.ExpiresAt));
+
+
+        if (userPlan == null)
+        {
+            return BadRequest(new { message = "No eres elegible para reclamar ganancias de este bot gratuito" });
+        }
+
+        DateTime Today = DateTime.Now;
+        if (Today > userPlan.ExpiresAt)
+        {
+            Today = userPlan.ExpiresAt;
+        }
+        double earnPerSecond = (double)userPlan.BotPlan.DailyProfitEstimate / (3600 * 24);
+        double totalEarned = Today.Subtract(userPlan.LastTradeAt).TotalSeconds * earnPerSecond;
+
+
+        userPlan.AccumulatedProfit += (decimal)totalEarned;
+
+        userPlan.LastTradeAt = Today;
+        _context.Entry(userPlan).State = EntityState.Modified;
+
+        var wallet = await _context.Wallets.FirstOrDefaultAsync(option => option.Email == userPlan.Username);
+        if (wallet != null)
+        {
+            wallet.Balance += (float)totalEarned;
+
+            _context.Entry(wallet).State = EntityState.Modified;
+
+        }
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "Ganancias reclamadas exitosamente" });
+    }
+
 
     /// <summary>
     /// Get free tier usage for a user

@@ -118,7 +118,13 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     if (this.activeFreePlan) {
       this.isBotRunning = true;
-      this.liveEarnings = parseFloat(this.activeFreePlan.accumulatedProfit.toString()) || 0;
+      const LastClaim=this.activeFreePlan.lastTradeAt;
+      const Today=new Date().getTime();
+      const LastTrade=new Date(this.activeFreePlan.lastTradeAt).getTime();
+      const NotClaimedSeconds=(Today-LastTrade)/1000;
+      const incrementPerSecond =this.activeFreePlan.dailyProfitEstimate/(3600*24) ;
+
+      this.liveEarnings =NotClaimedSeconds*incrementPerSecond;
       
       // Calculate hourly and daily based on the bot plan
       const bot = this.freeBot;
@@ -145,6 +151,22 @@ export class HomeComponent implements OnInit, OnDestroy {
     return usage !== undefined;
   }
 
+  async ClaimFreeEarns(): Promise<void> {
+    const url = `${environment.apiUrl}/BotPlans/ClaimFreeBotEarn`;
+    try {
+
+      const Body = {
+          Username: this.username,
+      };
+
+      const res = await firstValueFrom(this.http.post(url, Body));
+
+      await this.loadBotData();
+      await this.getMyBalance();
+    } catch(error: any) {
+        this.notification.errorMessage(error.message || 'Error al reclamar ganancias');
+    }
+  }
   // ─── API: Get Balance ───────────────────────────────
   async getMyBalance(): Promise<void> {
     const url = `${environment.apiUrl}/Wallet/GetBalanceUsdAndCop/${this.username}`;
@@ -198,8 +220,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     } else {
       // Collect earnings - navigate to plans or collect
       if (this.activeFreePlan) {
-        // Navigate to plans page to see full details
-        this.router.navigate(['/plans']);
+
+        await this.ClaimFreeEarns();
       }
     }
   }

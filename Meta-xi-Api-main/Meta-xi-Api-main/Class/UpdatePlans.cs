@@ -19,9 +19,11 @@ public class UpdatePlans : IUpdatePlansPerHour
 
         foreach (var userPlan in userplans)
         {
+           
             var plan = await context.BotPlans.FindAsync(userPlan.BotPlanId);
-
+            
             if (plan == null) continue;
+            if(plan.IsFreeTier) continue;
 
             double earnPerSecond = (double)plan.DailyProfitEstimate / (3600 * 24);
 

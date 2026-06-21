@@ -30,7 +30,7 @@ export interface UserActivePlanDTO {
   botPlanImageUrl?: string;
   startedAt: string;
   expiresAt: string;
-  lastTradeAt?: string;
+  lastTradeAt: string;
   accumulatedProfit: number;
   status: 'Active' | 'Paused';
   tradingPair: string;
