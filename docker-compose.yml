@@ -6,7 +6,7 @@ services:
     build:
       context: ./Meta-xi-Api-main/Meta-xi-Api-main
       dockerfile: Dockerfile
-    container_name: meta-xi-api
+    container_name: trading-api
     restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Production}
@@ -18,7 +18,7 @@ services:
     ports:
       - "5000:5071"
     networks:
-      - meta-xi-net
+      - trading-net
 
   # ==========================================
   # Frontend Angular + Nginx (reverse proxy)
@@ -27,7 +27,7 @@ services:
     build:
       context: ./Meta-xi-Client-main/Meta-xi-Client-main
       dockerfile: Dockerfile
-    container_name: meta-xi-client
+    container_name: trading-client
     restart: unless-stopped
     ports:
       - "8000:80"
@@ -36,7 +36,7 @@ services:
     depends_on:
       - api
     networks:
-      - meta-xi-net
+      - trading-net
 
   # ==========================================
   # Telegram Bot (Python)
@@ -45,7 +45,7 @@ services:
     build:
       context: ./Bot
       dockerfile: Dockerfile
-    container_name: meta-xi-bot
+    container_name: trading-bot
     restart: unless-stopped
     environment:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
@@ -55,11 +55,11 @@ services:
     depends_on:
       - api
     networks:
-      - meta-xi-net
+      - trading-net
 
 volumes:
   sqlite-data:
 
 networks:
-  meta-xi-net:
+  trading-net:
     driver: bridge
