@@ -1,0 +1,130 @@
+<div class="window-wrapper" [class.light-theme]="!isDarkMode">
+
+  <!-- TOP NAV BAR -->
+  <div class="top-navigation-bar">
+    <div class="square-action-btn" (click)="goBack()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    </div>
+    <div class="square-action-btn" (click)="toggleTheme()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <div class="main-header">
+    <h1>Check-in Diario</h1>
+    <p>Firma cada día para obtener recompensas increíbles</p>
+  </div>
+
+  <!-- STATS CARDS -->
+  <div class="stats-box-grid" (click)="flipCards()">
+
+    <div class="stat-card-wrapper" id="card-racha-target" [class.is-flipped]="isFlipped">
+      <div class="card-face front">
+        <div class="circle-icon orange">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
+        </div>
+        <span class="stat-label">Racha</span>
+        <span class="stat-value" id="racha-val-txt">{{ streak }} días</span>
+      </div>
+      <div class="card-face back">
+        <div class="circle-icon gold">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+        </div>
+        <span class="stat-label" style="color: var(--warning-gold);">Premio</span>
+        <span class="prize-value-epic">140 COP</span>
+      </div>
+    </div>
+
+    <div class="stat-card-wrapper" id="card-total-target" [class.is-flipped]="isTotalFlipped">
+      <div class="card-face front">
+        <div class="circle-icon purple">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        </div>
+        <span class="stat-label">Total</span>
+        <span class="stat-value" id="total-val-txt">{{ totalDays }} días</span>
+      </div>
+      <div class="card-face back">
+        <div class="circle-icon gold">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+        </div>
+        <span class="stat-label" style="color: var(--primary-blue);">Total Ganado</span>
+        <span class="prize-value-epic" id="total-ganado-val-txt">{{ totalEarned | number:'1.0-0' }} COP</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ACTION MODULE -->
+  <div class="action-module">
+    <button
+      class="btn-firmar-action"
+      id="action-btn"
+      (click)="claimDaily()"
+      *ngIf="!claimedToday && !showSuccessBanner"
+      [disabled]="isClaiming">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      {{ isClaiming ? 'Procesando...' : 'Firmar Asistencia Hoy' }}
+    </button>
+
+    <div class="success-banner-premium" id="success-banner" *ngIf="showSuccessBanner">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      <span>¡Ya firmaste hoy! Vuelve en</span>
+      <span class="timer-highlight" id="countdown-timer-display">{{ nextClaimTime }}</span>
+    </div>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="calendar-module-box">
+    <div class="calendar-nav-header">
+      <h2>Calendario de Check-in</h2>
+      <div class="nav-controls-wrapper">
+        <span class="arrow-clicker" [class.disabled]="!canGoPrev()" (click)="prevMonth()">&lt;</span>
+        <span id="calendar-title-label">{{ calendarTitle }}</span>
+        <span class="arrow-clicker" [class.disabled]="!canGoNext()" (click)="nextMonth()">&gt;</span>
+      </div>
+    </div>
+
+    <div class="calendar-days-grid" id="grid-days-target">
+      <!-- Weekday labels -->
+      <div class="weekday-label" *ngFor="let day of ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb']">{{ day }}</div>
+
+      <!-- Previous month faded days -->
+      <div class="cell-day-number faded-out status-checked" *ngFor="let d of prevMonthDays">{{ d }}</div>
+
+      <!-- Current month days -->
+      <div
+        *ngFor="let item of getCalendarDays()"
+        class="cell-day-number"
+        [ngClass]="{
+          'status-checked': item.status === 'checked',
+          'status-missed': item.status === 'missed',
+          'status-current': item.status === 'current',
+          'faded-out': item.status === 'future'
+        }">
+        {{ item.day }}
+      </div>
+    </div>
+  </div>
+
+  <!-- INFO ACCORDION -->
+  <div class="info-module-container">
+    <button class="btn-info-toggle" id="info-toggle-btn" (click)="toggleInfo()" [class.active]="isInfoOpen">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-blue)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      <span>¿Qué es el Check-in Diario?</span>
+      <svg class="arrow-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </button>
+    <div class="info-content-panel" id="info-panel" [class.open]="isInfoOpen">
+      <div class="info-inner-text">
+        <p>El <strong>Check-in Diario</strong> es nuestro programa VIP de constancia diseñado para premiar a los usuarios más activos de la plataforma.</p>
+        <p><strong>¿Cómo pueden ganar?</strong></p>
+        <ul>
+          <li>Entra a la aplicación cada 24 horas y pulsa el botón de firma.</li>
+          <li>Cada asistencia exitosa te otorga de manera fija <strong>140 COP</strong> directamente en tu balance.</li>
+          <li>Mantén la racha activa de días consecutivos para desbloquear multiplicadores y drops de premios especiales.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>

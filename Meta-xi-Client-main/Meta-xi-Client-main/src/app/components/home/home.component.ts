@@ -310,6 +310,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.router.navigate(['/plans']);
   }
 
+  navigateToDailyClaim(): void {
+    this.router.navigate(['/daily-claim']);
+  }
+
   // ─── Formatters ──────────────────────────────────────
   formatBalance(value: number): string {
     return value.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });

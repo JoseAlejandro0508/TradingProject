@@ -167,6 +167,14 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'daily-claim',
+    loadComponent: () =>
+      import('./components/daily-claim/daily-claim.component').then(
+        (m) => m.DailyClaimComponent
+      ),
+    canActivate: [authGuard]
+  },
+  {
     path: 'welcome',
     loadComponent: () =>
       import('./components/canjear-bono/canjear-bono.component').then(

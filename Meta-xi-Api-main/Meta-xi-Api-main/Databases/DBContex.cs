@@ -23,6 +23,7 @@ public class DBContext : DbContext
     public required DbSet<BotPlan> BotPlans { get; set; }
     public required DbSet<UserActivePlan> UserActivePlans { get; set; }
     public required DbSet<UserFreeBotUsage> UserFreeBotUsages { get; set; }
+    public required DbSet<DailyClaim> DailyClaims { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
