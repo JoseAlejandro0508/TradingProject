@@ -51,7 +51,9 @@ builder.Services.AddScoped<IRegisteredToReferLevel, RegisteredToReferLevels>();
 builder.Services.AddScoped<IUpdatePlansPerHour, UpdatePlans>();
 builder.Services.AddScoped<TaskService>();
 builder.Services.AddScoped<ReferService>();
+builder.Services.AddScoped<UpdatePlans>();
 builder.Services.AddHostedService<UpdateServicePerHour>();
+
 
 // JWT Secret desde variable de entorno
 var jwtSecret = builder.Configuration["JwtSettings:Secret"]

@@ -32,7 +32,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   username: string = localStorage.getItem('username') || '';
   balanceCOP: number = 0;
   balanceUSD: string = '0.00';
-
+  EarnPerSecond:number=0;
   // ─── Theme ───────────────────────────────────────────
   isDarkMode = this.themeService.getTheme() === 'dark';
 
@@ -61,6 +61,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // ─── Earnings Simulation ─────────────────────────────
   private earningsInterval: any;
+  private earningsBalanceInterval:any;
 
   async ngOnInit(): Promise<void> {
     this.startCarousel();
@@ -174,6 +175,10 @@ export class HomeComponent implements OnInit, OnDestroy {
       const response: any = await firstValueFrom(this.http.get(url));
       this.balanceCOP = response.balanceInCop || 0;
       this.balanceUSD = response.balanceInUsd || '0.00';
+      this.EarnPerSecond = response.earnPerSecond || 0;
+
+      this.startEarningsBalanceSimulation();
+
     } catch {
       this.balanceUSD = 'N/A';
       this.balanceCOP = 0;
@@ -241,6 +246,19 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
     }, 1000);
   }
+  private startEarningsBalanceSimulation(): void {
+    if (this.earningsBalanceInterval) {
+      clearInterval(this.earningsInterval);
+    }
+    
+    
+    this.earningsBalanceInterval = setInterval(() => {
+
+      this.balanceCOP += this.EarnPerSecond;
+     
+    }, 1000);
+  }
+
 
   // ─── Toast ───────────────────────────────────────────
   showToastNotification(message: string): void {

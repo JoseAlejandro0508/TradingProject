@@ -5,9 +5,9 @@ import { CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment';
 
 interface LatestReferral {
+  name: string;
   initials: string;
-  username: string;
-  date: string;
+  dateInfo: string;
   level: number;
 }
 
@@ -54,18 +54,31 @@ export class TeamComponent implements OnInit {
   toastMessage = 'Copiado con éxito';
 
   // ─── Latest Referrals (mock data until API available) ─
-  latestReferrals: LatestReferral[] = [
-    { initials: 'JD', username: 'Juan_Diego32', date: 'Hace 12 minutos', level: 1 },
-    { initials: 'AM', username: 'AndresM_Crypto', date: 'Hace 2 horas', level: 2 },
-    { initials: 'LC', username: 'Laura_Cardenas', date: 'Ayer, 18:43', level: 3 },
-    { initials: 'MA', username: 'Mateo_Asoc', date: 'Hace 2 días', level: 4 },
-  ];
-
+  latestReferrals: LatestReferral[] = [];
+  
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
+
     this.loadReferralData();
     this.loadLevelData();
+    this.loadLatestRefers();
+  }
+  
+  // ─── API: Referral latest Refers ──────────────────
+  private async loadLatestRefers(): Promise<void> {
+    const url = `${environment.apiUrl}/Refer/LatestRefers/${this.username}`;
+    try {
+      const response: any = await firstValueFrom(this.http.get(url));
+      response.forEach((element: LatestReferral) => {
+        this.latestReferrals.push(element);
+      });
+      this.referralCode = this.extractCodeFromUrl(this.referralLink);
+    } catch (error: any) {
+      console.error('Error al obtener datos de referido:', error);
+      this.referralCode = '---';
+      this.referralLink = '---';
+    }
   }
 
   // ─── API: Referral Link & Code ──────────────────

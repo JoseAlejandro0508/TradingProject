@@ -18,13 +18,15 @@ public class ReferService
 
     public async Task ReferEarnExecute(int UID, double Amount,int lvl = 1)
     {
-        if(lvl > 3) return;
+        if(lvl > 4) return;
    
         Dictionary<int, float> Comision = new Dictionary<int, float>
         {
-            { 1, 0.08f },
-            { 2, 0.05f },
-            { 3, 0.02f }
+            { 1, 0.04f },
+            { 2, 0.03f },
+            { 3, 0.02f },
+            { 4, 0.01f }
+
         };
 
         var user = await context.Users.FirstOrDefaultAsync(u => u.Id == UID);
@@ -43,7 +45,8 @@ public class ReferService
     }
     public async Task<Dictionary<int, List<User>>> GetCurrentRef(int UID, int SecondsTemporality)
     {
-        List<User> allUser = await context.Users.ToListAsync();
+        List<User> allUser = await context.Users.Include(u => u.ProfileDetails).ToListAsync();
+        
 
         var selectedUser = allUser.FirstOrDefault(x => x.Id == UID);
 
@@ -54,6 +57,7 @@ public class ReferService
             { 1,new List<User>()},
             { 2,new List<User>()},
             { 3,new List<User>()},
+            { 4,new List<User>()},
         };
         if (selectedUser == null)
         {
@@ -61,8 +65,8 @@ public class ReferService
         }
         async Task GetReferHierarchy(string Code, int lvl = 1)
         {
-            if (lvl > 3) return;
-            List<User> RefLVL = allUser.Where(u => u.ReferCode == Code).ToList();
+            if (lvl > 4) return;
+            List<User> RefLVL = allUser.Where(u => u.ReferCode == Code).OrderByDescending(u=>u.CreatedAt).ToList();
             foreach (User u in RefLVL)
             {
                 if (SecondsTemporality == 0 || u.CreatedAt > DateTimeOffset.Now.AddSeconds(-SecondsTemporality))
@@ -78,4 +82,5 @@ public class ReferService
 
         return _refers;
     }
+    
 }

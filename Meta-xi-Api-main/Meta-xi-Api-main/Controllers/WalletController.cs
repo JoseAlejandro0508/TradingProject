@@ -11,11 +11,14 @@ public class WalletController : ControllerBase
     private readonly DBContext context;
     private readonly UserService userService;
     private readonly ReferService referService;
-    public WalletController(DBContext _context, UserService _userService, ReferService _referService)
+    private readonly UpdatePlans updateService;
+    public WalletController(DBContext _context, UserService _userService, ReferService _referService,UpdatePlans _updateService)
     {
         context = _context;
         userService = _userService;
         referService = _referService;
+        updateService = _updateService;
+
     }
 
     // ── Hardcoded task definitions (mirrors TasksController) ──────────
@@ -646,6 +649,9 @@ public class WalletController : ControllerBase
     [HttpGet("GetBalanceUsdAndCop/{username}")]
     public async Task<IActionResult> GetBalanceUsdAndCop(string username)
     {
+        double EarnPerSecond=await updateService.UpdatePlansPerUser(username);
+
+
         var wallet = await context.Wallets.FirstOrDefaultAsync(option => option.Email == username);
         if (wallet == null)
         {
@@ -670,7 +676,7 @@ public class WalletController : ControllerBase
             balanceInUsd = 0;
         }
 
-        return Ok(new { balanceInCop, balanceInUsd });
+        return Ok(new { balanceInCop, balanceInUsd,EarnPerSecond });
     }
 
     // ── Welcome Bonus Endpoints ─────────────────────────────────────────

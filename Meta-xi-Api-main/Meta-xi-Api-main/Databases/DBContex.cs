@@ -7,12 +7,17 @@ public class DBContext : DbContext
     public DBContext(DbContextOptions<DBContext> options) : base(options){
         
     }
+    public required DbSet<ClaimRegister> BonusClaimRegister { get ; set ; }
+    public required DbSet<Bonus> BonusRegister { get ; set ; }
     public required DbSet<User> Users { get ; set ; }
+    public required DbSet<Chat> ChatSupport { get ; set ; }
     public required DbSet<Plan> Plans { get ; set ; }
     public required DbSet<ReferLevel1> ReferLevel1s { get ; set ; }
     public required DbSet<ReferLevel2> ReferLevel2s { get ; set ; }
     public required DbSet<ReferLevel3> ReferLevel3s { get ; set ; }
     public required DbSet<Wallet> Wallets { get ; set ; }
+    public required DbSet<WithdrawAccounts> WithdrawAccounts_ { get ; set ; }
+     public required DbSet<ProfileDetails> ProfileDetails_ { get ; set ; }
     public required DbSet<UserPlans> UserPlans { get ; set ; }
     public required DbSet<UpdatePlansForUser> UpdatePlansForUser { get ; set ; }
     public required DbSet<TaskRegister> TaskRegisters { get ; set ; }

@@ -3,7 +3,17 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ThemeService } from '../../services/theme.service';
+import { environment } from '../../../environments/environment';
+import { firstValueFrom } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+interface BonusHistory {
+  reward:number,
+  bonusID:string,
+  date:string,
+  state:string,
+  error:boolean
 
+}
 @Component({
   selector: 'app-canjear-bono',
   standalone: true,
@@ -11,22 +21,17 @@ import { ThemeService } from '../../services/theme.service';
   templateUrl: './canjear-bono.component.html',
   styleUrl: './canjear-bono.component.scss',
 })
+
 export class CanjearBonoComponent implements OnInit {
   private router = inject(Router);
   themeService = inject(ThemeService);
-
+  username: string = localStorage.getItem('username') || '';
   codeInput = '';
   isShaking = false;
   isOpen = false;
   rewardAmount: number | null = null;
 
-  history: Array<{
-    code: string;
-    date: string;
-    amount: number | null;
-    status: string;
-    statusClass: string;
-  }> = [];
+  history:  BonusHistory[]  = [];
 
   private readonly codes: Record<string, number> = {
     '220822': 1800,
@@ -35,11 +40,12 @@ export class CanjearBonoComponent implements OnInit {
   };
 
   private usedCodes = new Set<string>();
-
+  constructor(private http: HttpClient) {}
   ngOnInit(): void {
     // sync theme
     const current = this.themeService.getTheme();
     document.body.setAttribute('data-theme', current);
+    this.LoadHistory();
   }
 
   goBack(): void {
@@ -50,36 +56,46 @@ export class CanjearBonoComponent implements OnInit {
     this.themeService.toggleTheme();
   }
 
-  canjearCodigo(): void {
+  async canjearCodigo(): Promise<void> {
     const code = this.codeInput.trim();
 
     // Reset open state
     this.isOpen = false;
     this.rewardAmount = null;
 
-    // Validate: numeric only, 6 digits
-    if (!/^\d{6}$/.test(code)) {
-      this.triggerShake();
-      this.addToHistory(code || '-', null, 'Inválido', 'status-fail');
-      return;
+    const url = `${environment.apiUrl}/Bonus/ClaimBonus`;
+    try {
+      const response: any = await firstValueFrom(
+        this.http.post(url, { PhoneNumber: this.username, BonusID: code })
+      );
+    } catch (error: any) {
+   
+      console.error('Error al canjear código:', error);
     }
 
-    if (this.usedCodes.has(code)) {
-      this.triggerShake();
-      this.addToHistory(code, null, 'Ya Usado', 'status-fail');
-      return;
-    }
+    this.triggerShake();
+    await this.LoadHistory();
 
-    const reward = this.codes[code];
-    if (reward !== undefined) {
-      this.usedCodes.add(code);
-      this.rewardAmount = reward;
-      this.isOpen = true;
-      this.addToHistory(code, reward, 'Completado', 'status-success');
-    } else {
-      this.triggerShake();
-      this.addToHistory(code, null, 'Inválido', 'status-fail');
+  }
+  async LoadHistory(): Promise<void> {
+    const code = this.codeInput.trim();
+    this.history=[];
+    // Reset open state
+    this.isOpen = false;
+    this.rewardAmount = null;
+
+    const url = `${environment.apiUrl}/Bonus/BonusHistorial/${this.username}`;
+    try {
+      const response: any = await firstValueFrom(
+        this.http.get(url)
+      );
+      response.forEach((element: BonusHistory) => {
+        this.history.push(element);
+      });
+    } catch (error: any) {
+      console.error('Error al canjear código:', error);
     }
+    
   }
 
   private triggerShake(): void {
@@ -89,20 +105,4 @@ export class CanjearBonoComponent implements OnInit {
     }, 500);
   }
 
-  private addToHistory(
-    code: string,
-    amount: number | null,
-    status: string,
-    statusClass: string
-  ): void {
-    const now = new Date();
-    const day = String(now.getDate()).padStart(2, '0');
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const year = now.getFullYear();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const dateStr = `${day}/${month}/${year}, ${hours}:${minutes}`;
-
-    this.history.unshift({ code, date: dateStr, amount, status, statusClass });
-  }
 }

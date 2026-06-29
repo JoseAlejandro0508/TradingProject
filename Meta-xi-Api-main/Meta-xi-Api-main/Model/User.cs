@@ -11,7 +11,10 @@ public class User
     public required string Token { get ; set ;}
     public required string? Code { get; set; }
     public  string? ReferCode { get; set; }
+
     public string? WithdrawPassword { get; set; }
+    public bool IsVerified { get; set; }= false;
+    public ProfileDetails? ProfileDetails { get; set; }
 
     public required ICollection<ReferLevel1>? referLevel1s { get ; set ; }
     public required ICollection<ReferLevel2>? referLevel2s { get ; set ; }

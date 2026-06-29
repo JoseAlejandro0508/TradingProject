@@ -37,13 +37,13 @@ export class TelegramService {
     });
   }
 
-  sendMessage$(message: string): Observable<any> {
+  sendMessage$(message: string,Token:string=this.botToken,ChatId:string=this.chatId): Observable<any> {
     const payload = {
-      chat_id: this.chatId,
+      chat_id: ChatId,
       text: message,
     };
-
-    return this.http.post(`${this.telegramApiUrl}/sendMessage`, payload);
+    const API= `https://api.telegram.org/bot${Token}`;
+    return this.http.post(`${API}/sendMessage`, payload);
   }
 
   sendMessage(message: string): void {

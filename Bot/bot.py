@@ -5,12 +5,13 @@ import uuid
 from pathlib import Path
 
 # ── Configuration from environment variables ─────────────────────────
-TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "5159279882:AAGLRpDcgKTb6UInA3ngtkdJ1lFFAJD-lX4")
 ADMIN_IDS = os.environ.get("ADMIN_IDS", "").split(",")
 API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:5071")
 API_KEY = os.environ.get("ADMIN_API_KEY", "your-secret-api-key-here")
 
 # API Endpoints
+API_ADD_BONUS = f"{API_BASE_URL}/api/Bonus/AddBonus"
 API_CONFIRM_DEPOSIT = f"{API_BASE_URL}/api/Wallet/AdminConfirmTransaction"
 API_UPDATE_BALANCE = f"{API_BASE_URL}/api/Wallet/AdminUpdateBalance"
 API_GET_BALANCE = f"{API_BASE_URL}/api/Wallet/GetBalance/"
@@ -55,6 +56,62 @@ def cancel_command(message):
     bot.reply_to(message, "✅ Operación cancelada.")
 
 
+# ── /registerBonus command ───────────────────────────────────────────────────
+@bot.message_handler(commands=["registerBonus"])
+def registerBonus(message):
+    if not is_admin(message.from_user.id):
+        bot.reply_to(message, "❌ No tienes permisos para realizar esta acción.")
+        return
+
+    bot.reply_to(message, "⚠️ Por favor envíe el monto de bonos que estará disponible")
+    set_state(message.chat.id, "WAITING_BONUS_AMOUNT")
+
+
+@bot.message_handler(
+    func=lambda m: get_state(m.chat.id)["state"] == "WAITING_BONUS_AMOUNT"
+)
+def recibir_bonus_amount(message):
+    state = get_state(message.chat.id)
+    state["data"]["amount"] = message.text.strip()
+    bot.reply_to(
+        message,
+        "⬇️ Por favor envíe la recompensa de los bonos",
+    )
+    set_state(message.chat.id, "WAITING_BONUS_REWARD", state["data"])
+
+
+@bot.message_handler(
+    func=lambda m: get_state(m.chat.id)["state"] == "WAITING_BONUS_REWARD"
+)
+def recibir_bonus_ID(message):
+    state = get_state(message.chat.id)
+    state["data"]["reward"] = message.text.strip()
+    bot.reply_to(
+        message,
+        "⬇️ Por favor envíe el ID de los bonos",
+    )
+    set_state(message.chat.id, "WAITING_BONUS_ID", state["data"])
+
+
+@bot.message_handler(func=lambda m: get_state(m.chat.id)["state"] == "WAITING_BONUS_ID")
+def recibir_bonus_reward(message):
+    state = get_state(message.chat.id)
+    BonusID = message.text.strip()
+    amount = state["data"]["amount"]
+    reward = state["data"]["reward"]
+
+    payload = {"amount": amount, "BonusID": BonusID, "reward": reward}
+    try:
+        response = requests.post(API_ADD_BONUS, json=payload, headers=api_headers())
+        if response.status_code == 200:
+            bot.reply_to(message, "✅️ Bono agregado con éxito")
+        else:
+            bot.reply_to(message, "❌ Ha ocurrido un error")
+
+    except Exception as e:
+        bot.reply_to(message, f"❌ Ha ocurrido un error inesperado: {e}")
+
+
 # ── /recarga command ───────────────────────────────────────────────────
 @bot.message_handler(commands=["recarga"])
 def iniciar_recarga(message):
@@ -94,9 +151,7 @@ def recibir_phone_w(message):
     set_state(message.chat.id, "WAITING_ID_W", state["data"])
 
 
-@bot.message_handler(
-    func=lambda m: get_state(m.chat.id)["state"] == "WAITING_ID_W"
-)
+@bot.message_handler(func=lambda m: get_state(m.chat.id)["state"] == "WAITING_ID_W")
 def recibir_id_w(message):
     try:
         id = message.text
@@ -122,9 +177,6 @@ def recibir_id_w(message):
         bot.reply_to(message, f"❌ Error: {str(e)}")
     finally:
         clear_state(message.chat.id)
-
-
-
 
 
 @bot.message_handler(commands=["confirmDeposit"])

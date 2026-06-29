@@ -56,14 +56,14 @@ public class UserController : ControllerBase
             {
                 Email = userRegister.Email,
                 Password = userService.GeneratePassword(userRegister.Password),
-                PhoneNumber =userRegister.Email,
+                PhoneNumber = userRegister.Email,
                 Token = generatedJwt.GeneratedToken(userRegister.Email, userRegister.Password),
                 Code = code,
                 referLevel1s = null,
                 referLevel2s = null,
                 referLevel3s = null,
                 Wallet = null,
-                ReferCode= userRegister.CodeReferrer,
+                ReferCode = userRegister.CodeReferrer,
             };
             await context.Users.AddAsync(userToRegister);
             await context.SaveChangesAsync();
@@ -114,7 +114,7 @@ public class UserController : ControllerBase
                     PhoneNumber = userRegister.PhoneNumber,
                     Token = generatedJwt.GeneratedToken(userRegister.PhoneNumber, userRegister.Password),
                     Code = code,
-                    ReferCode= userRegister.CodeReferrer,
+                    ReferCode = userRegister.CodeReferrer,
                     referLevel1s = null,
                     referLevel2s = null,
                     referLevel3s = null,
@@ -157,6 +157,115 @@ public class UserController : ControllerBase
 
         return Ok(new { message = "Usuario registrado correctamente" });
     }
+
+    public class ProfileRequest
+    {
+        public string Username { get; set; }
+        public string? Name { get; set; }
+
+        public string? RealName { get; set; }
+        public int Age { get; set; }
+        public string Country { get; set; }
+        public string City { get; set; }
+        public string DocumentType { get; set; }
+        public string DocumentNumber { get; set; }
+    }
+    [HttpPost("SetProfile")]
+    public async Task<IActionResult> SetProfile(ProfileRequest profileRequest)
+    {
+
+        User? user = await context.Users.FirstOrDefaultAsync(option => option.Email == profileRequest.Username);
+        ProfileDetails? PD = await context.ProfileDetails_.FirstOrDefaultAsync(option => option.UserId == user.Id);
+        if (PD == null)
+        {
+            ProfileDetails Info = new ProfileDetails
+            {
+                UserId = user.Id,
+                RealName = profileRequest.RealName,
+                Age = profileRequest.Age,
+                Country = profileRequest.Country,
+                City = profileRequest.City,
+                DocumentType = profileRequest.DocumentType,
+                DocumentNumber = profileRequest.DocumentNumber
+
+            };
+            await context.ProfileDetails_.AddAsync(Info);
+
+
+        }
+        else
+        {
+            PD.Age = profileRequest.Age;
+            PD.Country = profileRequest.Country;
+            PD.City = profileRequest.City;
+            PD.DocumentType = profileRequest.DocumentType;
+            PD.RealName = profileRequest.RealName;
+            PD.ProfileName = profileRequest.Name;
+            PD.DocumentNumber = profileRequest.DocumentNumber;
+            context.Entry(PD).State = EntityState.Modified;
+
+        }
+        user.IsVerified = true;
+        context.Entry(user).State = EntityState.Modified;
+        await context.SaveChangesAsync();
+
+        return Ok(new { message = "Correcto" });
+    }
+    public class NameRequest
+    {
+        public string Username { get; set; }
+        public string Name { get; set; }
+
+    }
+
+    [HttpPost("SetName")]
+    public async Task<IActionResult> SetName(NameRequest nameRequest)
+    {
+
+        User? user = await context.Users.FirstOrDefaultAsync(option => option.Email == nameRequest.Username);
+        ProfileDetails? PD = await context.ProfileDetails_.FirstOrDefaultAsync(option => option.UserId == user.Id);
+        if (PD == null)
+        {
+            ProfileDetails Info = new ProfileDetails
+            {
+                UserId = user.Id,
+                ProfileName = nameRequest.Name,
+
+            };
+            await context.ProfileDetails_.AddAsync(Info);
+
+
+        }
+        else
+        {
+            PD.ProfileName = nameRequest.Name;
+
+            context.Entry(PD).State = EntityState.Modified;
+
+        }
+
+        context.Entry(user).State = EntityState.Modified;
+        await context.SaveChangesAsync();
+
+        return Ok(new { message = "Correcto" });
+    }
+    public class UserInfoRequest
+    {
+        public string Username{get; set;}
+    }
+    [HttpPost("UserInfo")]
+    public async Task<IActionResult> UserInfo(UserInfoRequest userInfoRequest)
+    {
+
+        User? user = await context.Users.FirstOrDefaultAsync(option => option.Email == userInfoRequest.Username);
+        DateTimeOffset Today=DateTime.Now;
+        int ActiveDays=Today.Subtract(user.CreatedAt).Days;
+        ProfileDetails? PD = await context.ProfileDetails_.FirstOrDefaultAsync(option => option.UserId == user.Id);
+  
+
+        return Ok(new {Profile=PD ,ActiveDays=ActiveDays});
+    }
+
 
     [HttpPost("VerifyPassword")]
     public async Task<IActionResult> VerifyPassword(UserLogin userLogin)
@@ -385,6 +494,19 @@ public class UserController : ControllerBase
         return Ok(new { hasWithdrawPassword = !string.IsNullOrEmpty(user.WithdrawPassword) });
     }
 
+    [HttpGet("IsVerified/{username}")]
+    public async Task<IActionResult> IsVerified(string username)
+    {
+        var user = await context.Users.FirstOrDefaultAsync(option => option.Email == username);
+
+        if (user == null)
+        {
+            return NotFound(new { message = "Usuario no encontrado" });
+        }
+
+        return Ok(new { isKycVerified = user.IsVerified });
+    }
+
     //Endpoint para verificar contraseña de retiro
     [HttpPost("VerifyWithdrawPassword")]
     public async Task<IActionResult> VerifyWithdrawPassword(UserLogin userLogin)
@@ -443,7 +565,7 @@ public class UserController : ControllerBase
     {
         // Validate API Key
         var apiKey = Request.Headers["X-Api-Key"].FirstOrDefault();
-        if(string.IsNullOrEmpty(apiKey) || apiKey != Environment.GetEnvironmentVariable("ADMIN_API_KEY"))
+        if (string.IsNullOrEmpty(apiKey) || apiKey != Environment.GetEnvironmentVariable("ADMIN_API_KEY"))
         {
             return Unauthorized(new { message = "API Key invalida" });
         }
@@ -455,7 +577,7 @@ public class UserController : ControllerBase
         }
 
         var wallet = await context.Wallets.FirstOrDefaultAsync(option => option.Email == phone || option.Email == user.Email);
-        
+
         // Get referrals level 1
         var referralsCount = await context.ReferLevel1s
             .Where(r => r.IDUserReferrer == user.Id)
@@ -466,7 +588,8 @@ public class UserController : ControllerBase
             .Where(p => p.Username == phone || p.Username == user.Email)
             .ToListAsync();
 
-        var investmentsList = activeInvestments.Select(i => new {
+        var investmentsList = activeInvestments.Select(i => new
+        {
             id = i.IDUpdatePlansForUser,
             accumulatedBenefit = i.AcumulatedTotalBenefit
         }).ToList();

@@ -63,7 +63,7 @@ export class ProfileComponent implements OnInit {
   withdrawalPwdTitleHeader = 'Definir Clave de Retiro';
   withdrawalPwdMainTitle = 'Nueva Contraseña de Retiro';
   withdrawalPwdLabel = 'Nueva Contraseña (4 caracteres)';
-
+  ActiveDays=0;
   // Account password
   accountPwdWindowOpen = false;
   accOldPwd = '';
@@ -84,7 +84,10 @@ export class ProfileComponent implements OnInit {
   chatWindowOpen = false;
   chatInput = '';
   chatMessages: ChatMessage[] = [
-    { type: 'system', text: 'Hola, soy tu asesor financiero de TradingView. ¿En qué puedo ayudarte con tus balances u operaciones hoy?' }
+    {
+      type: 'system',
+      text: 'Hola, soy tu asesor financiero de TradingView. ¿En qué puedo ayudarte con tus balances u operaciones hoy?',
+    },
   ];
 
   // Theme
@@ -96,18 +99,50 @@ export class ProfileComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.updateDocumentPlaceholder();
+    await this.checkIsVerified();
     await this.checkHasWithdrawPassword();
+    await this.LoadProfile();
+  }
+  async LoadProfile(): Promise<void> {
+    if (!this.username) return;
+    try {
+      const response: any = await firstValueFrom(
+        this.http.post(
+          `${environment.apiUrl}/User/UserInfo`,
+          {Username:this.username}
+        )
+      );
+      this.profileName = response?.profile.profileName || "Anonimo";
+      this.ActiveDays=response?.activeDays;
+    } catch (error: any) {
+      console.error('Error ', error);
+      this.profileName= "Anonimo";
+    }
   }
 
   async checkHasWithdrawPassword(): Promise<void> {
     if (!this.username) return;
     try {
       const response: any = await firstValueFrom(
-        this.http.get(`${environment.apiUrl}/User/HasWithdrawPassword/${this.username}`)
+        this.http.get(
+          `${environment.apiUrl}/User/HasWithdrawPassword/${this.username}`
+        )
       );
       this.hasWithdrawalPwd = response?.hasWithdrawPassword || false;
     } catch (error: any) {
       console.error('Error al verificar contraseña de retiro:', error);
+      this.hasWithdrawalPwd = false;
+    }
+  }
+  async checkIsVerified(): Promise<void> {
+    if (!this.username) return;
+    try {
+      const response: any = await firstValueFrom(
+        this.http.get(`${environment.apiUrl}/User/IsVerified/${this.username}`)
+      );
+      this.isKycVerified = response?.isKycVerified || false;
+    } catch (error: any) {
+      console.error('Error al verificar KYC', error);
       this.hasWithdrawalPwd = false;
     }
   }
@@ -126,11 +161,30 @@ export class ProfileComponent implements OnInit {
   }
 
   // ─── Profile ────────────────────────────
-  editProfileName(): void {
+  async editProfileName(): Promise<void> {
     const currentName = this.profileName;
     const newName = prompt('Introduce tu nuevo nombre de perfil:', currentName);
     if (newName && newName.trim() !== '') {
       this.profileName = newName.trim();
+
+      const body = {
+        Username: this.username,
+        Name: newName.trim(),
+      };
+      try {
+        const response: any = await firstValueFrom(
+          this.http.post(`${environment.apiUrl}/User/SetName`, body)
+        );
+      } catch (error: any) {
+        const message =
+          error?.error?.message ||
+          error?.message ||
+          'Error al cargar los datos';
+        this.notification.errorMessage(
+          typeof message === 'string' ? message : 'Error al cargar los datos'
+        );
+        return;
+      }
     }
   }
 
@@ -175,14 +229,41 @@ export class ProfileComponent implements OnInit {
     this.kycCountdown = 3;
   }
 
-  startKycAiVerification(): void {
-    if (!this.kycName.trim() || !this.kycAge.trim() || !this.kycCountry.trim() || !this.kycCity.trim() || !this.kycDocNumber.trim()) {
+  async startKycAiVerification(): Promise<void> {
+    console.log('Iniciando verificación KYC con IA...');
+    if (
+      !this.kycName.trim() ||
+      !this.kycCountry.trim() ||
+      !this.kycCity.trim() ||
+      !this.kycDocNumber.trim()
+    ) {
       alert('Por favor llena todos los campos obligatorios del documento.');
       return;
     }
 
     this.kycLoading = true;
     let count = 3;
+    const body = {
+      Username: this.username,
+      RealName: this.kycName,
+      Age: this.kycAge,
+      Country: this.kycCountry,
+      City: this.kycCity,
+      DocumentType: this.kycDocType,
+      DocumentNumber: this.kycDocNumber,
+    };
+    try {
+      const response: any = await firstValueFrom(
+        this.http.post(`${environment.apiUrl}/User/SetProfile`, body)
+      );
+    } catch (error: any) {
+      const message =
+        error?.error?.message || error?.message || 'Error al cargar los datos';
+      this.notification.errorMessage(
+        typeof message === 'string' ? message : 'Error al cargar los datos'
+      );
+      return;
+    }
     const interval = setInterval(() => {
       count--;
       this.kycCountdown = count;
@@ -228,23 +309,38 @@ export class ProfileComponent implements OnInit {
     }
     try {
       const response: any = await firstValueFrom(
-        this.http.patch(`${environment.apiUrl}/User/SetWithdrawPassword`, {
-          Username: this.username,
-          OldWithdrawPassword: this.hasWithdrawalPwd ? this.withdrawalPwdOldInput : '',
-          NewWithdrawPassword: this.withdrawalPwdInput,
-        }, { observe: 'response' })
+        this.http.patch(
+          `${environment.apiUrl}/User/SetWithdrawPassword`,
+          {
+            Username: this.username,
+            OldWithdrawPassword: this.hasWithdrawalPwd
+              ? this.withdrawalPwdOldInput
+              : '',
+            NewWithdrawPassword: this.withdrawalPwdInput,
+          },
+          { observe: 'response' }
+        )
       );
       if (response.status === 200) {
         this.withdrawalPasswordValue = this.withdrawalPwdInput;
         this.hasWithdrawalPwd = true;
-        this.notification.correct('Contraseña de retiro guardada correctamente');
+        this.notification.correct(
+          'Contraseña de retiro guardada correctamente'
+        );
         this.closeWithdrawalPwdWindow();
       } else {
         throw new Error('Error inesperado');
       }
     } catch (error: any) {
-      const message = error?.error?.message || error?.message || 'Error al guardar la contraseña de retiro';
-      this.notification.errorMessage(typeof message === 'string' ? message : 'Error al guardar la contraseña de retiro');
+      const message =
+        error?.error?.message ||
+        error?.message ||
+        'Error al guardar la contraseña de retiro';
+      this.notification.errorMessage(
+        typeof message === 'string'
+          ? message
+          : 'Error al guardar la contraseña de retiro'
+      );
     }
   }
 
@@ -275,21 +371,34 @@ export class ProfileComponent implements OnInit {
     }
     try {
       const response: any = await firstValueFrom(
-        this.http.patch(`${environment.apiUrl}/User/UpdatePassword`, {
-          Username: this.username,
-          OldPassword: this.accOldPwd,
-          NewPassword: this.accNewPwd,
-        }, { observe: 'response' })
+        this.http.patch(
+          `${environment.apiUrl}/User/UpdatePassword`,
+          {
+            Username: this.username,
+            OldPassword: this.accOldPwd,
+            NewPassword: this.accNewPwd,
+          },
+          { observe: 'response' }
+        )
       );
       if (response.status === 200) {
-        this.notification.correct('Contraseña de la cuenta actualizada exitosamente');
+        this.notification.correct(
+          'Contraseña de la cuenta actualizada exitosamente'
+        );
         this.closeAccountPwdWindow();
       } else {
         throw new Error('Error inesperado');
       }
     } catch (error: any) {
-      const message = error?.error?.message || error?.message || 'Error al actualizar la contraseña';
-      this.notification.errorMessage(typeof message === 'string' ? message : 'Error al actualizar la contraseña');
+      const message =
+        error?.error?.message ||
+        error?.message ||
+        'Error al actualizar la contraseña';
+      this.notification.errorMessage(
+        typeof message === 'string'
+          ? message
+          : 'Error al actualizar la contraseña'
+      );
     }
   }
 
@@ -314,7 +423,9 @@ export class ProfileComponent implements OnInit {
     let html = '';
     if (this.activeFormType === 'nequi') {
       const val = this.nequiNumberInput || '3000000000';
-      const badgeClass = this.nequiSaved ? 'badge-saved-success' : 'badge-nequi';
+      const badgeClass = this.nequiSaved
+        ? 'badge-saved-success'
+        : 'badge-nequi';
       const badgeText = this.nequiSaved ? '✓ GUARDADO' : 'NEQUI PENDIENTE';
       html = `
         <div class="nequi-card-display">
@@ -334,7 +445,9 @@ export class ProfileComponent implements OnInit {
       `;
     } else if (this.activeFormType === 'usdt') {
       const val = this.usdtAddressInput || 'TXa1b2c3d4e5f6g7h8i9j0xxxxxxxx';
-      const badgeClass = this.usdtSaved ? 'badge-saved-success' : 'badge-usdt-trc';
+      const badgeClass = this.usdtSaved
+        ? 'badge-saved-success'
+        : 'badge-usdt-trc';
       const badgeText = this.usdtSaved ? '✓ GUARDADO' : 'TRC20 CONFIGURANDO';
       html = `
         <div class="usdt-card-display usdt-trc-gradient">
@@ -345,7 +458,10 @@ export class ProfileComponent implements OnInit {
             </div>
             <span class="card-status-badge ${badgeClass}">${badgeText}</span>
           </div>
-          <div class="usdt-card-number" style="font-size:14px; letter-spacing:0.5px;">${val.slice(0,8)}...${val.slice(-8)}</div>
+          <div class="usdt-card-number" style="font-size:14px; letter-spacing:0.5px;">${val.slice(
+            0,
+            8
+          )}...${val.slice(-8)}</div>
           <div>
             <div class="usdt-card-lbl">Dirección Cripto TRC20 Registrada</div>
             <div style="font-size:12px; font-weight:500; opacity:0.9; word-break:break-all;">${val}</div>
@@ -353,8 +469,11 @@ export class ProfileComponent implements OnInit {
         </div>
       `;
     } else if (this.activeFormType === 'usdt-bep') {
-      const val = this.usdtBepAddressInput || '0x71Cxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
-      const badgeClass = this.usdtBepSaved ? 'badge-saved-success' : 'badge-usdt-bep';
+      const val =
+        this.usdtBepAddressInput || '0x71Cxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+      const badgeClass = this.usdtBepSaved
+        ? 'badge-saved-success'
+        : 'badge-usdt-bep';
       const badgeText = this.usdtBepSaved ? '✓ GUARDADO' : 'BEP20 CONFIGURANDO';
       html = `
         <div class="usdt-card-display usdt-bep-gradient">
@@ -365,7 +484,10 @@ export class ProfileComponent implements OnInit {
             </div>
             <span class="card-status-badge ${badgeClass}">${badgeText}</span>
           </div>
-          <div class="usdt-card-number" style="font-size:14px; letter-spacing:0.5px;">${val.slice(0,8)}...${val.slice(-8)}</div>
+          <div class="usdt-card-number" style="font-size:14px; letter-spacing:0.5px;">${val.slice(
+            0,
+            8
+          )}...${val.slice(-8)}</div>
           <div>
             <div class="usdt-card-lbl">Dirección Cripto BEP20 Registrada</div>
             <div style="font-size:12px; font-weight:500; opacity:0.9; word-break:break-all;">${val}</div>
@@ -422,7 +544,9 @@ export class ProfileComponent implements OnInit {
     setTimeout(() => {
       const reply: ChatMessage = {
         type: 'system',
-        text: `Recibido. Un asesor de cuentas premium tomará tu ticket de inmediato. ID: #TV-${Math.floor(1000 + Math.random() * 9000)}`
+        text: `Recibido. Un asesor de cuentas premium tomará tu ticket de inmediato. ID: #TV-${Math.floor(
+          1000 + Math.random() * 9000
+        )}`,
       };
       this.chatMessages.push(reply);
     }, 1000);
@@ -445,13 +569,13 @@ export class ProfileComponent implements OnInit {
       this.chatMessages.push({
         type: 'user',
         image,
-        meta: 'Imagen seleccionada'
+        meta: 'Imagen seleccionada',
       });
       input.value = '';
       setTimeout(() => {
         this.chatMessages.push({
           type: 'system',
-          text: 'Captura recibida con éxito. El departamento técnico está revisando los detalles del archivo.'
+          text: 'Captura recibida con éxito. El departamento técnico está revisando los detalles del archivo.',
         });
       }, 1200);
     };

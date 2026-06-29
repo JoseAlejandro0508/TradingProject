@@ -60,9 +60,9 @@ public class BotPlansController : ControllerBase
         {
             return NotFound(new { message = "Usuario no encontrado" });
         }
-
+        DateTime Today = DateTime.Now;
         var activePlans = await _context.UserActivePlans
-            .Where(uap => uap.Username == username)
+            .Where(uap => uap.Username == username && (uap.ExpiresAt>Today))
             .Include(uap => uap.BotPlan)
             .Select(uap => new UserActivePlanDTO
             {
@@ -189,10 +189,10 @@ public class BotPlansController : ControllerBase
         // Check free tier limit
         if (botPlan.IsFreeTier)
         {
-            var freeUsage = await _context.UserFreeBotUsages
+            var freeUsage = await _context.UserActivePlans
                 .FirstOrDefaultAsync(u => u.Username == request.Username && u.BotPlanId == request.BotPlanId);
 
-            if (freeUsage != null && !freeUsage.IsEligible)
+            if (freeUsage != null)
             {
                 return BadRequest(new { message = "Has alcanzado el límite de usos gratuitos para este bot" });
             }

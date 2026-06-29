@@ -11,37 +11,75 @@ public class UpdatePlans : IUpdatePlansPerHour
         context = dbcontext;
     }
 
-    public async Task UpdatePlansPerHour()
+    public async Task<double> UpdatePlansPerUser(string username)
     {
         DateTime dateTime = DateTime.Now;
-        var userplans = await context.UserActivePlans.Where(p => p.LastTradeAt==null || p.LastTradeAt < p.ExpiresAt).ToListAsync();
-
-
+        var userplans = await context.UserActivePlans.Where(p => (p.LastTradeAt == null || p.LastTradeAt < p.ExpiresAt) && p.Username == username).ToListAsync();
+        double TotalEarnPereSecond=0;
         foreach (var userPlan in userplans)
         {
-           
+
             var plan = await context.BotPlans.FindAsync(userPlan.BotPlanId);
-            
+
             if (plan == null) continue;
-            if(plan.IsFreeTier) continue;
+            if (plan.IsFreeTier) continue;
 
             double earnPerSecond = (double)plan.DailyProfitEstimate / (3600 * 24);
 
             double totalEarned = dateTime.Subtract(userPlan.LastTradeAt).TotalSeconds * earnPerSecond;
+            TotalEarnPereSecond+=totalEarned;
 
-           
             userPlan.AccumulatedProfit += (decimal)totalEarned;
             userPlan.LastTradeAt = dateTime;
 
             context.Entry(userPlan).State = EntityState.Modified;
-           
+
             var wallet = await context.Wallets.FirstOrDefaultAsync(option => option.Email == userPlan.Username);
             if (wallet != null)
             {
                 wallet.Balance += (float)totalEarned;
 
                 context.Entry(wallet).State = EntityState.Modified;
-             
+
+            }
+            await context.SaveChangesAsync();
+
+
+        }
+        return TotalEarnPereSecond;
+
+    }
+    public async Task UpdatePlansPerHour()
+    {
+        DateTime dateTime = DateTime.Now;
+        var userplans = await context.UserActivePlans.Where(p => p.LastTradeAt == null || p.LastTradeAt < p.ExpiresAt).ToListAsync();
+
+
+        foreach (var userPlan in userplans)
+        {
+
+            var plan = await context.BotPlans.FindAsync(userPlan.BotPlanId);
+
+            if (plan == null) continue;
+            if (plan.IsFreeTier) continue;
+
+            double earnPerSecond = (double)plan.DailyProfitEstimate / (3600 * 24);
+
+            double totalEarned = dateTime.Subtract(userPlan.LastTradeAt).TotalSeconds * earnPerSecond;
+
+
+            userPlan.AccumulatedProfit += (decimal)totalEarned;
+            userPlan.LastTradeAt = dateTime;
+
+            context.Entry(userPlan).State = EntityState.Modified;
+
+            var wallet = await context.Wallets.FirstOrDefaultAsync(option => option.Email == userPlan.Username);
+            if (wallet != null)
+            {
+                wallet.Balance += (float)totalEarned;
+
+                context.Entry(wallet).State = EntityState.Modified;
+
             }
             await context.SaveChangesAsync();
 

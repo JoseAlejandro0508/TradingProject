@@ -104,12 +104,12 @@
     <ul class="history-list" *ngIf="history.length > 0; else emptyHistory">
       <li class="history-item" *ngFor="let item of history">
         <div class="history-meta">
-          <span class="history-code">{{ item.code }}</span>
+          <span class="history-code">{{ item.bonusID }}</span>
           <span class="history-date">{{ item.date }}</span>
         </div>
         <div class="history-details">
-          <span class="history-amount" *ngIf="item.amount !== null">+${{ item.amount }}</span>
-          <span class="history-status" [class.status-success]="item.statusClass === 'status-success'" [class.status-fail]="item.statusClass === 'status-fail'">{{ item.status }}</span>
+          <span class="history-amount" *ngIf="item.reward !== null">+${{ item.reward }}</span>
+          <span class="history-status" [class.status-success]="item.state === 'Completado'" [class.status-fail]="item.state === 'Inválido' || item.state === 'Ya usado'">{{ item.state }}</span>
         </div>
       </li>
     </ul>
