@@ -102,6 +102,8 @@ export class MeComponent implements OnInit, OnDestroy {
   // ─── History ─────────────────────────────────────────
   depositHistory: TxItem[] = [];
   withdrawHistory: TxItem[] = [];
+  historyLoaded = false;
+  historyLoading = false;
 
   // ─── Account Details ─────────────────────────────────
   accountDetails: AccountDetails = {
@@ -195,6 +197,10 @@ export class MeComponent implements OnInit, OnDestroy {
     // Toggle the clicked one
     if (!currentlyOpen) {
       this.accordionOpen[id] = true;
+      // Lazy load history when opening deposits or withdraws accordion
+      if ((id === 'acc-deposits' || id === 'acc-withdraws') && !this.historyLoaded && !this.historyLoading) {
+        this.loadHistory();
+      }
     }
   }
 
@@ -440,32 +446,54 @@ export class MeComponent implements OnInit, OnDestroy {
   }
 
   // ─── API: Get History ────────────────────────────────
-  async getHistory(type: 'deposit' | 'withdraw'): Promise<void> {
+  async loadHistory(): Promise<void> {
+    this.historyLoading = true;
     const url = `${environment.apiUrl}/Wallet/History/${this.username}`;
     try {
       const response: any = await firstValueFrom(this.http.get(url));
-      if (type === 'deposit') {
-        this.depositHistory = (response.deposits || []).map((d: any) => this.mapTx(d, 'deposit'));
-      } else {
-        this.withdrawHistory = (response.withdrawals || []).map((w: any) => this.mapTx(w, 'withdraw'));
-      }
+      // API returns a flat array with type field ('deposit' | 'withdrawal')
+      const all: any[] = Array.isArray(response) ? response : [];
+      this.depositHistory = all
+        .filter((t) => t.type === 'deposit')
+        .map((t) => this.mapTx(t, 'deposit'));
+      this.withdrawHistory = all
+        .filter((t) => t.type === 'withdrawal')
+        .map((t) => this.mapTx(t, 'withdraw'));
+      this.historyLoaded = true;
     } catch {
-      if (type === 'deposit') this.depositHistory = [];
-      else this.withdrawHistory = [];
+      this.depositHistory = [];
+      this.withdrawHistory = [];
+      this.historyLoaded = true;
+    } finally {
+      this.historyLoading = false;
     }
   }
 
   private mapTx(raw: any, type: 'deposit' | 'withdraw'): TxItem {
+    const statusRaw = (raw.status || '').toLowerCase();
+    const isApproved = statusRaw === 'éxito' || statusRaw === 'completado' || statusRaw === 'approved';
     return {
-      title: type === 'deposit' ? 'Depósito de Fondos' : 'Retiro Solicitado',
-      status: raw.status === 'approved' ? 'approved' : 'pending',
-      from: raw.from || (type === 'deposit' ? 'USDT (Red TRC20)' : 'Cartera Principal'),
-      to: raw.to || (type === 'deposit' ? 'Cartera Principal' : 'Red externa Bitcoin (BTC)'),
-      date: raw.date || raw.createdAt || 'N/A',
-    amountSent: String(raw.amountSent || raw.amount || '$0.00'),
-    amountReceived: String(raw.amountReceived || raw.netAmount || '$0.00'),
+      title: raw.title || (type === 'deposit' ? 'Depósito de Fondos' : 'Retiro Solicitado'),
+      status: isApproved ? 'approved' : 'pending',
+      from: type === 'deposit' ? this.extractTokenFromTitle(raw.title) : 'Cartera Principal',
+      to: type === 'deposit' ? 'Cartera Principal' : 'Cuenta externa',
+      date: raw.date || 'N/A',
+      amountSent: raw.signedAmount || `${type === 'deposit' ? '+' : '-'} ${(raw.amount || 0).toLocaleString('es-CO')} COP`,
+      amountReceived: raw.netAmount
+        ? `${raw.netAmount.toLocaleString('es-CO')} COP`
+        : `${(raw.amount || 0).toLocaleString('es-CO')} COP`,
       receivedColor: type === 'deposit' ? 'var(--success)' : 'var(--danger)',
     };
+  }
+
+  private extractTokenFromTitle(title: string): string {
+    if (!title) return 'Recarga';
+    // Titles like "Recarga Nequi", "Recarga Usdt_trc20", etc.
+    const parts = title.split(' ');
+    if (parts.length > 1) {
+      return parts.slice(1).join(' ');
+    }
+    return title;
   }
 
   // ─── API: Get Account Details ───────────────────────

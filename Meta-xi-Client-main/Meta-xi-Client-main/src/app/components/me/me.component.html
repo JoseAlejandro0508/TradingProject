@@ -27,6 +27,9 @@
       </div>
     </div>
     <div class="accordion-content">
+      <div class="tx-block empty-state" *ngIf="historyLoading">
+        <div class="tx-header-title">Cargando recargas...</div>
+      </div>
       <div class="tx-block" *ngFor="let tx of depositHistory">
         <div class="tx-header-title">
           <span>{{ tx.title }}</span>
@@ -40,7 +43,7 @@
         <div class="tx-row"><span class="tx-label">Cantidad a enviar:</span><span class="tx-value">{{ tx.amountSent }}</span></div>
         <div class="tx-row"><span class="tx-label">Llegó luego de comisión:</span><span class="tx-value" [style.color]="tx.receivedColor">{{ tx.amountReceived }}</span></div>
       </div>
-      <div class="tx-block empty-state" *ngIf="depositHistory.length === 0">
+      <div class="tx-block empty-state" *ngIf="!historyLoading && depositHistory.length === 0">
         <div class="tx-header-title">No hay recargas</div>
       </div>
     </div>
@@ -58,6 +61,9 @@
       </div>
     </div>
     <div class="accordion-content">
+      <div class="tx-block empty-state" *ngIf="historyLoading">
+        <div class="tx-header-title">Cargando retiros...</div>
+      </div>
       <div class="tx-block" *ngFor="let tx of withdrawHistory">
         <div class="tx-header-title">
           <span>{{ tx.title }}</span>
@@ -71,7 +77,7 @@
         <div class="tx-row"><span class="tx-label">Cantidad a enviar:</span><span class="tx-value">{{ tx.amountSent }}</span></div>
         <div class="tx-row"><span class="tx-label">Llegó luego de comisión:</span><span class="tx-value" [style.color]="tx.receivedColor">{{ tx.amountReceived }}</span></div>
       </div>
-      <div class="tx-block empty-state" *ngIf="withdrawHistory.length === 0">
+      <div class="tx-block empty-state" *ngIf="!historyLoading && withdrawHistory.length === 0">
         <div class="tx-header-title">No hay retiros</div>
       </div>
     </div>
