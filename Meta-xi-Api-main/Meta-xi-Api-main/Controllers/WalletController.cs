@@ -269,7 +269,7 @@ public class WalletController : ControllerBase
         }
 
         // Verify password
-        if (!userService.verifyPassword(request.Password, user.Password))
+        if (!userService.verifyPassword(request.Password, user.WithdrawPassword))
         {
             return BadRequest(new { message = "Contraseña incorrecta" });
         }

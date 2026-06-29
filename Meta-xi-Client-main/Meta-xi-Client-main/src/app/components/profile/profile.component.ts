@@ -149,11 +149,11 @@ export class ProfileComponent implements OnInit {
 
   // ─── Navigation ───────────────────────────
   goToDeposit(): void {
-    this.router.navigate(['/deposit']);
+    this.router.navigate(['/recharge']);
   }
 
   goToWithdraw(): void {
-    this.router.navigate(['/withdraw']);
+    this.router.navigate(['/withdrawToken']);
   }
 
   goToReferrals(): void {

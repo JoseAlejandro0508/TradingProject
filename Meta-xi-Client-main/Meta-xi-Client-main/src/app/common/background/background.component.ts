@@ -22,6 +22,8 @@ export class BackgroundComponent implements OnInit {
     'withdraw/usdt-bep20',
     'nequi/nequi',
     'deposit/usdt-bep20',
+    '/withdraw/usdt-trc20',
+    '/withdraw/daviplata',
     'deposit/breb',
     'breb/breb',
     'deposit/nequi',
