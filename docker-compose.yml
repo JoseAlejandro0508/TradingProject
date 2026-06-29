@@ -56,7 +56,7 @@ services:
       - api
     networks:
       - trading-net
-  botSupport:
+  botsupport:
     build:
       context: ./SupportBot
       dockerfile: Dockerfile
