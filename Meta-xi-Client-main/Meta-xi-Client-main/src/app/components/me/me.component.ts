@@ -496,21 +496,25 @@ export class MeComponent implements OnInit, OnDestroy {
     return title;
   }
 
-  // ─── API: Get Account Details ───────────────────────
+  // ─── API: Get Account Details (Earnings Breakdown) ───
   async getAccountDetails(): Promise<void> {
-    const url = `${environment.apiUrl}/Wallet/GetAccountSummary/${this.username}`;
+    const url = `${environment.apiUrl}/Wallet/GetEarningsBreakdown/${this.username}`;
     try {
       const response: any = await firstValueFrom(this.http.get(url));
       this.accountDetails = {
-        yesterday: response.yesterday || '0',
-        today: response.today || '0',
-        month: response.month || '0',
-        team: response.team || '0',
-        total: response.total || '0',
+        yesterday: this.formatNumber(response.yesterday || 0),
+        today: this.formatNumber(response.today || 0),
+        month: this.formatNumber(response.month || 0),
+        team: this.formatNumber(response.team || 0),
+        total: this.formatNumber(response.total || 0),
       };
     } catch {
       this.accountDetails = { yesterday: '0', today: '0', month: '0', team: '0', total: '0' };
     }
+  }
+
+  private formatNumber(value: number): string {
+    return Math.round(value).toLocaleString('es-CO');
   }
 
   // ─── API: Submit Password Change ────────────────────

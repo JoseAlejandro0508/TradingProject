@@ -754,4 +754,168 @@ public class WalletController : ControllerBase
     {
         public string Email { get; set; } = string.Empty;
     }
+
+    // ── Earnings Breakdown DTOs ─────────────────────────────────────────
+    public class EarningsBreakdownDTO
+    {
+        public float Yesterday { get; set; }
+        public float Today { get; set; }
+        public float Month { get; set; }
+        public float Team { get; set; }
+        public float Total { get; set; }
+    }
+
+    // ── GET: api/Wallet/GetEarningsBreakdown/{username} ─────────────────
+    [HttpGet("GetEarningsBreakdown/{username}")]
+    public async Task<IActionResult> GetEarningsBreakdown(string username)
+    {
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == username || u.PhoneNumber == username);
+        if (user == null)
+        {
+            return NotFound(new { message = "Usuario no encontrado" });
+        }
+
+        var email = user.Email!;
+
+        // ── Time boundaries (server local time, consistent with plan.StartedAt which uses DateTime.Now) ──
+        var now = DateTime.Now;
+        var todayStart = now.Date;
+        var yesterdayStart = todayStart.AddDays(-1);
+        var monthStart = new DateTime(now.Year, now.Month, 1);
+        var todayEnd = todayStart.AddDays(1);
+
+        // ── 1. BOT EARNINGS (estimated from active plans) ──
+        var activePlans = await context.UserActivePlans
+            .Include(uap => uap.BotPlan)
+            .Where(uap => uap.Username == email && uap.Status == "Active")
+            .ToListAsync();
+
+        float botToday = 0, botYesterday = 0, botMonth = 0;
+
+        foreach (var plan in activePlans)
+        {
+            if (plan.BotPlan == null) continue;
+            var dailyRate = (float)plan.BotPlan.DailyProfitEstimate;
+            var perSecond = dailyRate / 86400f;
+
+            // Today: seconds elapsed since midnight (or since plan started if today)
+            var todayStartDt = plan.StartedAt > todayStart ? plan.StartedAt : todayStart;
+            var todayEndDt = now < plan.ExpiresAt ? now : plan.ExpiresAt;
+            if (todayEndDt > todayStartDt)
+                botToday += perSecond * (float)(todayEndDt - todayStartDt).TotalSeconds;
+
+            // Yesterday: full day or portion that plan was active
+            var yStart = plan.StartedAt > yesterdayStart ? plan.StartedAt : yesterdayStart;
+            var yEnd = todayStart < plan.ExpiresAt ? todayStart : plan.ExpiresAt;
+            if (yEnd > yStart)
+                botYesterday += perSecond * (float)(yEnd - yStart).TotalSeconds;
+
+            // Month: seconds since start of month (or since plan started)
+            var mStart = plan.StartedAt > monthStart ? plan.StartedAt : monthStart;
+            var mEnd = now < plan.ExpiresAt ? now : plan.ExpiresAt;
+            if (mEnd > mStart)
+                botMonth += perSecond * (float)(mEnd - mStart).TotalSeconds;
+        }
+
+        // ── 2. REFERRAL EARNINGS (from deposits of referred users) ──
+        // Level 1: 5%, Level 2: 3%, Level 3: 1%
+        var lvl1Refs = await context.ReferLevel1s.Where(r => r.IDUserReferrer == user.Id).ToListAsync();
+        var lvl1Codes = lvl1Refs.Select(r => r.UniqueCodeReFerred).ToList();
+        var lvl1Users = await context.Users.Where(u => lvl1Codes.Contains(u.Code)).ToListAsync();
+        var lvl1Emails = lvl1Users.Select(u => u.Email).ToList();
+
+        var lvl2Refs = await context.ReferLevel2s.Where(r => r.IDUserReferrer == user.Id).ToListAsync();
+        var lvl2Codes = lvl2Refs.Select(r => r.UniqueCodeReFerred).ToList();
+        var lvl2Users = await context.Users.Where(u => lvl2Codes.Contains(u.Code)).ToListAsync();
+        var lvl2Emails = lvl2Users.Select(u => u.Email).ToList();
+
+        var lvl3Refs = await context.ReferLevel3s.Where(r => r.IDUserReferrer == user.Id).ToListAsync();
+        var lvl3Codes = lvl3Refs.Select(r => r.UniqueCodeReFerred).ToList();
+        var lvl3Users = await context.Users.Where(u => lvl3Codes.Contains(u.Code)).ToListAsync();
+        var lvl3Emails = lvl3Users.Select(u => u.Email).ToList();
+
+        // Load all deposits from referred users to memory (SQLite DateTimeOffset workaround)
+        var allLvl1Deposits = await context.DepositHistories.Where(d => lvl1Emails.Contains(d.Email)).ToListAsync();
+        var allLvl2Deposits = await context.DepositHistories.Where(d => lvl2Emails.Contains(d.Email)).ToListAsync();
+        var allLvl3Deposits = await context.DepositHistories.Where(d => lvl3Emails.Contains(d.Email)).ToListAsync();
+
+        float refToday = 0, refYesterday = 0, refMonth = 0, refTotal = 0;
+
+        // Only count successful deposits
+        foreach (var d in allLvl1Deposits)
+        {
+            if (d.Status != "Éxito") continue;
+            var depositDate = d.Timestamp.LocalDateTime;
+            refTotal += d.Amount * 0.05f;
+            if (depositDate >= todayStart && depositDate < todayEnd) refToday += d.Amount * 0.05f;
+            if (depositDate >= yesterdayStart && depositDate < todayStart) refYesterday += d.Amount * 0.05f;
+            if (depositDate >= monthStart) refMonth += d.Amount * 0.05f;
+        }
+        foreach (var d in allLvl2Deposits)
+        {
+            if (d.Status != "Éxito") continue;
+            var depositDate = d.Timestamp.LocalDateTime;
+            refTotal += d.Amount * 0.03f;
+            if (depositDate >= todayStart && depositDate < todayEnd) refToday += d.Amount * 0.03f;
+            if (depositDate >= yesterdayStart && depositDate < todayStart) refYesterday += d.Amount * 0.03f;
+            if (depositDate >= monthStart) refMonth += d.Amount * 0.03f;
+        }
+        foreach (var d in allLvl3Deposits)
+        {
+            if (d.Status != "Éxito") continue;
+            var depositDate = d.Timestamp.LocalDateTime;
+            refTotal += d.Amount * 0.01f;
+            if (depositDate >= todayStart && depositDate < todayEnd) refToday += d.Amount * 0.01f;
+            if (depositDate >= yesterdayStart && depositDate < todayStart) refYesterday += d.Amount * 0.01f;
+            if (depositDate >= monthStart) refMonth += d.Amount * 0.01f;
+        }
+
+        // ── 3. MISSION EARNINGS (by claim date) ──
+        var userMissions = await context.UserMissions
+            .Where(um => um.Email == email && um.ClaimedAt != null)
+            .Join(context.Missions, um => um.MissionId, m => m.Id, (um, m) => new { um.ClaimedAt, m.Gift })
+            .ToListAsync();
+
+        float missionToday = 0, missionYesterday = 0, missionMonth = 0, missionTotal = 0;
+        foreach (var um in userMissions)
+        {
+            if (um.ClaimedAt == null) continue;
+            var claimDate = um.ClaimedAt.Value.LocalDateTime;
+            missionTotal += (float)um.Gift;
+            if (claimDate >= todayStart && claimDate < todayEnd) missionToday += (float)um.Gift;
+            if (claimDate >= yesterdayStart && claimDate < todayStart) missionYesterday += (float)um.Gift;
+            if (claimDate >= monthStart) missionMonth += (float)um.Gift;
+        }
+
+        // ── 4. DAILY CLAIM EARNINGS (by claim date) ──
+        var dailyClaims = await context.DailyClaims.Where(dc => dc.Email == email).ToListAsync();
+
+        float claimToday = 0, claimYesterday = 0, claimMonth = 0, claimTotal = 0;
+        foreach (var dc in dailyClaims)
+        {
+            var claimDate = dc.ClaimedAt.LocalDateTime;
+            claimTotal += dc.Amount;
+            if (claimDate >= todayStart && claimDate < todayEnd) claimToday += dc.Amount;
+            if (claimDate >= yesterdayStart && claimDate < todayStart) claimYesterday += dc.Amount;
+            if (claimDate >= monthStart) claimMonth += dc.Amount;
+        }
+
+        // ── 5. BOT TOTAL (all-time accumulated profit) ──
+        var allPlans = await context.UserActivePlans
+            .Where(uap => uap.Username == email)
+            .ToListAsync();
+        float botTotal = (float)allPlans.Sum(p => p.AccumulatedProfit);
+
+        // ── ASSEMBLE RESULT ──
+        var breakdown = new EarningsBreakdownDTO
+        {
+            Yesterday = botYesterday + refYesterday + missionYesterday + claimYesterday,
+            Today = botToday + refToday + missionToday + claimToday,
+            Month = botMonth + refMonth + missionMonth + claimMonth,
+            Team = refTotal,
+            Total = botTotal + refTotal + missionTotal + claimTotal
+        };
+
+        return Ok(breakdown);
+    }
 }
