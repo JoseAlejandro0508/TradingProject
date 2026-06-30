@@ -121,8 +121,8 @@ export const routes: Routes = [
   {
     path: 'daviplata/:token',
     loadComponent: () =>
-      import('./common/deposit/daviplata/daviplata.component').then(
-        (m) => m.DaviplataComponent
+      import('./common/deposit/daviplata/daviplata-confirmation/daviplata-confirmation.component').then(
+        (m) => m.DaviplataConfirmationComponent
       ),
     canActivate: [authGuard]
   },

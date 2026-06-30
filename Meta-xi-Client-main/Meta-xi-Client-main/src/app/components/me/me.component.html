@@ -2,7 +2,7 @@
 <div class="wallet-wrapper" *ngIf="currentView === 'main'">
   <header class="balance-card">
     <div class="balance-label">BALANCE DISPONIBLE PARA RETIRO:</div>
-    <div class="balance-amount">{{ balanceUSD === 'N/A' ? 'N/A' : ('$' + balanceUSD) }}</div>
+    <div class="balance-amount">{{('$' + balanceCOP) }}</div>
     <div class="balance-crypto">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
       {{ balanceCOP > 0 ? (balanceCOP | currency:'COP':'symbol':'1.0-0':'es') : '0 COP' }}

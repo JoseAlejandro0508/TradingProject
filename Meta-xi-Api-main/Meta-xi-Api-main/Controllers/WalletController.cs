@@ -383,6 +383,10 @@ public class WalletController : ControllerBase
                 depositAmountCop = updateBalance.Balance;
                 //wallet.Balance += depositAmountCop;
                 break;
+            case "daviplata":
+                depositAmountCop = updateBalance.Balance;
+                //wallet.Balance += depositAmountCop;
+                break;
             default:
                 return NotFound(new { message = "Token no soportado" });
         }

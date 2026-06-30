@@ -1,0 +1,131 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+import { TelegramService } from '../../../../services/products/Telegram.service';
+import { NotificationService } from '../../../../services/products/notification.service';
+import { environment } from '../../../../../environments/environment';
+
+@Component({
+  selector: 'app-daviplata-confirmation',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterLink],
+  templateUrl: './daviplata-confirmation.component.html',
+  styleUrl: './daviplata-confirmation.component.scss',
+})
+export class DaviplataConfirmationComponent implements OnInit {
+  // Amount from query params (set by DaviplataComponent)
+  montoRecarga = 0;
+  // Unique order number
+  orderNumber = '';
+  // User input: transaction reference
+  reference = '';
+  // Toggle between payment view and success view
+  showSuccess = false;
+  // QR data URL
+  qrUrl = '';
+  // Loading state during submission
+  submitting = false;
+  // Username from localStorage
+  username = '';
+
+  constructor(
+    private route: ActivatedRoute,
+    private http: HttpClient,
+    private telegramService: TelegramService,
+    private notificationService: NotificationService
+  ) {}
+
+  ngOnInit(): void {
+    // Read cantidad from query params
+    this.route.queryParams.subscribe((params) => {
+      this.montoRecarga = Number(params['cantidad']) || 0;
+    });
+
+    // Generate a unique order number
+    this.orderNumber = this.generateOrderNumber();
+
+    // Generate QR with payment info
+    this.qrUrl = this.buildQrUrl();
+
+    // Read username from localStorage
+    this.username = localStorage.getItem('username') || '';
+  }
+
+  get displayAmount(): string {
+    return '$ ' + this.montoRecarga.toLocaleString('es-CO');
+  }
+
+  get canConfirm(): boolean {
+    return this.reference.trim().length > 0 && !this.submitting;
+  }
+
+  async onConfirm(): Promise<void> {
+    if (this.submitting) return;
+    this.submitting = true;
+
+    const updateBalancePayload = {
+      OrdenId: this.orderNumber,
+      Email: this.username,
+      Balance: this.montoRecarga,
+      Token: 'daviplata',
+    };
+
+    try {
+      await firstValueFrom(
+        this.http.post(
+          `${environment.apiUrl}/Wallet/UpdateBalance`,
+          updateBalancePayload
+        )
+      );
+
+      const message = this.buildMessage();
+      await firstValueFrom(this.telegramService.sendMessage$(message));
+
+      this.showSuccess = true;
+    } catch {
+      this.notificationService.errorMessage(
+        'Error al actualizar el balance o enviar el mensaje. Inténtalo nuevamente.'
+      );
+    } finally {
+      this.submitting = false;
+    }
+  }
+
+  handleQrError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img) {
+      img.src = 'assets/token/daviplata.png';
+    }
+  }
+
+  closePage(): void {
+    window.close();
+  }
+
+  private generateOrderNumber(): string {
+    const timestamp = Date.now().toString().slice(-6);
+    const random = Math.floor(Math.random() * 10000)
+      .toString()
+      .padStart(4, '0');
+    return `DAV${timestamp}${random}`;
+  }
+
+  private buildQrUrl(): string {
+    const paymentData = `DaviplataPago:${this.montoRecarga}:${this.orderNumber}`;
+    return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(
+      paymentData
+    )}`;
+  }
+
+  private buildMessage(): string {
+    const user = this.username || 'N/A';
+    return `⬇️ Nueva Recarga:\n● Moneda: DAVIPLATA\n● Cantidad: ${
+      this.displayAmount
+    } COP\n● Usuario: ${user}\n⚠️ Orden: ${
+      this.orderNumber
+    }\n⚠️ Referencia: ${this.reference.trim()}`;
+  }
+}
