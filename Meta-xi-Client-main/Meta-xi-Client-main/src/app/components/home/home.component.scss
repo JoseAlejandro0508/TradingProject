@@ -112,13 +112,13 @@
 /* --- RECUADRO GRANDE EXTENDIDO DE BORDE A BORDE PERFECTO (100vw) --- */
 .earnings-card {
   background: linear-gradient(135deg, var(--bg-grad-start), var(--bg-grad-end));
-  width: 100vw; /* Forzado total al ancho real de la pantalla */
-  margin-left: calc(-50vw + 50%); /* Centrado absoluto rompiendo paddings del padre */
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
   margin-right: calc(-50vw + 50%);
-  border-radius: 0; /* Sin curvas para mimetizarse con los límites laterales */
+  border-radius: 0;
   padding: 26px 24px; 
   position: relative; 
-  overflow: hidden; /* Mantiene la notificación contenida */
+  overflow: hidden;
   border-top: 1px solid rgba(255, 255, 255, 0.08); 
   border-bottom: 1px solid rgba(255, 255, 255, 0.08); 
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
@@ -266,7 +266,7 @@
 /* --- NOTIFICACIÓN TOAST --- */
 .toast-notification { 
   position: absolute; 
-  top: -80px; /* Desplazado completamente fuera del recuadro por defecto */
+  top: -80px;
   left: 16px; 
   right: 16px; 
   background-color: var(--tv-blue); 
@@ -281,7 +281,7 @@
   transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
 }
 .toast-notification.show { 
-  top: 14px; /* Baja elegantemente a su posición visual sólo al activarse */
+  top: 14px;
 }
 
 /* --- RESPONSIVE --- */

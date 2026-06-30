@@ -2,14 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
-import { NavComponent } from '../../shared/nav/nav.component';
+import { NavbarComponent } from '../../shared/navbar/navbar.component';
 import { ButtonsComponent } from '../../shared/buttons/buttons.component';
 import { TopNotificationComponent } from '../../shared/top-notification/top-notification.component';
 
 @Component({
   selector: 'app-background',
   standalone: true,
-  imports: [RouterOutlet, NavComponent, ButtonsComponent, TopNotificationComponent, CommonModule],
+  imports: [RouterOutlet, NavbarComponent, ButtonsComponent, TopNotificationComponent, CommonModule],
   templateUrl: './background.component.html',
   styleUrl: './background.component.scss',
 })
