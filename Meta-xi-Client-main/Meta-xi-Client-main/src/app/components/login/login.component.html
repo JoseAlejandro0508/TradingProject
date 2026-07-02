@@ -9,7 +9,32 @@
     </svg>
     <div class="brand-title">Trading<span>View</span></div>
   </div>
-  <div class="nav-controls">
+  <div class="nav-right-group">
+    <button
+      class="theme-toggle-btn"
+      (click)="toggleTheme()"
+      title="Cambiar tema"
+    >
+      <svg *ngIf="isDarkMode" viewBox="0 0 24 24">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+      </svg>
+      <svg *ngIf="!isDarkMode" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.07" x2="5.64" y2="17.66"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+    </button>
+  </div>
+
+  <!--
+    
+ 
     <app-theme-toggle></app-theme-toggle>
     <button class="control-btn" (click)="toggleDropdown(); $event.stopPropagation()">
       <svg viewBox="0 0 24 24">
@@ -18,10 +43,14 @@
         <circle cx="12" cy="19" r="1" />
       </svg>
     </button>
-  </div>
+       -->
 </header>
 
-<div class="dropdown-menu" [class.show]="dropdownOpen" (click)="$event.stopPropagation()">
+<div
+  class="dropdown-menu"
+  [class.show]="dropdownOpen"
+  (click)="$event.stopPropagation()"
+>
   <button class="dropdown-item" (click)="openAuthModal('reg')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -52,22 +81,34 @@
   <app-trading-chart></app-trading-chart>
 
   <div class="cta-group">
-    <button class="btn-primary-cta" (click)="openAuthModal('reg')">Registrarme</button>
-    <button class="btn-secondary-login-cta" (click)="openAuthModal('log')">Iniciar sesión</button>
+    <button class="btn-primary-cta" (click)="openAuthModal('reg')">
+      Registrarme
+    </button>
+    <button class="btn-secondary-login-cta" (click)="openAuthModal('log')">
+      Iniciar sesión
+    </button>
   </div>
 
   <p class="hero-lead">
-    Multiplica tu capital de forma segura y automatizada. Al activar un plan, tus fondos trabajan en
+    Multiplica tu capital de forma segura y automatizada. Al activar un plan,
+    tus fondos trabajan en
     <span>TradingBots algorítmicos</span>
-    que ejecutan compras y ventas en los mercados financieros globales más grandes. Operamos bajo estrictas medidas de protección programada 24/7, garantizando una generación de
-    <span>ingresos pasivos estables</span>, transparentes y bajo tu total control.
+    que ejecutan compras y ventas en los mercados financieros globales más
+    grandes. Operamos bajo estrictas medidas de protección programada 24/7,
+    garantizando una generación de
+    <span>ingresos pasivos estables</span>, transparentes y bajo tu total
+    control.
   </p>
 
   <div class="hero-kpi-container">
     <div class="kpi-row">
       <div class="kpi-label">Nuevos Usuarios</div>
-      <div class="kpi-value" style="display: flex; align-items: center; gap: 6px;">
-        376 <div class="indicator-dot"></div>
+      <div
+        class="kpi-value"
+        style="display: flex; align-items: center; gap: 6px"
+      >
+        376
+        <div class="indicator-dot"></div>
       </div>
     </div>
     <div class="kpi-row">
@@ -76,7 +117,9 @@
     </div>
     <div class="kpi-row">
       <div class="kpi-label">Operaciones hoy</div>
-      <div class="kpi-value" style="color: var(--accent-green);">+{{ liveCounter }}</div>
+      <div class="kpi-value" style="color: var(--accent-green)">
+        +{{ liveCounter }}
+      </div>
     </div>
   </div>
 </main>
@@ -87,7 +130,12 @@
   <div class="cards-layout">
     <div class="info-card" *ngFor="let member of members">
       <div class="card-icon-frame">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+        >
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
           <circle cx="12" cy="7" r="4" />
         </svg>
@@ -103,8 +151,15 @@
 
     <div class="info-card">
       <div class="card-icon-frame">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M21.21 15.89A10 10 0 1 1 8 2.83M22 12A10 10 0 0 0 12 2v10z" />
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+        >
+          <path
+            d="M21.21 15.89A10 10 0 1 1 8 2.83M22 12A10 10 0 0 0 12 2v10z"
+          />
         </svg>
       </div>
       <h3>{{ teamData.title }}</h3>
@@ -128,5 +183,7 @@
 ></app-auth-modal>
 
 <footer>
-  <p>&copy; 2026 TradingView. Protección perimetral avanzada y análisis técnico.</p>
+  <p>
+    &copy; 2026 TradingView. Protección perimetral avanzada y análisis técnico.
+  </p>
 </footer>

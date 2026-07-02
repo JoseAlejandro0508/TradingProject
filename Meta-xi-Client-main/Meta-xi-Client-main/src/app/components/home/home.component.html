@@ -121,7 +121,7 @@
           <div class="stat-box"><span class="stat-val" id="dayStat">${{ formatBalance(dailyEarnings) }}</span><span class="stat-label">Cada día</span></div>
         </div>
         
-        <button class="btn-claim" id="actionBtn" (click)="processBotAction()" [disabled]="isLoadingBot">
+        <button  *ngIf="AvailableFreeBot" class="btn-claim" id="actionBtn" (click)="processBotAction()" [disabled]="isLoadingBot">
           <span *ngIf="isLoadingBot">Conectando Servidor...</span>
           <span *ngIf="!isLoadingBot && !isBotRunning">TradingBots Gratis</span>
           <span *ngIf="!isLoadingBot && isBotRunning">Recolectar Ganancias</span>
@@ -161,11 +161,36 @@
       </button>
     </div>
 
-    <!-- BONO DIARIO -->
-    <button class="btn-bonus-long" (click)="navigateToDailyClaim()">
-      <svg viewBox="0 0 24 24"><path d="M20 12V8H4v4M2 12h20v9H2zM12 2a3 3 0 0 0-3 3c0 .66.31 1.25.8 1.63L12 8l2.2-1.37c.49-.38.8-.97.8-1.63a3 3 0 0 0-3-3z"/></svg>
-      <span>Reclamar Bono Diario</span>
-    </button>
+
+    <div class="filter-bar-trigger" id="accountPwdBtn" (click)="navigateToDailyClaim()">
+      <div class="filter-left-side">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+        <span>Reclamar Bono Diario</span>
+      </div>
+      <div class="filter-right-side">
+        <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+    </div>
+
+        <div class="filter-bar-trigger" id="accountPwdBtn" (click)="navigateToBonus()" >
+      <div class="filter-left-side">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+        <span>Canjear Bono </span>
+      </div>
+      <div class="filter-right-side">
+        <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+    </div>
+
+        <div class="filter-bar-trigger" id="accountPwdBtn" (click)="navigateToBots()">
+      <div class="filter-left-side">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+        <span>Trading Bots</span>
+      </div>
+      <div class="filter-right-side">
+        <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+    </div>
 
   </div>
 </div>

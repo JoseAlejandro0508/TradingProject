@@ -24,5 +24,7 @@ export class TradingChartComponent {
     { type: 'up', height: '60%', delay: '0.9s' },
     { type: 'down', height: '50%', delay: '0.5s' },
     { type: 'up', height: '75%', delay: '1.1s' },
+    { type: 'down', height: '50%', delay: '0.5s' },
+    { type: 'up', height: '75%', delay: '1.1s' },
   ];
 }

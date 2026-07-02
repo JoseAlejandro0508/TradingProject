@@ -1,3 +1,31 @@
+
+.filter-bar-trigger {
+  background: #141826;
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background 0.2s ease, border 0.2s ease, opacity 0.3s;
+}
+.wallet-wrapper[data-theme="light"] .filter-bar-trigger { background: #ffffff; }
+.filter-bar-trigger:active { background: #1c2030; }
+.wallet-wrapper[data-theme="light"] .filter-bar-trigger:active { background: #f1f3f5; }
+.filter-left-side {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+}
+.wallet-wrapper[data-theme="light"] .filter-left-side { color: #1f2937; }
+.filter-left-side svg { color: var(--text-muted); flex-shrink: 0; }
+.filter-right-side { display: flex; align-items: center; gap: 8px; }
+.arrow-icon { color: var(--text-muted); }
+
 .home-wrapper {
   width: 100%;
   min-height: 100vh;
@@ -121,7 +149,7 @@
   overflow: hidden;
   border-top: 1px solid rgba(255, 255, 255, 0.08); 
   border-bottom: 1px solid rgba(255, 255, 255, 0.08); 
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+ box-shadow: 2px 1px 30px rgb(241 3 179 / 40%);
 }
 
 /* Resplandores inferiores del color del recuadro grande */

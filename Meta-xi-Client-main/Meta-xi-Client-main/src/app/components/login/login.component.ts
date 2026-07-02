@@ -4,7 +4,8 @@ import { ThemeToggleComponent } from './theme-toggle/theme-toggle.component';
 import { TradingChartComponent } from './trading-chart/trading-chart.component';
 import { PartnersCarouselComponent } from './partners-carousel/partners-carousel.component';
 import { AuthModalComponent } from './auth-modal/auth-modal.component';
-
+import { ThemeService } from '../../services/theme.service';
+import { inject } from '@angular/core';
 export interface TeamMember {
   role: string;
   name: string;
@@ -37,13 +38,44 @@ export class LoginComponent implements OnInit, OnDestroy {
   dropdownOpen = false;
   liveCounter = 689;
   private counterInterval: any;
-
+  private themeService = inject(ThemeService);
+  isDarkMode = this.themeService.getTheme() === 'dark';
   members: TeamMember[] = [
-    { role: 'Director Ejecutivo (CEO)', name: 'Alexander Vance', country: 'Colombia', age: '34 años', profession: 'Ingeniero Financiero & Emprendedor' },
-    { role: 'Principal Inversor', name: 'Mateo Sterling', country: 'Suiza', age: '42 años', profession: 'Gestor de Fondos de Cobertura' },
-    { role: 'Equipo de Programación', name: 'DevCore Solutions', country: 'Global / Remoto', age: 'Corp.', profession: 'Ingenieros de Software Full-Stack' },
-    { role: 'Editor de Contenido', name: 'Lucas Silva', country: 'Argentina', age: '28 años', profession: 'Diseñador Multimedia & Editor' },
-    { role: 'Agente de Marketing', name: 'Elena Rostova', country: 'España', age: '31 años', profession: 'Estratega de Crecimiento Digital' },
+    {
+      role: 'Director Ejecutivo (CEO)',
+      name: 'Alexander Vance',
+      country: 'Colombia',
+      age: '34 años',
+      profession: 'Ingeniero Financiero & Emprendedor',
+    },
+    {
+      role: 'Principal Inversor',
+      name: 'Mateo Sterling',
+      country: 'Suiza',
+      age: '42 años',
+      profession: 'Gestor de Fondos de Cobertura',
+    },
+    {
+      role: 'Equipo de Programación',
+      name: 'DevCore Solutions',
+      country: 'Global / Remoto',
+      age: 'Corp.',
+      profession: 'Ingenieros de Software Full-Stack',
+    },
+    {
+      role: 'Editor de Contenido',
+      name: 'Lucas Silva',
+      country: 'Argentina',
+      age: '28 años',
+      profession: 'Diseñador Multimedia & Editor',
+    },
+    {
+      role: 'Agente de Marketing',
+      name: 'Elena Rostova',
+      country: 'España',
+      age: '31 años',
+      profession: 'Estratega de Crecimiento Digital',
+    },
   ];
 
   teamData: TeamData = {
@@ -74,6 +106,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.authMode = mode;
     this.authOpen = true;
     this.dropdownOpen = false;
+  }
+  toggleTheme(): void {
+    const next = this.themeService.toggleTheme();
+    this.isDarkMode = next === 'dark';
   }
 
   closeAuthModal(): void {

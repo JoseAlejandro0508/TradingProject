@@ -32,7 +32,7 @@ export interface UserActivePlanDTO {
   expiresAt: string;
   lastTradeAt: string;
   accumulatedProfit: number;
-  status: 'Active' | 'Paused';
+  status: 'Active' | 'Paused'|'Ended';
   tradingPair: string;
   dailyProfitEstimate: number;
   acquisitionCost?: number;

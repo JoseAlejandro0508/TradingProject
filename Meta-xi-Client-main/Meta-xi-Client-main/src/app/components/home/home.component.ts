@@ -27,7 +27,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private notification = inject(NotificationService);
   private themeService = inject(ThemeService);
   private botPlanService = inject(BotPlanService);
-
+  AvailableFreeBot:boolean=true;
   // ─── User Data ───────────────────────────────────────
   username: string = localStorage.getItem('username') || '';
   balanceCOP: number = 0;
@@ -101,7 +101,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       
       // Load active plans
       this.activePlans = await this.botPlanService.getMyActiveBots(this.username);
-      
+      this.activePlans.filter(plan => plan.status != 'Ended');
+      console.log('Imprimiendo');
+      console.log(this.activePlans);
       // Load free usage
       this.freeUsages = await this.botPlanService.getFreeUsage(this.username);
       
@@ -113,9 +115,15 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private checkActiveFreeBot(): void {
     // Find active free bot plan
+    if(this.activePlans.find(
+      plan => plan.status != 'Active' && this.isFreePlan(plan.botPlanId)
+    )){
+      this.AvailableFreeBot=false;
+    }
     this.activeFreePlan = this.activePlans.find(
       plan => plan.status === 'Active' && this.isFreePlan(plan.botPlanId)
     ) || null;
+
 
     if (this.activeFreePlan) {
       this.isBotRunning = true;
@@ -139,6 +147,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       
       this.startEarningsSimulation();
     } else {
+
       this.isBotRunning = false;
       this.liveEarnings = 0;
       this.hourlyEarnings = 0;
@@ -330,6 +339,12 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   navigateToDailyClaim(): void {
     this.router.navigate(['/daily-claim']);
+  }
+  navigateToBonus(): void {
+    this.router.navigate(['/welcome']);
+  }
+  navigateToBots(): void {
+    this.router.navigate(['/plans']);
   }
 
   // ─── Formatters ──────────────────────────────────────

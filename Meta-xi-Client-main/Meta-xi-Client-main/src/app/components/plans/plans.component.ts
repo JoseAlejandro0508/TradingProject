@@ -138,6 +138,9 @@ export class PlansComponent implements OnInit {
     this.isLoadingActive = true;
     try {
       this.activePlans = await this.botPlanService.getMyActiveBots(this.username);
+      
+      this.activePlans=this.activePlans.filter(plan => plan.status !== 'Ended');
+
       this.updateTotalEarnings();
     } catch (error: any) {
       console.error('Error loading active bots:', error);

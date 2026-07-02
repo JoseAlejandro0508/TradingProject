@@ -1,6 +1,10 @@
+:host {
+  width: 100vw;
+}
+
 .live-trading-chart {
   width: 100%;
-  max-width: 380px;
+
   height: 130px;
   background: #090e1a;
   border: 1px solid rgba(41, 98, 255, 0.3);

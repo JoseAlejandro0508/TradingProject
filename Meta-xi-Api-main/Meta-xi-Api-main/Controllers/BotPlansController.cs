@@ -62,7 +62,7 @@ public class BotPlansController : ControllerBase
         }
         DateTime Today = DateTime.Now;
         var activePlans = await _context.UserActivePlans
-            .Where(uap => uap.Username == username && (uap.ExpiresAt>Today))
+            .Where(uap => uap.Username == username )
             .Include(uap => uap.BotPlan)
             .Select(uap => new UserActivePlanDTO
             {
@@ -74,7 +74,7 @@ public class BotPlansController : ControllerBase
                 ExpiresAt = uap.ExpiresAt,
                 LastTradeAt = uap.LastTradeAt,
                 AccumulatedProfit = uap.AccumulatedProfit,
-                Status = uap.Status,
+                Status =  uap.ExpiresAt>Today?"Active":"Ended",
                 TradingPair = uap.BotPlan.TradingPair,
                 DailyProfitEstimate = uap.BotPlan.DailyProfitEstimate,
                 AcquisitionCost = uap.AcquisitionCost
