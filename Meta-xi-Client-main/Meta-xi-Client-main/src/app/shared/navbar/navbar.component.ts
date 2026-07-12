@@ -75,10 +75,10 @@ export class NavbarComponent implements OnInit {
   }
 
   // ─── Navigation ──────────────────────────────────────
-  navigateTo(route: string): void {
+  navigateTo(route: string, section?: string): void {
     this.sidebarOpen = false;
     if (route === '#') return;
-    this.router.navigate([route]);
+    this.router.navigate([route], { state: { sectionOpen: section } });
   }
 
   // ─── Chat ────────────────────────────────────────────

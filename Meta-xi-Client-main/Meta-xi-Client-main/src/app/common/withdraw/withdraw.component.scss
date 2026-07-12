@@ -2,7 +2,13 @@
   display: block;
   width: 100%;
 }
-
+.nequilogodot {
+  width: 8px;
+  height: 8px;
+  background: #3fe3ff;
+  border-radius: 50%;
+  display: inline-block;
+}
 .deposit-wrap {
   width: 100%;
   max-width: 420px;

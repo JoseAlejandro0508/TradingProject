@@ -62,7 +62,7 @@ public class BotPlansController : ControllerBase
         }
         DateTime Today = DateTime.Now;
         var activePlans = await _context.UserActivePlans
-            .Where(uap => uap.Username == username )
+            .Where(uap => uap.Username == username)
             .Include(uap => uap.BotPlan)
             .Select(uap => new UserActivePlanDTO
             {
@@ -74,10 +74,46 @@ public class BotPlansController : ControllerBase
                 ExpiresAt = uap.ExpiresAt,
                 LastTradeAt = uap.LastTradeAt,
                 AccumulatedProfit = uap.AccumulatedProfit,
-                Status =  uap.ExpiresAt>Today?"Active":"Ended",
+                Status = uap.ExpiresAt > Today ? "Active" : "Ended",
                 TradingPair = uap.BotPlan.TradingPair,
                 DailyProfitEstimate = uap.BotPlan.DailyProfitEstimate,
-                AcquisitionCost = uap.AcquisitionCost
+                AcquisitionCost = uap.AcquisitionCost,
+                Icon_color = uap.BotPlan.IconColor,
+                NotClaimed=Today.Subtract(uap.LastTradeAt).TotalSeconds * (double)uap.BotPlan.DailyProfitEstimate / (3600 * 24)
+            })
+            .ToListAsync();
+
+        return Ok(activePlans);
+    }
+    /// <summary>
+    /// Get user's active bot plans
+    /// </summary>
+    public class  BotResponse
+    {
+        public string name{get; set;}
+        public double profit{get; set;}
+        public double baseProfit{get; set;}
+    }
+    [HttpGet("WalletBots/{username}")]
+    public async Task<IActionResult> WalletBots(string username)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == username || u.PhoneNumber == username);
+        if (user == null)
+        {
+            return NotFound(new { message = "Usuario no encontrado" });
+        }
+        DateTime Today = DateTime.Now;
+        var activePlans = await _context.UserActivePlans
+            .Where(uap => uap.Username == username && uap.ExpiresAt > Today)
+            .Include(uap => uap.BotPlan)
+            .Select(uap => new BotResponse
+            {
+    
+                name = uap.BotPlan.Name,
+
+                profit = (double)uap.AccumulatedProfit,
+                baseProfit = (double)uap.BotPlan.DailyProfitEstimate,
+         
             })
             .ToListAsync();
 
@@ -347,6 +383,8 @@ public class UserActivePlanDTO
     public required string TradingPair { get; set; }
     public decimal DailyProfitEstimate { get; set; }
     public decimal AcquisitionCost { get; set; }
+    public string Icon_color { get; set; }
+    public double NotClaimed { get; set; } = 0;
 }
 
 public class UserFreeUsageDTO

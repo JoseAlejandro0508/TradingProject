@@ -112,16 +112,7 @@
     </div>
   </div>
 
-  <!-- BOTÓN: SOPORTE -->
-  <div class="filter-bar-trigger" (click)="toggleChat()">
-    <div class="filter-left-side">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-      <span>Soporte</span>
-    </div>
-    <div class="filter-right-side">
-      <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-    </div>
-  </div>
+
 
   <!-- BOTÓN: CAMBIAR TEMA (MODO OSCURO / CLARO) -->
   <div class="filter-bar-trigger" (click)="toggleTheme()">
@@ -310,19 +301,7 @@
             </div>
             <span>Nequi</span>
           </div>
-          <div class="method-select-card" id="selectUsdtOption" (click)="switchMethodForm('usdt')" [class.active-usdt]="activeFormType === 'usdt'">
-            <div class="method-icon-wrapper">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#009393" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12M9 8h6M9 12h6"></path></svg>
-            </div>
-            <span>USDT (TRC20)</span>
-          </div>
-          <div class="method-select-card" id="selectUsdtBepOption" (click)="switchMethodForm('usdt-bep')" [class.active-usdt-bep]="activeFormType === 'usdt-bep'">
-            <div class="method-icon-wrapper">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#f3ba2f" stroke-width="2"><path d="M12 2l4 4-4 4-4-4zM12 14l4 4-4 4-4-4zM6 8l4 4-4 4-4-4zM18 8l4 4-4 4-4-4z"></path></svg>
-            </div>
-            <span>USDT (BEP20)</span>
-          </div>
-        </div>
+
       </div>
 
       <!-- CONTENEDOR DE LA VISTA PREVIA INTERNA EN VIVO -->

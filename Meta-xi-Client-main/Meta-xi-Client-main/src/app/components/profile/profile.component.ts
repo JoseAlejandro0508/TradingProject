@@ -63,7 +63,7 @@ export class ProfileComponent implements OnInit {
   withdrawalPwdTitleHeader = 'Definir Clave de Retiro';
   withdrawalPwdMainTitle = 'Nueva Contraseña de Retiro';
   withdrawalPwdLabel = 'Nueva Contraseña (4 caracteres)';
-  ActiveDays=0;
+  ActiveDays = 0;
   // Account password
   accountPwdWindowOpen = false;
   accOldPwd = '';
@@ -77,6 +77,7 @@ export class ProfileComponent implements OnInit {
   usdtSaved = false;
   usdtBepSaved = false;
   nequiNumberInput = '';
+  nequiNumberSaved = '';
   usdtAddressInput = '';
   usdtBepAddressInput = '';
 
@@ -102,21 +103,42 @@ export class ProfileComponent implements OnInit {
     await this.checkIsVerified();
     await this.checkHasWithdrawPassword();
     await this.LoadProfile();
+    await this.getSavedAccount();
+    this.LoadState();
+  }
+  LoadState(): void {
+    const navState = history.state;
+
+    const SelectedSection=navState.sectionOpen||null;
+
+    if(!SelectedSection) {
+      return
+    }else if(SelectedSection==='ChangePass'){
+      this.openAccountPwdWindow();
+    }else if(SelectedSection==='ChangeWithdrawPass'){
+      this.openWithdrawalPwdWindow();
+    }else if(SelectedSection==='KYC'){
+
+      this.openKycWindow();
+    }else if(SelectedSection==='Nequi'){
+      this.openNequiWindow();
+    }
+
+
   }
   async LoadProfile(): Promise<void> {
     if (!this.username) return;
     try {
       const response: any = await firstValueFrom(
-        this.http.post(
-          `${environment.apiUrl}/User/UserInfo`,
-          {Username:this.username}
-        )
+        this.http.post(`${environment.apiUrl}/User/UserInfo`, {
+          Username: this.username,
+        })
       );
-      this.profileName = response?.profile.profileName || "Anonimo";
-      this.ActiveDays=response?.activeDays;
+      this.profileName = response?.profile.profileName || 'Anonimo';
+      this.ActiveDays = response?.activeDays;
     } catch (error: any) {
       console.error('Error ', error);
-      this.profileName= "Anonimo";
+      this.profileName = 'Anonimo';
     }
   }
 
@@ -149,11 +171,11 @@ export class ProfileComponent implements OnInit {
 
   // ─── Navigation ───────────────────────────
   goToDeposit(): void {
-    this.router.navigate(['/recharge']);
+    this.router.navigate(['/deposit/nequi']);
   }
 
   goToWithdraw(): void {
-    this.router.navigate(['/withdrawToken']);
+    this.router.navigate(['/withdraw/nequi']);
   }
 
   goToReferrals(): void {
@@ -403,12 +425,13 @@ export class ProfileComponent implements OnInit {
   }
 
   // ─── Withdrawal Methods ───────────────────
-  openNequiWindow(): void {
+  async openNequiWindow(): Promise<void> {
     this.activeFormType = '';
     this.nequiNumberInput = '';
     this.usdtAddressInput = '';
     this.usdtBepAddressInput = '';
     this.nequiWindowOpen = true;
+    await this.getSavedAccount();
   }
 
   closeNequiWindow(): void {
@@ -422,12 +445,161 @@ export class ProfileComponent implements OnInit {
   get liveCardPreview(): SafeHtml {
     let html = '';
     if (this.activeFormType === 'nequi') {
-      const val = this.nequiNumberInput || '3000000000';
+      const val = String(this.nequiNumberSaved || '3000000000').trim();
       const badgeClass = this.nequiSaved
         ? 'badge-saved-success'
         : 'badge-nequi';
       const badgeText = this.nequiSaved ? '✓ GUARDADO' : 'NEQUI PENDIENTE';
       html = `
+
+        <style>
+        
+          .method-selector-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.method-select-card {
+  background: var(--input-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 14px;
+  padding: 12px 6px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.method-select-card .method-icon-wrapper {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.method-select-card.active-nequi {
+  border-color: #da0077;
+  background: rgba(218, 0, 119, 0.05);
+}
+
+.method-select-card.active-usdt {
+  border-color: var(--usdt-brand);
+  background: rgba(0, 147, 147, 0.05);
+}
+
+.method-select-card.active-usdt-bep {
+  border-color: #f3ba2f;
+  background: rgba(243, 186, 47, 0.05);
+}
+
+/* --- TARJETAS GRANDES DE RETIRO --- */
+.saved-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.nequi-card-display {
+  width: 100%;
+  background: linear-gradient(135deg, #da0077 0%, #1c003a 100%);
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
+  color: #ffffff;
+  box-shadow: 0 12px 28px rgba(218, 0, 119, 0.25);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 190px;
+  margin-top: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nequi-card-display::before,
+.usdt-card-display::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 250px;
+  height: 250px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.nequi-logo-text {
+  font-weight: 900;
+  font-size: 24px;
+  letter-spacing: -1px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.nequi-logo-dot {
+  width: 8px;
+  height: 8px;
+  background: #3fe3ff;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.nequi-card-number,
+.usdt-card-number {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  margin: 20px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  word-break: break-all;
+}
+
+.nequi-card-lbl,
+.usdt-card-lbl {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.7;
+  margin-bottom: 2px;
+}
+
+/* DISEÑO DE LA TARJETA USDT */
+.usdt-card-display {
+  width: 100%;
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 190px;
+  margin-top: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.usdt-trc-gradient {
+  background: linear-gradient(135deg, #009393 0%, #061826 100%);
+  box-shadow: 0 12px 28px rgba(0, 147, 147, 0.25);
+}
+
+.usdt-bep-gradient {
+  background: linear-gradient(135deg, #f3ba2f 0%, #11141a 100%);
+  box-shadow: 0 12px 28px rgba(243, 186, 47, 0.2);
+}
+
+        </style>
         <div class="nequi-card-display">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div class="nequi-logo-text">
@@ -444,12 +616,162 @@ export class ProfileComponent implements OnInit {
         </div>
       `;
     } else if (this.activeFormType === 'usdt') {
-      const val = this.usdtAddressInput || 'TXa1b2c3d4e5f6g7h8i9j0xxxxxxxx';
+      const val = String(
+        this.usdtAddressInput || 'TXa1b2c3d4e5f6g7h8i9j0xxxxxxxx'
+      ).trim();
       const badgeClass = this.usdtSaved
         ? 'badge-saved-success'
         : 'badge-usdt-trc';
       const badgeText = this.usdtSaved ? '✓ GUARDADO' : 'TRC20 CONFIGURANDO';
       html = `
+              <style>
+        
+          .method-selector-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.method-select-card {
+  background: var(--input-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 14px;
+  padding: 12px 6px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.method-select-card .method-icon-wrapper {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.method-select-card.active-nequi {
+  border-color: #da0077;
+  background: rgba(218, 0, 119, 0.05);
+}
+
+.method-select-card.active-usdt {
+  border-color: var(--usdt-brand);
+  background: rgba(0, 147, 147, 0.05);
+}
+
+.method-select-card.active-usdt-bep {
+  border-color: #f3ba2f;
+  background: rgba(243, 186, 47, 0.05);
+}
+
+/* --- TARJETAS GRANDES DE RETIRO --- */
+.saved-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.nequi-card-display {
+  width: 100%;
+  background: linear-gradient(135deg, #da0077 0%, #1c003a 100%);
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
+  color: #ffffff;
+  box-shadow: 0 12px 28px rgba(218, 0, 119, 0.25);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 190px;
+  margin-top: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nequi-card-display::before,
+.usdt-card-display::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 250px;
+  height: 250px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.nequi-logo-text {
+  font-weight: 900;
+  font-size: 24px;
+  letter-spacing: -1px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.nequi-logo-dot {
+  width: 8px;
+  height: 8px;
+  background: #3fe3ff;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.nequi-card-number,
+.usdt-card-number {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  margin: 20px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  word-break: break-all;
+}
+
+.nequi-card-lbl,
+.usdt-card-lbl {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.7;
+  margin-bottom: 2px;
+}
+
+/* DISEÑO DE LA TARJETA USDT */
+.usdt-card-display {
+  width: 100%;
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 190px;
+  margin-top: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.usdt-trc-gradient {
+  background: linear-gradient(135deg, #009393 0%, #061826 100%);
+  box-shadow: 0 12px 28px rgba(0, 147, 147, 0.25);
+}
+
+.usdt-bep-gradient {
+  background: linear-gradient(135deg, #f3ba2f 0%, #11141a 100%);
+  box-shadow: 0 12px 28px rgba(243, 186, 47, 0.2);
+}
+
+        </style>
         <div class="usdt-card-display usdt-trc-gradient">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div class="nequi-logo-text" style="color: #ffffff; font-size:20px;">
@@ -469,13 +791,162 @@ export class ProfileComponent implements OnInit {
         </div>
       `;
     } else if (this.activeFormType === 'usdt-bep') {
-      const val =
-        this.usdtBepAddressInput || '0x71Cxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+      const val = String(
+        this.usdtBepAddressInput || '0x71Cxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+      ).trim();
       const badgeClass = this.usdtBepSaved
         ? 'badge-saved-success'
         : 'badge-usdt-bep';
       const badgeText = this.usdtBepSaved ? '✓ GUARDADO' : 'BEP20 CONFIGURANDO';
       html = `
+              <style>
+        
+          .method-selector-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.method-select-card {
+  background: var(--input-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 14px;
+  padding: 12px 6px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.method-select-card .method-icon-wrapper {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.method-select-card.active-nequi {
+  border-color: #da0077;
+  background: rgba(218, 0, 119, 0.05);
+}
+
+.method-select-card.active-usdt {
+  border-color: var(--usdt-brand);
+  background: rgba(0, 147, 147, 0.05);
+}
+
+.method-select-card.active-usdt-bep {
+  border-color: #f3ba2f;
+  background: rgba(243, 186, 47, 0.05);
+}
+
+/* --- TARJETAS GRANDES DE RETIRO --- */
+.saved-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.nequi-card-display {
+  width: 100%;
+  background: linear-gradient(135deg, #da0077 0%, #1c003a 100%);
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
+  color: #ffffff;
+  box-shadow: 0 12px 28px rgba(218, 0, 119, 0.25);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 190px;
+  margin-top: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nequi-card-display::before,
+.usdt-card-display::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 250px;
+  height: 250px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.nequi-logo-text {
+  font-weight: 900;
+  font-size: 24px;
+  letter-spacing: -1px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.nequi-logo-dot {
+  width: 8px;
+  height: 8px;
+  background: #3fe3ff;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.nequi-card-number,
+.usdt-card-number {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  margin: 20px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  word-break: break-all;
+}
+
+.nequi-card-lbl,
+.usdt-card-lbl {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.7;
+  margin-bottom: 2px;
+}
+
+/* DISEÑO DE LA TARJETA USDT */
+.usdt-card-display {
+  width: 100%;
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 190px;
+  margin-top: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.usdt-trc-gradient {
+  background: linear-gradient(135deg, #009393 0%, #061826 100%);
+  box-shadow: 0 12px 28px rgba(0, 147, 147, 0.25);
+}
+
+.usdt-bep-gradient {
+  background: linear-gradient(135deg, #f3ba2f 0%, #11141a 100%);
+  box-shadow: 0 12px 28px rgba(243, 186, 47, 0.2);
+}
+
+        </style>
         <div class="usdt-card-display usdt-bep-gradient">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div class="nequi-logo-text" style="color: #ffffff; font-size:20px;">
@@ -498,15 +969,47 @@ export class ProfileComponent implements OnInit {
     return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 
-  saveNequiAccount(): void {
-    const nequiNum = this.nequiNumberInput.trim();
+  async getSavedAccount(): Promise<void> {
+    try {
+      const response: any = await firstValueFrom(
+        this.http.get(
+          `${environment.apiUrl}/User/GetWithdrawAccount/${this.username}`
+        )
+      );
+      if (response?.accountNumber) {
+        this.nequiSaved = true;
+        this.nequiBtnText = 'Editar retiro guardado';
+        this.nequiNumberSaved = response.accountNumber;
+      } else {
+        this.nequiSaved = false;
+      }
+    } catch (error: any) {
+      this.nequiSaved = false;
+      console.warn('No hay cuenta Nequi guardada', error?.error?.message);
+    }
+  }
+  async saveNequiAccount(): Promise<void> {
+    const nequiNum = String(this.nequiNumberInput || '').trim();
+    console.log('Guardando cuenta Nequi:', nequiNum.length);
     if (!nequiNum || nequiNum.length < 8) {
       alert('Por favor introduce un número de cuenta Nequi válido.');
       return;
     }
-    this.nequiSaved = true;
-    this.nequiBtnText = 'Editar retiro guardado';
-    alert('Método de retiro Nequi guardado exitosamente.');
+    try {
+      const response: any = await firstValueFrom(
+        this.http.post(`${environment.apiUrl}/User/SetWithrawAccount`, {
+          Phone: this.username,
+          AccountNumber: nequiNum,
+        })
+      );
+
+      this.nequiSaved = true;
+      this.nequiNumberSaved = nequiNum;
+      this.nequiBtnText = 'Editar retiro guardado';
+      alert('Método de retiro Nequi guardado exitosamente.');
+    } catch (error: any) {
+      alert('Error inesperado');
+    }
   }
 
   saveUsdtAccount(): void {

@@ -1,6 +1,18 @@
-import { Component, inject, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import {
+  Component,
+  inject,
+  Input,
+  Output,
+  EventEmitter,
+  OnInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -8,9 +20,19 @@ import { NotificationService } from '../../../services/products/notification.ser
 import { environment } from '../../../../environments/environment';
 
 export const FLAG_DB: Record<string, string> = {
-  '57': '🇨🇴', '53': '🇨🇺', '34': '🇪🇸', '54': '🇦🇷',
-  '52': '🇲🇽', '51': '🇵🇪', '55': '🇧🇷', '56': '🇨🇱',
-  '58': '🇻🇪', '1': '🇺🇸', '44': '🇬🇧', '41': '🇨🇭', '593': '🇪🇨'
+  '57': '🇨🇴',
+  '53': '🇨🇺',
+  '34': '🇪🇸',
+  '54': '🇦🇷',
+  '52': '🇲🇽',
+  '51': '🇵🇪',
+  '55': '🇧🇷',
+  '56': '🇨🇱',
+  '58': '🇻🇪',
+  '1': '🇺🇸',
+  '44': '🇬🇧',
+  '41': '🇨🇭',
+  '593': '🇪🇨',
 };
 
 export interface PasswordStrength {
@@ -57,29 +79,41 @@ export class AuthModalComponent implements OnInit {
   smsTimer = 0;
   isSubmitting = false;
 
-  passwordStrength: PasswordStrength = { label: 'Vacía', color: 'var(--text-muted)', bars: 0 };
+  passwordStrength: PasswordStrength = {
+    label: 'Vacía',
+    color: 'var(--text-muted)',
+    bars: 0,
+  };
 
   codeReferrer: string | null = null;
 
   ngOnInit(): void {
     this.initForms();
-    this.route.queryParamMap.subscribe(params => {
+    this.route.queryParamMap.subscribe((params) => {
       this.codeReferrer = params.get('code');
     });
+    this.onCountryCodeChange('reg');
+    this.onCountryCodeChange('log');
   }
 
   private initForms() {
     this.regForm = this.fb.group({
-      countryCode: ['', [Validators.required, Validators.minLength(1)]],
+      countryCode: [
+        { value: '+57', disabled: true },
+        [Validators.required, Validators.minLength(1)],
+      ],
       phone: ['', [Validators.required, Validators.minLength(7)]],
-      smsCode: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]],
+      smsCode: [
+        '',
+        [Validators.required, Validators.minLength(6), Validators.maxLength(6)],
+      ],
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', [Validators.required]],
       teamCode: ['TV-GLOBAL-2026'],
     });
 
     this.logForm = this.fb.group({
-      countryCode: ['', [Validators.required]],
+      countryCode: [{ value: '+57', disabled: true }, [Validators.required]],
       phone: ['', [Validators.required, Validators.minLength(7)]],
       password: ['', [Validators.required]],
       keepActive: [false],
@@ -107,6 +141,7 @@ export class AuthModalComponent implements OnInit {
     const code = form.get('countryCode')?.value?.replace(/\D/g, '') || '';
     if (code.length === 0) {
       form.patchValue({ phone: '' }, { emitEvent: false });
+
       return;
     }
     let phone = form.get('phone')?.value?.replace(/\D/g, '') || '';
@@ -146,7 +181,9 @@ export class AuthModalComponent implements OnInit {
     if (!code || phone.length < 7 || this.smsTimer > 0) return;
 
     this.smsTimer = 60;
-    const generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const generatedCode = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
     this.regForm.patchValue({ smsCode: generatedCode });
 
     const interval = setInterval(() => {
@@ -159,29 +196,38 @@ export class AuthModalComponent implements OnInit {
 
   togglePasswordVisibility(field: 'reg' | 'regConfirm' | 'log'): void {
     if (field === 'reg') {
-      this.regPasswordType = this.regPasswordType === 'password' ? 'text' : 'password';
+      this.regPasswordType =
+        this.regPasswordType === 'password' ? 'text' : 'password';
     } else if (field === 'regConfirm') {
-      this.regConfirmPasswordType = this.regConfirmPasswordType === 'password' ? 'text' : 'password';
+      this.regConfirmPasswordType =
+        this.regConfirmPasswordType === 'password' ? 'text' : 'password';
     } else {
-      this.logPasswordType = this.logPasswordType === 'password' ? 'text' : 'password';
+      this.logPasswordType =
+        this.logPasswordType === 'password' ? 'text' : 'password';
     }
   }
 
   isRegFormValid(): boolean {
     const form = this.regForm;
-    const phoneValid = form.get('countryCode')?.value?.length >= 2 && form.get('phone')?.value?.length >= 7;
+    const phoneValid =
+      form.get('countryCode')?.value?.length >= 2 &&
+      form.get('phone')?.value?.length >= 7;
     const smsValid = form.get('smsCode')?.value?.length === 6;
     const pass = form.get('password')?.value || '';
     const conf = form.get('confirmPassword')?.value || '';
     const passValid = pass.length >= 8;
     const confValid = conf === pass && conf.length >= 8;
-    const strengthValid = this.passwordStrength.label === 'Bien segura' || this.passwordStrength.label === 'Muy segura';
+    const strengthValid =
+      this.passwordStrength.label === 'Bien segura' ||
+      this.passwordStrength.label === 'Muy segura';
     return phoneValid && smsValid && passValid && confValid && strengthValid;
   }
 
   isLoginFormValid(): boolean {
     const form = this.logForm;
-    const phoneValid = form.get('countryCode')?.value?.length >= 2 && form.get('phone')?.value?.length >= 7;
+    const phoneValid =
+      form.get('countryCode')?.value?.length >= 2 &&
+      form.get('phone')?.value?.length >= 7;
     const passValid = (form.get('password')?.value || '').length >= 1;
     return phoneValid && passValid;
   }
@@ -199,7 +245,11 @@ export class AuthModalComponent implements OnInit {
   async onRegisterSubmit() {
     if (!this.isRegFormValid() || this.isSubmitting) return;
     this.isSubmitting = true;
-    const { countryCode, phone, password } = this.regForm.value;
+    const formValues = this.regForm.getRawValue();
+
+    const countryCode = formValues.countryCode; // Ahora sí será "+57" en lugar de undefined
+    const phone = formValues.phone;
+    const password = formValues.password;
     const data: LoginData = {
       email: null,
       phoneNumber: countryCode.replace(/\D/g, '') + phone,
@@ -212,9 +262,13 @@ export class AuthModalComponent implements OnInit {
       this.notification.correct(response.message || 'Registro exitoso');
       setTimeout(() => {
         this.mode = 'log';
-        this.regForm.reset();
-        this.logForm.reset();
-        this.passwordStrength = { label: 'Vacía', color: 'var(--text-muted)', bars: 0 };
+        this.regForm.reset({ countryCode: '+57' });
+        this.logForm.reset({ countryCode: '+57' });
+        this.passwordStrength = {
+          label: 'Vacía',
+          color: 'var(--text-muted)',
+          bars: 0,
+        };
       }, 3000);
     } catch (error: any) {
       this.notification.errorMessage(`${error}`);
@@ -226,7 +280,11 @@ export class AuthModalComponent implements OnInit {
   async onLoginSubmit() {
     if (!this.isLoginFormValid() || this.isSubmitting) return;
     this.isSubmitting = true;
-    const { countryCode, phone, password } = this.logForm.value;
+    const formValues = this.logForm.getRawValue();
+
+    const countryCode = formValues.countryCode; // Ahora sí será "+57" en lugar de undefined
+    const phone = formValues.phone;
+    const password = formValues.password;
     const data: LoginData = {
       email: null,
       phoneNumber: countryCode.replace(/\D/g, '') + phone,
@@ -250,7 +308,9 @@ export class AuthModalComponent implements OnInit {
   async login(data: LoginData): Promise<any> {
     const url = `${environment.apiUrl}/User/Login`;
     try {
-      const response = await firstValueFrom(this.http.post(url, data, { responseType: 'text' }));
+      const response = await firstValueFrom(
+        this.http.post(url, data, { responseType: 'text' })
+      );
       return response;
     } catch (error: any) {
       let errorMsg = 'Error desconocido';
@@ -268,7 +328,9 @@ export class AuthModalComponent implements OnInit {
   async register(data: LoginData): Promise<any> {
     const url = `${environment.apiUrl}/User/UserRegister`;
     try {
-      const response = await firstValueFrom(this.http.post<any>(url, data, { observe: 'response' }));
+      const response = await firstValueFrom(
+        this.http.post<any>(url, data, { observe: 'response' })
+      );
       if (response.status === 200) {
         return response.body;
       } else {
@@ -287,7 +349,12 @@ export class AuthModalComponent implements OnInit {
 
   allowOnlyNumbers(event: KeyboardEvent): void {
     const key = event.key;
-    if (!/^[0-9]$/.test(key) && key !== 'Backspace' && key !== 'Delete' && key !== 'Tab') {
+    if (
+      !/^[0-9]$/.test(key) &&
+      key !== 'Backspace' &&
+      key !== 'Delete' &&
+      key !== 'Tab'
+    ) {
       event.preventDefault();
     }
   }

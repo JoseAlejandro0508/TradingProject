@@ -36,6 +36,8 @@ export interface UserActivePlanDTO {
   tradingPair: string;
   dailyProfitEstimate: number;
   acquisitionCost?: number;
+  icon_color:string;
+  notClaimed:number|null;
 }
 
 export interface UserFreeUsageDTO {

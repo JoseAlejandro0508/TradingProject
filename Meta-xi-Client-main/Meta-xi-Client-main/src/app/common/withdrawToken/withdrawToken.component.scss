@@ -1,3 +1,73 @@
+.nequi-card-lbl,
+.usdt-card-lbl {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.7;
+  margin-bottom: 2px;
+}
+.nequi-card-display::before,
+.usdt-card-display::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 250px;
+  height: 250px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.nequi-logo-text {
+  font-weight: 900;
+  font-size: 24px;
+  letter-spacing: -1px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #ffffff;
+}
+
+.nequilogodot {
+  width: 8px;
+  height: 8px;
+  background: #3fe3ff;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.nequi-card-number,
+.usdt-card-number {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  margin: 20px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  word-break: break-all;
+  color: #ffffff;
+}
+.nequi-card-display,
+.usdt-card-display {
+  width: 100%;
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 190px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+  margin-bottom: 24px;
+}
+
+.nequi-gradient {
+  background: linear-gradient(135deg, #da0077 0%, #1c003a 100%);
+  box-shadow: 0 12px 28px rgba(218, 0, 119, 0.25);
+}
 .container {
   width: 100%;
   max-width: 420px;
@@ -34,7 +104,7 @@
   justify-content: space-between;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 
   &:hover {
     background: var(--btn-hover);

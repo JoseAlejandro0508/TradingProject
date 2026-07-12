@@ -20,6 +20,7 @@ public class User
     public required ICollection<ReferLevel2>? referLevel2s { get ; set ; }
     public required ICollection<ReferLevel3>? referLevel3s { get ; set ; }
     public required Wallet? Wallet { get ; set ; }
+    public string? NequiAccount { get; set; } = null;
     
     public  DateTimeOffset CreatedAt { get; set; }
     public User()

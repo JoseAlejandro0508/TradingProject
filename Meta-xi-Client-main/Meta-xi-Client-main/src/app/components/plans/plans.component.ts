@@ -1,14 +1,21 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { NotificationService } from '../../services/products/notification.service';
 import { ThemeService } from '../../services/theme.service';
-import { 
-  BotPlanService, 
-  BotPlanDTO, 
-  UserActivePlanDTO, 
-  UserFreeUsageDTO 
+
+import {
+  BotPlanService,
+  BotPlanDTO,
+  UserActivePlanDTO,
+  UserFreeUsageDTO,
 } from '../../services/bot-plan.service';
 import { environment } from '../../../environments/environment';
 
@@ -77,7 +84,13 @@ export class PlansComponent implements OnInit {
     await this.loadFreeUsage();
     await this.loadActiveBots();
     this.updateTotalEarnings();
-    console.log('All data loaded. Total earnings:', this.totalEarnings, 'Active plans:', this.activePlans.length);
+    console.log(
+      'All data loaded. Total earnings:',
+      this.totalEarnings,
+      'Active plans:',
+      this.activePlans.length
+    );
+    this.ChechFreeBootClaim();
   }
 
   // --- Theme ---
@@ -89,6 +102,14 @@ export class PlansComponent implements OnInit {
     this.themeService.toggleTheme();
   }
 
+  ChechFreeBootClaim() {
+    const navState = history.state;
+    const claimFree = navState.claimFree || false;
+    if(!claimFree)return;
+    const bot = this.botPlans.find((bot) => bot.isFreeTier);
+    this.selectedBotForDeploy = bot || null;
+    this.showDeployModal = true;
+  }
   // --- Tab Navigation ---
   setTab(tab: 'tradingbots' | 'mis-sistemas'): void {
     this.activeTab = tab;
@@ -101,9 +122,7 @@ export class PlansComponent implements OnInit {
   async loadUserBalance(): Promise<void> {
     try {
       const url = `${environment.apiUrl}/Wallet/GetBalance/${this.username}`;
-      const response = await firstValueFrom(
-        this.http.get(url)
-      );
+      const response = await firstValueFrom(this.http.get(url));
       this.userBalance = parseFloat(response.toString()) || 0;
     } catch (error) {
       console.error('Error loading balance:', error);
@@ -115,18 +134,20 @@ export class PlansComponent implements OnInit {
     this.isLoadingBots = true;
     try {
       const bots = await this.botPlanService.getAvailableBots();
-      
+
       // Map to extended interface with stock info
-      this.botPlans = bots.map(bot => ({
+      this.botPlans = bots.map((bot) => ({
         ...bot,
-        stockAvailable: bot.stockMax // Initialize with max stock
+        stockAvailable: bot.stockMax, // Initialize with max stock
       }));
 
       // Calculate actual stock availability
       await this.calculateStockAvailability();
     } catch (error: any) {
       console.error('Error loading bots:', error);
-      this.notificationService.errorMessage('Error al cargar los bots disponibles');
+      this.notificationService.errorMessage(
+        'Error al cargar los bots disponibles'
+      );
     } finally {
       this.isLoadingBots = false;
     }
@@ -137,14 +158,20 @@ export class PlansComponent implements OnInit {
 
     this.isLoadingActive = true;
     try {
-      this.activePlans = await this.botPlanService.getMyActiveBots(this.username);
-      
-      this.activePlans=this.activePlans.filter(plan => plan.status !== 'Ended');
+      this.activePlans = await this.botPlanService.getMyActiveBots(
+        this.username
+      );
+
+      this.activePlans = this.activePlans.filter(
+        (plan) => plan.status !== 'Ended'
+      );
 
       this.updateTotalEarnings();
     } catch (error: any) {
       console.error('Error loading active bots:', error);
-      this.notificationService.errorMessage('Error al cargar tus sistemas activos');
+      this.notificationService.errorMessage(
+        'Error al cargar tus sistemas activos'
+      );
     } finally {
       this.isLoadingActive = false;
     }
@@ -166,38 +193,43 @@ export class PlansComponent implements OnInit {
 
     try {
       // Get user's active bots to calculate remaining stock
-      const activeBots = await this.botPlanService.getMyActiveBots(this.username);
+      const activeBots = await this.botPlanService.getMyActiveBots(
+        this.username
+      );
       console.log('Active bots from API:', activeBots); // DEBUG
 
       // Count active bots per plan
       const activeCountByPlan: { [key: number]: number } = {};
-      activeBots.forEach(bot => {
-        activeCountByPlan[bot.botPlanId] = (activeCountByPlan[bot.botPlanId] || 0) + 1;
+      activeBots.forEach((bot) => {
+        activeCountByPlan[bot.botPlanId] =
+          (activeCountByPlan[bot.botPlanId] || 0) + 1;
       });
       console.log('Active count by plan:', activeCountByPlan); // DEBUG
 
       // Update stock available for each bot
-      this.botPlans = this.botPlans.map(bot => {
+      this.botPlans = this.botPlans.map((bot) => {
         // Default stockMax to 1 if not provided from backend
         const maxStock = bot.stockMax || 1;
         const activeCount = activeCountByPlan[bot.id] || 0;
         const availableStock = Math.max(0, maxStock - activeCount);
-        
-        console.log(`Bot ${bot.name} (ID: ${bot.id}): maxStock=${maxStock}, active=${activeCount}, available=${availableStock}`); // DEBUG
-        
+
+        console.log(
+          `Bot ${bot.name} (ID: ${bot.id}): maxStock=${maxStock}, active=${activeCount}, available=${availableStock}`
+        ); // DEBUG
+
         return {
           ...bot,
           stockMax: maxStock,
-          stockAvailable: availableStock
+          stockAvailable: availableStock,
         };
       });
     } catch (error) {
       console.error('Error calculating stock:', error);
       // Default to showing stock from backend (stockMax) if there's an error
-      this.botPlans = this.botPlans.map(bot => ({
+      this.botPlans = this.botPlans.map((bot) => ({
         ...bot,
         stockMax: bot.stockMax || 1,
-        stockAvailable: bot.stockMax || 1
+        stockAvailable: bot.stockMax || 1,
       }));
     }
   }
@@ -205,7 +237,7 @@ export class PlansComponent implements OnInit {
   // --- Computed Properties ---
   get visibleBotPlans(): BotPlanWithStock[] {
     // Filter out free bots that have been claimed
-    return this.botPlans.filter(bot => {
+    return this.botPlans.filter((bot) => {
       if (bot.isFreeTier && this.isFreeBotClaimed(bot.id)) {
         return false;
       }
@@ -214,12 +246,18 @@ export class PlansComponent implements OnInit {
   }
 
   get totalInvestment(): number {
-    return this.activePlans.reduce((acc, plan) => acc + (plan.acquisitionCost || 0), 0);
+    return this.activePlans.reduce(
+      (acc, plan) => acc + (plan.acquisitionCost || 0),
+      0
+    );
   }
 
   updateTotalEarnings(): void {
     // Calculate total earnings from active plans (REAL data, no hardcoded base)
-    this.totalEarnings = this.activePlans.reduce((acc, plan) => acc + (plan.accumulatedProfit || 0), 0);
+    this.totalEarnings = this.activePlans.reduce(
+      (acc, plan) => acc + (plan.accumulatedProfit || 0),
+      0
+    );
   }
 
   // --- User Stock Helpers ---
@@ -228,7 +266,7 @@ export class PlansComponent implements OnInit {
   }
 
   isFreeBotClaimed(botId: number): boolean {
-    const usage = this.freeUsages.find(u => u.botPlanId === botId);
+    const usage = this.freeUsages.find((u) => u.botPlanId === botId);
     return usage ? !usage.isEligible : false;
   }
 
@@ -292,25 +330,29 @@ export class PlansComponent implements OnInit {
     try {
       const response = await this.botPlanService.deployBot({
         username: this.username,
-        botPlanId: this.selectedBotForDeploy.id
+        botPlanId: this.selectedBotForDeploy.id,
       });
 
-      this.showToastNotification(`${this.selectedBotForDeploy.name} activado correctamente`);
-      
+      this.showToastNotification(
+        `${this.selectedBotForDeploy.name} activado correctamente`
+      );
+
       // Close modal
       this.closeDeploy();
-      
+
       // Refresh data
       await this.loadUserBalance();
       await this.loadFreeUsage();
       await this.calculateStockAvailability();
       await this.loadActiveBots();
-      
+
       // Switch to active systems tab
       this.setTab('mis-sistemas');
     } catch (error: any) {
       console.error('Error deploying bot:', error);
-      this.notificationService.errorMessage(error.message || 'Error al desplegar el bot');
+      this.notificationService.errorMessage(
+        error.message || 'Error al desplegar el bot'
+      );
     } finally {
       this.isDeploying = false;
     }
@@ -329,10 +371,10 @@ export class PlansComponent implements OnInit {
     const startedAt = new Date(plan.startedAt);
     const expiresAt = new Date(plan.expiresAt);
     const now = new Date();
-    
+
     const totalDuration = expiresAt.getTime() - startedAt.getTime();
     const elapsed = now.getTime() - startedAt.getTime();
-    
+
     if (totalDuration <= 0) return 100;
     const percentage = (elapsed / totalDuration) * 100;
     return Math.min(100, Math.max(0, percentage));
@@ -341,7 +383,7 @@ export class PlansComponent implements OnInit {
   getTotalProfitForPlan(plan: UserActivePlanDTO): number {
     // Calculate total expected profit based on daily estimate and duration
     // This is an approximation
-    const bot = this.botPlans.find(b => b.id === plan.botPlanId);
+    const bot = this.botPlans.find((b) => b.id === plan.botPlanId);
     if (bot) {
       return bot.totalProfitEstimate;
     }
@@ -373,15 +415,17 @@ export class PlansComponent implements OnInit {
     try {
       const response = await this.botPlanService.pauseBot(plan.id);
       this.showToastNotification(response.message);
-      
+
       // Update local state
-      const planIndex = this.activePlans.findIndex(p => p.id === plan.id);
+      const planIndex = this.activePlans.findIndex((p) => p.id === plan.id);
       if (planIndex !== -1) {
         this.activePlans[planIndex].status = 'Paused';
       }
     } catch (error: any) {
       console.error('Error pausing bot:', error);
-      this.notificationService.errorMessage(error.message || 'Error al pausar el bot');
+      this.notificationService.errorMessage(
+        error.message || 'Error al pausar el bot'
+      );
     } finally {
       this.isPausingBot[plan.id] = false;
     }
@@ -394,15 +438,17 @@ export class PlansComponent implements OnInit {
     try {
       const response = await this.botPlanService.resumeBot(plan.id);
       this.showToastNotification(response.message);
-      
+
       // Update local state
-      const planIndex = this.activePlans.findIndex(p => p.id === plan.id);
+      const planIndex = this.activePlans.findIndex((p) => p.id === plan.id);
       if (planIndex !== -1) {
         this.activePlans[planIndex].status = 'Active';
       }
     } catch (error: any) {
       console.error('Error resuming bot:', error);
-      this.notificationService.errorMessage(error.message || 'Error al reanudar el bot');
+      this.notificationService.errorMessage(
+        error.message || 'Error al reanudar el bot'
+      );
     } finally {
       this.isResumingBot[plan.id] = false;
     }

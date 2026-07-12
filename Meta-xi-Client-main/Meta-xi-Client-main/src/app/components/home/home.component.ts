@@ -133,7 +133,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       const NotClaimedSeconds=(Today-LastTrade)/1000;
       const incrementPerSecond =this.activeFreePlan.dailyProfitEstimate/(3600*24) ;
 
-      this.liveEarnings =NotClaimedSeconds*incrementPerSecond;
+      this.liveEarnings =this.activeFreePlan.notClaimed|| 0;
       
       // Calculate hourly and daily based on the bot plan
       const bot = this.freeBot;
@@ -196,6 +196,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // ─── Bot Action ──────────────────────────────────────
   async processBotAction(): Promise<void> {
+  
+
     if (!this.isBotRunning) {
       // Activate free bot
       if (!this.freeBot) {
@@ -212,6 +214,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
       this.isLoadingBot = true;
       try {
+        this.navigateToFreeBot();
+        return;
         const response = await this.botPlanService.deployBot({
           username: this.username,
           botPlanId: this.freeBot.id
@@ -318,11 +322,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // ─── Navigation ──────────────────────────────────────
   navigateToRecharge(): void {
-    this.router.navigate(['/recharge']);
+    this.router.navigate(['/deposit/nequi']);
   }
 
   navigateToWithdraw(): void {
-    this.router.navigate(['/withdrawToken']);
+    this.router.navigate(['/withdraw/nequi']);
   }
 
   navigateToTeam(): void {
@@ -345,6 +349,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
   navigateToBots(): void {
     this.router.navigate(['/plans']);
+  }
+  navigateToFreeBot(): void {
+    this.router.navigate(['/plans'], { state: { claimFree: true } });
   }
 
   // ─── Formatters ──────────────────────────────────────

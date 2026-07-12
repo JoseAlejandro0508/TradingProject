@@ -251,19 +251,19 @@ public class UserController : ControllerBase
     }
     public class UserInfoRequest
     {
-        public string Username{get; set;}
+        public string Username { get; set; }
     }
     [HttpPost("UserInfo")]
     public async Task<IActionResult> UserInfo(UserInfoRequest userInfoRequest)
     {
 
         User? user = await context.Users.FirstOrDefaultAsync(option => option.Email == userInfoRequest.Username);
-        DateTimeOffset Today=DateTime.Now;
-        int ActiveDays=Today.Subtract(user.CreatedAt).Days;
+        DateTimeOffset Today = DateTime.Now;
+        int ActiveDays = Today.Subtract(user.CreatedAt).Days;
         ProfileDetails? PD = await context.ProfileDetails_.FirstOrDefaultAsync(option => option.UserId == user.Id);
-  
 
-        return Ok(new {Profile=PD ,ActiveDays=ActiveDays});
+
+        return Ok(new { Profile = PD, ActiveDays = ActiveDays });
     }
 
 
@@ -481,6 +481,8 @@ public class UserController : ControllerBase
         return Ok(new { message = "Contraseña de retiro actualizada correctamente" });
     }
 
+
+
     //Endpoint para verificar si tiene contraseña de retiro configurada
     [HttpGet("HasWithdrawPassword/{username}")]
     public async Task<IActionResult> HasWithdrawPassword(string username)
@@ -557,6 +559,48 @@ public class UserController : ControllerBase
         await context.SaveChangesAsync();
 
         return Ok(new { message = "Sesión cerrada correctamente" });
+    }
+    public class SetRequest
+    {
+        public string Phone { get; set; }
+        public string AccountNumber { get; set; }
+
+    }
+    [HttpPost("SetWithrawAccount")]
+    public async Task<IActionResult> WithdrawAccount([FromBody] SetRequest request)
+    {
+        User user = await context.Users.FirstOrDefaultAsync(option => option.Email == request.Phone || option.PhoneNumber == request.Phone);
+        if (user == null)
+        {
+            return NotFound(new { message = "Usuario no encontrado" });
+        }
+        user.NequiAccount = request.AccountNumber;
+        context.Entry(user).State = EntityState.Modified;
+        await context.SaveChangesAsync();
+
+        return Ok(new { message = "Cuenta guardada correctamente" });
+
+    }
+    public class NequiAccountResponse
+    {
+        public string AccountNumber { get; set; }
+
+    }
+    [HttpGet("GetWithdrawAccount/{phone}")]
+    public async Task<IActionResult> GetWithdrawAccount(string phone)
+    {
+        User user = await context.Users.FirstOrDefaultAsync(option => option.Email == phone || option.PhoneNumber == phone);
+        if (user == null)
+        {
+            return NotFound(new { message = "Usuario no encontrado" });
+        }
+        if(user.NequiAccount==null)return BadRequest(new{message="No hay cuenta guardada"});
+        return Ok(new NequiAccountResponse
+        {
+           AccountNumber=user.NequiAccount 
+        });
+
+
     }
 
     // ── GET: api/User/AdminGetUserInfo/{phone} ──────────────────────────

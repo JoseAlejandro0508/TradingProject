@@ -11,8 +11,8 @@
 
   <!-- ACTION BUTTONS -->
   <section class="action-group">
-    <button class="btn btn-deposit" [routerLink]="['/recharge']">Recargar Cuenta</button>
-    <button class="btn btn-withdraw" [routerLink]="['/withdrawToken']">Retirar Fondos</button>
+    <button class="btn btn-deposit" [routerLink]="['/deposit/nequi']">Recargar Cuenta</button>
+    <button class="btn btn-withdraw" [routerLink]="['/withdraw/nequi']">Retirar Fondos</button>
   </section>
 
   <!-- ACCORDION: HISTORIAL RECARGAS -->
@@ -151,13 +151,13 @@
       <div class="tx-block">
         <div class="tx-header-title">Gestionar cuenta</div>
         <div class="tx-row">
-          <button class="btn btn-deposit" style="width:100%;" (click)="switchView('pass')">Cambiar contraseña</button>
+          <button class="btn btn-deposit" style="width:100%;" (click)="navigateTo('/profile', 'ChangePass')">Cambiar contraseña</button>
         </div>
         <div class="tx-row">
-          <button class="btn btn-deposit" style="width:100%;" (click)="switchView('withdrawPass')">Contraseña de retiro</button>
+          <button class="btn btn-deposit" style="width:100%;" (click)="navigateTo('/profile', 'ChangeWithdrawPass')">Contraseña de retiro</button>
         </div>
         <div class="tx-row">
-          <button class="btn btn-withdraw" style="width:100%;" (click)="switchView('phone')">Cambiar número</button>
+          <button class="btn btn-withdraw" style="width:100%;" (click)="navigateTo('/profile', 'ChangePhone')">Cambiar número</button>
         </div>
         <div class="tx-row">
           <button class="btn btn-withdraw" style="width:100%;" (click)="copyReferralLink()">Copiar link de referido</button>

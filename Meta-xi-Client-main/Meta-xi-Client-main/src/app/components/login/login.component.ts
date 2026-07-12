@@ -12,6 +12,7 @@ export interface TeamMember {
   country: string;
   age: string;
   profession: string;
+  icon:string;
 }
 
 export interface TeamData {
@@ -47,6 +48,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       country: 'Colombia',
       age: '34 años',
       profession: 'Ingeniero Financiero & Emprendedor',
+      icon: 'assets/avatars/ceo-1.webp', // Ruta al icono del CEO
     },
     {
       role: 'Principal Inversor',
@@ -54,6 +56,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       country: 'Suiza',
       age: '42 años',
       profession: 'Gestor de Fondos de Cobertura',
+      icon: 'assets/avatars/ceo-2.webp', // Ruta al icono del principal inversor
     },
     {
       role: 'Equipo de Programación',
@@ -61,6 +64,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       country: 'Global / Remoto',
       age: 'Corp.',
       profession: 'Ingenieros de Software Full-Stack',
+      icon: 'assets/avatars/ceo-3.webp', 
     },
     {
       role: 'Editor de Contenido',
@@ -68,6 +72,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       country: 'Argentina',
       age: '28 años',
       profession: 'Diseñador Multimedia & Editor',
+      icon: 'assets/avatars/ceo-4.webp', // Ruta al icono del editor de contenido
     },
     {
       role: 'Agente de Marketing',
@@ -75,6 +80,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       country: 'España',
       age: '31 años',
       profession: 'Estratega de Crecimiento Digital',
+      icon: 'assets/avatars/ceo-5.webp', // Ruta al icono del agente de marketing
     },
   ];
 

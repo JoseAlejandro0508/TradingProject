@@ -173,6 +173,7 @@ export class MeComponent implements OnInit, OnDestroy {
     this.getReferralLink();
     this.getAccountDetails();
     this.startBotSimulation();
+    this.LoadBots();
   }
 
   ngOnDestroy(): void {
@@ -208,10 +209,10 @@ export class MeComponent implements OnInit, OnDestroy {
   private startBotSimulation(): void {
     this.botInterval = setInterval(() => {
       this.bots.forEach((bot) => {
-        const delta = (Math.random() * 0.4 - 0.2);
-        bot.profit = parseFloat((bot.baseProfit + delta).toFixed(2));
+        const delta = bot.baseProfit/(3600*24);
+        bot.profit = parseFloat((bot.profit + delta).toFixed(4));
       });
-    }, 3000);
+    }, 1000);
   }
 
   // ─── Chat ───────────────────────────────────────────
@@ -280,6 +281,10 @@ export class MeComponent implements OnInit, OnDestroy {
       this.captchaPhone = this.generateCode();
       this.captchaWithdrawPass = this.generateCode();
     }
+  }
+  navigateTo(route: string, section?: string): void {
+
+    this.router.navigate([route], { state: { sectionOpen: section } });
   }
 
   private resetFormFields(): void {
@@ -434,6 +439,16 @@ export class MeComponent implements OnInit, OnDestroy {
     }
   }
 
+  async LoadBots(): Promise<void> {
+    const url = `${environment.apiUrl}/BotPlans/WalletBots/${this.username}`;
+    try {
+
+      const response = await firstValueFrom(this.http.get<Bot[]>(url));
+      this.bots = response || [];
+    } catch (error: any) {
+      console.error('Error al obtener bots:', error);
+    }
+  }
   // ─── API: Get Referral Link ─────────────────────────
   async getReferralLink(): Promise<void> {
     const url = `${environment.apiUrl}/User/GetLink/${this.username}`;

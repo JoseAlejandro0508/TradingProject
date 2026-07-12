@@ -63,7 +63,9 @@ export class WithdrawComponent implements OnInit, OnDestroy {
   showPassword = false;
 
   // ─── Quick Amounts ───────────────────────────
-  readonly QUICK_AMOUNTS_COP = [10000, 20000, 30000, 50000, 100000, 500000, 1000000, 5000000];
+  readonly QUICK_AMOUNTS_COP = [
+    10000, 20000, 30000, 50000, 100000, 500000, 1000000, 5000000,
+  ];
   readonly QUICK_AMOUNTS_USDT = [5, 10, 20, 50, 100, 200, 500, 1000];
 
   // ─── Constants (base values in COP) ──────────
@@ -74,11 +76,15 @@ export class WithdrawComponent implements OnInit, OnDestroy {
 
   // ─── Computed Min/Max based on currency ──────
   get MIN_AMOUNT(): number {
-    return this.isCOP ? this.MIN_AMOUNT_COP : this.MIN_AMOUNT_COP / this.USDT_CONVERSION_RATE;
+    return this.isCOP
+      ? this.MIN_AMOUNT_COP
+      : this.MIN_AMOUNT_COP / this.USDT_CONVERSION_RATE;
   }
 
   get MAX_AMOUNT(): number {
-    return this.isCOP ? this.MAX_AMOUNT_COP : this.MAX_AMOUNT_COP / this.USDT_CONVERSION_RATE;
+    return this.isCOP
+      ? this.MAX_AMOUNT_COP
+      : this.MAX_AMOUNT_COP / this.USDT_CONVERSION_RATE;
   }
 
   constructor(
@@ -91,12 +97,29 @@ export class WithdrawComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getBalance();
     this.regenerateCaptcha();
+    this.getSavedAccount();
   }
 
   ngOnDestroy(): void {
     // Cleanup handled by Angular
   }
 
+  async getSavedAccount(): Promise<void> {
+    try {
+      const response: any = await firstValueFrom(
+        this.http.get(
+          `${environment.apiUrl}/User/GetWithdrawAccount/${this.username}`
+        )
+      );
+      if (response?.accountNumber) {
+        this.linkedNumber = response.accountNumber;
+        this.accountNumber= response.accountNumber;
+      } 
+    } catch (error: any) {
+      
+      console.warn('No hay cuenta Nequi guardada', error?.error?.message);
+    }
+  }
   // ─── Getters ────────────────────────────────
   get isCOP(): boolean {
     return this.token === 'nequi' || this.token === 'daviplata';
@@ -263,7 +286,11 @@ export class WithdrawComponent implements OnInit, OnDestroy {
     const amt = this.amount ?? 0;
 
     // Amount validation
-    if (this.amount !== null && this.amount !== undefined && String(this.amount).length > 0) {
+    if (
+      this.amount !== null &&
+      this.amount !== undefined &&
+      String(this.amount).length > 0
+    ) {
       if (amt < this.MIN_AMOUNT) {
         this.amountValid = false;
         this.amountInvalid = true;
@@ -298,13 +325,12 @@ export class WithdrawComponent implements OnInit, OnDestroy {
     }
 
     // Captcha validation
-    const capValid = this.captchaInput === this.activeCaptcha;
+    const capValid = true;
 
     // Button unlock logic
-    const allFilled = String(this.amount ?? '').length > 0
-      && this.accountNumber.length > 0
-      && this.password.length > 0
-      && this.captchaInput.length > 0;
+    const allFilled =
+      String(this.amount ?? '').length > 0 &&
+      this.password.length > 0;
 
     this.canSubmit = allFilled && amt >= this.MIN_AMOUNT && capValid;
   }
@@ -348,8 +374,8 @@ export class WithdrawComponent implements OnInit, OnDestroy {
 
     // Convert amount to COP for backend if currency is USDT
     const amountToSend = this.isCOP
-      ? (this.amount ?? 0)
-      : ((this.amount ?? 0) * this.USDT_CONVERSION_RATE);
+      ? this.amount ?? 0
+      : (this.amount ?? 0) * this.USDT_CONVERSION_RATE;
 
     // Call backend FIRST to deduct balance and record withdrawal
     try {
@@ -359,27 +385,36 @@ export class WithdrawComponent implements OnInit, OnDestroy {
         Amount: amountToSend,
         AccountNumber: this.accountNumber,
         Token: this.token,
-        Password: this.password
+        Password: this.password,
       };
 
-      const res = await firstValueFrom(this.http.post<WithdrawResponse>(withdrawalUrl, withdrawalBody));
+      const res = await firstValueFrom(
+        this.http.post<WithdrawResponse>(withdrawalUrl, withdrawalBody)
+      );
 
       // Parsear ordenId de forma defensiva (por si cambia mayúsculas/estructura)
       const ordenId = (res as any)?.ordenId ?? (res as any)?.OrdenId ?? '';
 
       // Backend returned 200 — send Telegram notification
-      const message = `⬆️ Nuevo Retiro:\n\n● Moneda: ${this.token}\n● Cantidad a enviar: ${Math.round(this.amountToReceive)}\n●Ususario: ${this.username}\n\n⚠️ Cuenta: ${this.accountNumber}\n\n⚠️ Orden ID: ${ordenId}`;
+      const message = `⬆️ Nuevo Retiro:\n\n● Moneda: ${
+        this.token
+      }\n● Cantidad a enviar: ${Math.round(this.amountToReceive)}\n●Ususario: ${
+        this.username
+      }\n\n⚠️ Cuenta: ${this.accountNumber}\n\n⚠️ Orden ID: ${ordenId}`;
       this.telegram.sendMessage(message);
       this.notification.correct('Solicitud de retiro enviada correctamente');
     } catch (error: any) {
       // Backend rejected — show error, do NOT send Telegram
-      const msg = error?.error?.message || error?.error || 'Error al procesar el retiro';
+      const msg =
+        error?.error?.message || error?.error || 'Error al procesar el retiro';
       // Check if it's a schedule error
       if (error?.status === 400 && msg.includes('horario')) {
         this.scheduleInfo = error?.error?.schedule || null;
         this.showScheduleModal = true;
       } else {
-        this.notification.errorMessage(typeof msg === 'string' ? msg : 'Error al procesar el retiro');
+        this.notification.errorMessage(
+          typeof msg === 'string' ? msg : 'Error al procesar el retiro'
+        );
       }
     }
 
@@ -390,13 +425,24 @@ export class WithdrawComponent implements OnInit, OnDestroy {
     const url = `${environment.apiUrl}/User/VerifyWithdrawPassword`;
     // The app stores phone number in localStorage as 'username'
     // API supports both Email and PhoneNumber lookup
-    const body = { Email: this.username, Password: this.password, PhoneNumber: this.username };
+    const body = {
+      Email: this.username,
+      Password: this.password,
+      PhoneNumber: this.username,
+    };
     try {
       await firstValueFrom(this.http.post(url, body));
       return true;
     } catch (error: any) {
-      const msg = error?.error?.message || error?.error || 'Error al verificar contraseña de retiro';
-      this.notification.errorMessage(typeof msg === 'string' ? msg : 'Error al verificar contraseña de retiro');
+      const msg =
+        error?.error?.message ||
+        error?.error ||
+        'Error al verificar contraseña de retiro';
+      this.notification.errorMessage(
+        typeof msg === 'string'
+          ? msg
+          : 'Error al verificar contraseña de retiro'
+      );
       return false;
     }
   }
