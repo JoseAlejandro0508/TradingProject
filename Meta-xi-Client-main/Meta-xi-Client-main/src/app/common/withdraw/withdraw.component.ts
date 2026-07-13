@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, inject} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
@@ -8,7 +8,7 @@ import { NotificationService } from '../../services/products/notification.servic
 import { TelegramService } from '../../services/products/Telegram.service';
 import { ThemeService } from '../../services/theme.service';
 import { environment } from '../../../environments/environment';
-
+import { Router } from '@angular/router';
 interface WithdrawResponse {
   message: string;
   amount: number;
@@ -27,7 +27,7 @@ interface WithdrawResponse {
 })
 export class WithdrawComponent implements OnInit, OnDestroy {
   @Input('token') token: string = '';
-
+  private router = inject(Router);
   // ─── Form Fields ───────────────────────────
   balance = '0.00';
   username: string = localStorage.getItem('username') || '';
@@ -116,7 +116,8 @@ export class WithdrawComponent implements OnInit, OnDestroy {
         this.accountNumber= response.accountNumber;
       } 
     } catch (error: any) {
-      
+      this.notification.errorMessage('No hay cuenta Nequi guardada');
+      this.router.navigate(['/home']);
       console.warn('No hay cuenta Nequi guardada', error?.error?.message);
     }
   }

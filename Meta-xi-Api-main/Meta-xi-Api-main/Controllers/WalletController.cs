@@ -791,7 +791,7 @@ public class WalletController : ControllerBase
         // ── 1. BOT EARNINGS (estimated from active plans) ──
         var activePlans = await context.UserActivePlans
             .Include(uap => uap.BotPlan)
-            .Where(uap => uap.Username == email && uap.Status == "Active")
+            .Where(uap => uap.Username == email)
             .ToListAsync();
 
         float botToday = 0, botYesterday = 0, botMonth = 0;

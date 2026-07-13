@@ -171,8 +171,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
       const res = await firstValueFrom(this.http.post(url, Body));
 
-      await this.loadBotData();
-      await this.getMyBalance();
+      this.ngOnInit();
+      this.showToastNotification('¡Ganancias reclamadas con éxito!');
+
     } catch(error: any) {
         this.notification.errorMessage(error.message || 'Error al reclamar ganancias');
     }

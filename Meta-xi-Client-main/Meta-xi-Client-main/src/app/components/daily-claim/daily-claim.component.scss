@@ -15,7 +15,7 @@
   --stat-value-size: 16px;
 }
 
-:host-context(body.light-theme) {
+[data-theme="light"] :host {
   --bg-window: #f4f6fa;
   --bg-card: rgba(255, 255, 255, 0.85);
   --border-premium: rgba(0, 0, 0, 0.06);
@@ -23,7 +23,9 @@
   --text-muted: #626d7e;
   --shadow-card: rgba(28, 30, 36, 0.08);
 }
-
+[data-theme="light"]  .btn-firmar-action{
+  color: #06070a;
+}
 /* --- GLOBAL RESET FOR THIS COMPONENT --- */
 .window-wrapper {
   background-color: var(--bg-window);

@@ -252,8 +252,8 @@ public class BotPlansController : ControllerBase
         {
             Username = request.Username,
             BotPlanId = request.BotPlanId,
-            StartedAt = DateTime.UtcNow,
-            ExpiresAt = DateTime.UtcNow.AddDays(botPlan.DurationDays),
+            StartedAt = DateTime.Now,
+            ExpiresAt = DateTime.Now.AddDays(botPlan.DurationDays),
             AccumulatedProfit = 0,
             Status = "Active",
             AcquisitionCost = botPlan.IsFreeTier ? 0 : botPlan.Price
@@ -274,15 +274,15 @@ public class BotPlansController : ControllerBase
                     Username = request.Username,
                     BotPlanId = request.BotPlanId,
                     UsageCount = 1,
-                    FirstUsedAt = DateTime.UtcNow,
-                    LastUsedAt = DateTime.UtcNow
+                    FirstUsedAt = DateTime.Now,
+                    LastUsedAt = DateTime.Now
                 };
                 await _context.UserFreeBotUsages.AddAsync(freeUsage);
             }
             else
             {
                 freeUsage.UsageCount++;
-                freeUsage.LastUsedAt = DateTime.UtcNow;
+                freeUsage.LastUsedAt = DateTime.Now;
                 _context.Entry(freeUsage).State = EntityState.Modified;
             }
         }
