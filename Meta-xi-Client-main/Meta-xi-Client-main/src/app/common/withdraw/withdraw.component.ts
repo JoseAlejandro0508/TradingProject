@@ -64,12 +64,12 @@ export class WithdrawComponent implements OnInit, OnDestroy {
 
   // ─── Quick Amounts ───────────────────────────
   readonly QUICK_AMOUNTS_COP = [
-    10000, 20000, 30000, 50000, 100000, 500000, 1000000, 5000000,
+    10000, 20000, 30000, 40000, 50000, 100000, 1000000, 2000000,5000000
   ];
   readonly QUICK_AMOUNTS_USDT = [5, 10, 20, 50, 100, 200, 500, 1000];
 
   // ─── Constants (base values in COP) ──────────
-  private readonly MIN_AMOUNT_COP = 20000;
+  private readonly MIN_AMOUNT_COP = 10000;
   private readonly MAX_AMOUNT_COP = 10000000;
   private readonly USDT_CONVERSION_RATE = 3600; // COP to USDT
   private readonly FEE_RATE = 0.15; // 15% commission

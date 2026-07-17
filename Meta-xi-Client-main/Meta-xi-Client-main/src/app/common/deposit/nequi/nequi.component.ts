@@ -19,7 +19,7 @@ interface PresetAmount {
   styleUrl: './nequi.component.scss',
 })
 export class NequiComponent implements OnInit {
-  readonly MIN_AMOUNT = 50000;
+  readonly MIN_AMOUNT = 30000;
 
   saldo = 0;
   username: string = localStorage.getItem('username') || '';
@@ -30,14 +30,15 @@ export class NequiComponent implements OnInit {
   displayAmount = '';
 
   presets: PresetAmount[] = [
-    { value: 20000, label: '20.000' },
+    { value: 30000, label: '30.000' },
+    { value: 50000, label: '50.000' },
     { value: 100000, label: '100.000' },
-    { value: 200000, label: '200.000' },
-    { value: 600000, label: '600.000' },
-    { value: 1000000, label: '1.000.000' },
-    { value: 3000000, label: '3.000.000' },
-    { value: 5000000, label: '5.000.000' },
-    { value: 10000000, label: '10.000.000' },
+    { value: 150000, label: '150.000' },
+    { value: 300000, label: '300.000' },
+    { value: 500000, label: '500.000' },
+    { value: 800000, label: '800.000' },
+    { value: 1000000, label: '1000.000' },
+    { value: 1600000, label: '1600.000' },
   ];
 
   constructor(private http: HttpClient) {}

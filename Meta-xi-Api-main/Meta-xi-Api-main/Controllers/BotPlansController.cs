@@ -42,7 +42,7 @@ public class BotPlansController : ControllerBase
                 BuyPercentage = bp.BuyPercentage ?? 50,
                 SellPercentage = bp.SellPercentage ?? 50,
                 IconColor = bp.IconColor ?? "#2962ff",
-                TotalProfitEstimate = bp.TotalProfitEstimate ?? (bp.DailyProfitEstimate * bp.DurationDays)
+                TotalProfitEstimate = (bp.DailyProfitEstimate * bp.DurationDays)
             })
             .ToListAsync();
 
