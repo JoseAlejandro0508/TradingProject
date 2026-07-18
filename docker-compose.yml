@@ -50,7 +50,7 @@ services:
     environment:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - ADMIN_IDS=${ADMIN_IDS}
-      - API_BASE_URL=http://api:5000
+      - API_BASE_URL=${API_BASE_URL:-http://api:5071}
       - ADMIN_API_KEY=${ADMIN_API_KEY}
     depends_on:
       - api
@@ -65,7 +65,7 @@ services:
     environment:
       - CHAT_BOT_TOKEN=${CHAT_BOT_TOKEN}
       - ADMIN_IDS=${ADMIN_IDS}
-      - API_BASE_URL=http://api:5000
+      - API_BASE_URL=${API_BASE_URL:-http://api:5071}
       - ADMIN_API_KEY=${ADMIN_API_KEY}
     depends_on:
       - api
