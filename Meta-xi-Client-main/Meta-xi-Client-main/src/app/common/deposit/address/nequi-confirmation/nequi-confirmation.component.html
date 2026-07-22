@@ -1,11 +1,11 @@
-<!-- Background -->
-
+<!-- Background
+ 
 <div class="bg-container">
   <div class="bg-yellow-diagonal"></div>
   <div class="bg-red-diamond"></div>
 </div>
 
-<!-- Payment View -->
+
 <div class="main-content" [style.display]="showSuccess ? 'none' : 'flex'">
   <div class="logo-container">
     <div class="dot"></div>
@@ -17,7 +17,7 @@
   <p class="amount">{{ displayAmount }}</p>
 
   <div class="qr-box">
-    <!--<img [src]="qrUrl" alt="Código QR Nequi" (error)="handleQrError($event)" />-->
+    
     <img src="assets/qr/Nequi.jpg" alt="Código QR Nequi" (error)="handleQrError($event)" />
 
 
@@ -52,7 +52,7 @@
   </button>
 </div>
 
-<!-- Success Screen -->
+
 <div class="success-screen" [style.display]="showSuccess ? 'flex' : 'none'">
   <div class="logo-container">
     <div class="dot"></div>
@@ -67,4 +67,89 @@
   </p>
 
   <button class="btn btn-white"  [routerLink]="['/home']">Cerrar</button>
+</div>
+ -->
+<div class="card">
+  <div id="payment-screen" [style.display]="showSuccess ? 'none' : 'block'">
+    <div class="logo-section">
+      <div class="logo-diamond"></div>
+      <div class="logo-text">NEQUI</div>
+    </div>
+
+    <div class="label-gray">Número de pedido</div>
+    <div class="order-number">{{ orderNumber }}</div>
+
+    <div class="amount-text">COP {{ displayAmount }}</div>
+    <div class="timer-text" id="countdown">{{displayTime}}</div>
+
+    <hr class="divider" />
+    <div class="qr-instruction">
+      Abra la aplicación NEQUI y escanee el código QR para pagar.
+    </div>
+
+    <div class="qr-placeholder">
+      <img
+        src="assets/qr/Nequi.jpeg"
+        alt="Código QR Nequi"
+        (error)="handleQrError($event)"
+      />
+    </div>
+    <div class="addr-box">
+      <span class="addr-text">{{ walletAddress }}</span>
+      <span class="copy-btn" (click)="copyAddress($any($event).target)"
+        >COPIAR</span
+      >
+    </div>
+
+    <div class="reference-container">
+      <label>Referencia</label>
+      <input
+        type="text"
+        placeholder="Por favor ingrese una referencia"
+        [(ngModel)]="reference"
+      />
+    </div>
+
+    <button
+      class="btn-green"
+      [class.inactive]="!canConfirm"
+      [disabled]="!canConfirm"
+      [attr.aria-busy]="submitting"
+      [attr.aria-disabled]="!canConfirm"
+      (click)="onConfirm()"
+    >
+      <span *ngIf="!submitting">He Pagado</span>
+      <span *ngIf="submitting">Enviando...</span>
+    </button>
+
+    <div class="attention-card">
+      <div class="attention-title">Atención</div>
+      <ul class="attention-list">
+        <li>
+          1. Tome una captura de pantalla y guarde el código QR, abra el
+          programa NEQUI y escanee el código para pagar.
+        </li>
+        <li>2. Pague, copie su referencia.</li>
+        <li>
+          3. Regrese aquí pegue la referencia y completa la recarga antes de que
+          termine el tiempo.
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div
+    id="verification-screen"
+    [style.display]="!showSuccess ? 'none' : 'block'"
+  >
+    <div class="clock-icon"></div>
+    <h2 class="waiting-title">Espere por favor</h2>
+    <p class="waiting-text">Su pedido está siendo verificado.</p>
+
+    <div class="order-number" style="margin-bottom: 30px">
+      Número de pedido: {{ orderNumber }}
+    </div>
+
+    <button class="btn btn-white" [routerLink]="['/home']">Cerrar</button>
+  </div>
 </div>

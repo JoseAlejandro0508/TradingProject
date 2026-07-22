@@ -310,30 +310,31 @@
 }
 
 .addr-box {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--btn-bg);
-  padding: 6px 10px;
-  border-radius: 8px;
-  margin-top: 4px;
-}
+    display: flex;
+      justify-content: space-between;
+        align-items: center;
+          background: var(--btn-bg);
+            padding: 6px 10px;
+              border-radius: 8px;
+                margin-top: 4px;
+                }
 
-.addr-text {
-  font-size: 10px;
-  color: var(--text-muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 180px;
-}
+                .addr-text {
+                  font-size: 10px;
+                    color: var(--text-muted);
+                      overflow: hidden;
+                        text-overflow: ellipsis;
+                          white-space: nowrap;
+                            max-width: 180px;
+                            }
 
-.copy-btn {
-  color: var(--primary);
-  font-size: 10px;
-  font-weight: 700;
-  cursor: pointer;
-}
+                            .copy-btn {
+                              color: var(--primary);
+                                font-size: 10px;
+                                  font-weight: 700;
+                                    cursor: pointer;
+                                    }
+
 
 .stepper-container {
   display: flex;

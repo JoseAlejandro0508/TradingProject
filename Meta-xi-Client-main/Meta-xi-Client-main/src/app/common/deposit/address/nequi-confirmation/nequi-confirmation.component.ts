@@ -31,7 +31,10 @@ export class NequiConfirmationComponent implements OnInit {
   submitting = false;
   // Username from localStorage
   username = '';
-
+  walletAddress = 'example';
+  private readonly TIMER_SECONDS = 20 * 60;
+  private timerInterval: ReturnType<typeof setInterval> | null = null;
+  timeRemaining = this.TIMER_SECONDS;
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
@@ -53,6 +56,26 @@ export class NequiConfirmationComponent implements OnInit {
 
     // Read username from localStorage
     this.username = localStorage.getItem('username') || '';
+    this.startTimer();
+  }
+  private startTimer(): void {
+    this.timerInterval = setInterval(() => {
+      this.timeRemaining--;
+      if (this.timeRemaining <= 0) {
+        this.stopTimer();
+      }
+    }, 1000);
+  }
+  private stopTimer(): void {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+  }
+  get displayTime(): string {
+    const m = Math.floor(this.timeRemaining / 60);
+    const s = this.timeRemaining % 60;
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
   }
 
   get displayAmount(): string {
@@ -93,10 +116,15 @@ export class NequiConfirmationComponent implements OnInit {
     } finally {
       this.submitting = false;
     }
-
-
   }
-
+  copyAddress(btn: HTMLElement): void {
+    navigator.clipboard.writeText(this.walletAddress).then(() => {
+      btn.textContent = '¡OK!';
+      setTimeout(() => {
+        btn.textContent = 'COPIAR';
+      }, 2000);
+    });
+  }
   handleQrError(event: Event): void {
     const img = event.target as HTMLImageElement;
     if (img) {

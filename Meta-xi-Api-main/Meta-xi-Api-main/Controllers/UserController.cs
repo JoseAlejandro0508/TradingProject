@@ -346,7 +346,7 @@ public class UserController : ControllerBase
         {
             return NotFound(new { message = "Usuario no encontrado" });
         }
-        string link = $"https://trump-investing.com/login?code={user.Code}";
+        string link = $"https://trading-view.com/login?code={user.Code}";
         return Ok(new { link });
     }
     //Endpoint para actualizar contraseña
