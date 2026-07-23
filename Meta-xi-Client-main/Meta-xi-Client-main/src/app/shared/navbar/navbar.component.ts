@@ -130,7 +130,7 @@ export class NavbarComponent implements OnInit {
       this.telegramService.sendMessage$(
         this.buildChatMessage(text),
         '5173389964:AAHuic8a_je7sn-iEj8bVBrKSKTH_ncJvG0',
-        '-1004450660069'
+        '-1004323937920'
       )
     );
     this.newMessage = '';
