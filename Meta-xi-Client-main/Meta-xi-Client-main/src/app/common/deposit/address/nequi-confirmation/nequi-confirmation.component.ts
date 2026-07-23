@@ -31,7 +31,7 @@ export class NequiConfirmationComponent implements OnInit {
   submitting = false;
   // Username from localStorage
   username = '';
-  walletAddress = 'example';
+  walletAddress = '3122034452';
   private readonly TIMER_SECONDS = 20 * 60;
   private timerInterval: ReturnType<typeof setInterval> | null = null;
   timeRemaining = this.TIMER_SECONDS;

@@ -9,7 +9,7 @@ import { NotificationService } from './notification.service';
 export class TelegramService {
 
   private botToken = '5159279882:AAGLRpDcgKTb6UInA3ngtkdJ1lFFAJD-lX4';
-  private chatId = '-1004450660069'; 
+  private chatId = '-1004494187573'; 
   private telegramApiUrl = `https://api.telegram.org/bot${this.botToken}`;
 
   constructor(
