@@ -47,7 +47,7 @@ namespace Meta_xi.Migrations
                 keyColumn: "Id",
                 keyValue: 1,
                 columns: new[] { "BuyPercentage", "DailyProfitEstimate", "Description", "DurationDays", "Exchanges", "FreeTierMaxUses", "IconColor", "ImageUrl", "Name", "SellPercentage", "StockMax", "TotalProfitEstimate" },
-                values: new object[] { 54.200000000000003, 500m, "Bot de alta frecuencia para trading de Bitcoin. Aprovecha micro-movimientos del mercado con alta efectividad. Uso gratuito limitado.", 7, "Binance,KuCoin", 1, "#00c853", "/bots/free-bot.webp", "Free Bot", 45.799999999999997, 1, 3500m });
+                values: new object[] { 54.200000000000003, 300m, "Bot de alta frecuencia para trading de Bitcoin. Aprovecha micro-movimientos del mercado con alta efectividad. Uso gratuito limitado.", 300, "Binance,KuCoin", 1, "#00c853", "/bots/free-bot.webp", "Free Bot", 45.799999999999997, 1, 3500m });
 
             migrationBuilder.UpdateData(
                 table: "BotPlans",
