@@ -14,7 +14,7 @@ services:
       - JwtSettings__Secret=${JWT_SECRET:-super secret key for new project with the 512 bytes patreon , thanks for user my app}
       - ADMIN_API_KEY=${ADMIN_API_KEY:-default-api-key-change-me}
     volumes:
-      - ./Data:/app/Data
+      - sqlite-data:/app/Data
     ports:
       - "5000:5071"
     networks:
