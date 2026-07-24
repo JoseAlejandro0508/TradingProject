@@ -22,8 +22,8 @@ public class ReferService
    
         Dictionary<int, float> Comision = new Dictionary<int, float>
         {
-            { 1, 0.04f },
-            { 2, 0.03f },
+            { 1, 0.08f },
+            { 2, 0.04f },
             { 3, 0.02f },
             { 4, 0.01f }
 

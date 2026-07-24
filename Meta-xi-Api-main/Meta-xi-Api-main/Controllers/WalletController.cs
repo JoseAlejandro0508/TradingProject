@@ -252,7 +252,7 @@ public class WalletController : ControllerBase
         }
 
         // Validate amount limits
-        if (request.Amount < 20000)
+        if (request.Amount < 10000)
         {
             return BadRequest(new { message = "Monto mínimo de retiro: 20,000 COP" });
         }
@@ -288,7 +288,7 @@ public class WalletController : ControllerBase
         }
 
         // Compute fee (8%)
-        float fee = request.Amount * 0.08f;
+        float fee = request.Amount * 0.1f;
         float netAmount = request.Amount - fee;
 
         // Deduct from wallet

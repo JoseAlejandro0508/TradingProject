@@ -115,8 +115,8 @@ public class ReferController : ControllerBase
         };
         Dictionary<int, double> Comision = new Dictionary<int, double>
         {
-            { 1, 0.04 },
-            { 2, 0.03 },
+            { 1, 0.08 },
+            { 2, 0.04 },
             { 3, 0.02 },
             { 4, 0.01 }
 

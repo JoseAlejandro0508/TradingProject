@@ -72,7 +72,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
   private readonly MIN_AMOUNT_COP = 10000;
   private readonly MAX_AMOUNT_COP = 10000000;
   private readonly USDT_CONVERSION_RATE = 3600; // COP to USDT
-  private readonly FEE_RATE = 0.15; // 15% commission
+  private readonly FEE_RATE = 0.10; // 15% commission
 
   // ─── Computed Min/Max based on currency ──────
   get MIN_AMOUNT(): number {

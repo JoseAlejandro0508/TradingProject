@@ -98,7 +98,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       // Load available bots
       const bots = await this.botPlanService.getAvailableBots();
       this.freeBot = bots.find(b => b.isFreeTier) || null;
-      
+
       // Load active plans
       this.activePlans = await this.botPlanService.getMyActiveBots(this.username);
       this.activePlans.filter(plan => plan.status != 'Ended');
@@ -138,20 +138,21 @@ export class HomeComponent implements OnInit, OnDestroy {
       // Calculate hourly and daily based on the bot plan
       const bot = this.freeBot;
       if (bot) {
-        this.hourlyEarnings = parseFloat((bot.dailyProfitEstimate / 24).toFixed(2));
-        this.dailyEarnings = parseFloat(bot.dailyProfitEstimate.toFixed(2));
+        this.hourlyEarnings = parseFloat((bot.dailyProfitEstimate / 24+this.EarnPerSecond*3600).toFixed(2));
+        this.dailyEarnings = parseFloat((bot.dailyProfitEstimate+this.EarnPerSecond*3600*24).toFixed(2));
       } else {
-        this.hourlyEarnings = parseFloat((this.activeFreePlan.dailyProfitEstimate / 24).toFixed(2));
-        this.dailyEarnings = parseFloat(this.activeFreePlan.dailyProfitEstimate.toFixed(2));
+        this.hourlyEarnings = parseFloat((this.activeFreePlan.dailyProfitEstimate / 24+this.EarnPerSecond*3600).toFixed(2));
+        this.dailyEarnings = parseFloat((this.activeFreePlan.dailyProfitEstimate+this.EarnPerSecond*3600*24).toFixed(2));
       }
-      
+
+
       this.startEarningsSimulation();
     } else {
 
       this.isBotRunning = false;
       this.liveEarnings = 0;
-      this.hourlyEarnings = 0;
-      this.dailyEarnings = 0;
+      this.hourlyEarnings = parseFloat((this.EarnPerSecond*3600).toFixed(2));
+      this.dailyEarnings =  parseFloat((this.EarnPerSecond*3600*24).toFixed(2));;
     }
   }
 

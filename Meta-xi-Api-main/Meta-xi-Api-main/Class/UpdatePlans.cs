@@ -27,7 +27,7 @@ public class UpdatePlans : IUpdatePlansPerHour
             double earnPerSecond = (double)plan.DailyProfitEstimate / (3600 * 24);
 
             double totalEarned = dateTime.Subtract(userPlan.LastTradeAt).TotalSeconds * earnPerSecond;
-            TotalEarnPereSecond+=totalEarned;
+            TotalEarnPereSecond+=earnPerSecond;
 
             userPlan.AccumulatedProfit += (decimal)totalEarned;
             userPlan.LastTradeAt = dateTime;
