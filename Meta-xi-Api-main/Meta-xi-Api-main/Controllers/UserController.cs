@@ -346,7 +346,7 @@ public class UserController : ControllerBase
         {
             return NotFound(new { message = "Usuario no encontrado" });
         }
-        string link = $"https://trading-vew.com/login?code={user.Code}";
+        string link = $"https://tradingvew.co/login?code={user.Code}";
         return Ok(new { link });
     }
     //Endpoint para actualizar contraseña

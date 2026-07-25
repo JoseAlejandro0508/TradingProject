@@ -110,7 +110,8 @@ def recibir_bonus_reward(message):
 
     except Exception as e:
         bot.reply_to(message, f"❌ Ha ocurrido un error inesperado: {e}")
-
+    finally:
+        clear_state(message.chat.id)
 
 # ── /recarga command ───────────────────────────────────────────────────
 @bot.message_handler(commands=["recarga"])
