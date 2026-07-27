@@ -69,6 +69,27 @@
   <button class="btn btn-white"  [routerLink]="['/home']">Cerrar</button>
 </div>
  -->
+<div class="guide">
+  <div [style.display]="showAtention ? 'block' : 'none'" class="attention-card">
+    <div class="attention-title">Atención</div>
+    <ul class="attention-list">
+      <li>
+        1. Tome una captura de pantalla y guarde el código QR, abra el programa
+        NEQUI y escanee el código para pagar.
+      </li>
+      <li>2. Pague, copie su referencia.</li>
+      <li>
+        3. Regrese aquí pegue la referencia y completa la recarga antes de que
+        termine el tiempo.
+      </li>
+    </ul>
+    <button class="btn-green" (click)="switchGuia()">
+      <span *ngIf="showAtention">Cerrar Guia </span>
+      <span *ngIf="!showAtention">Ver Guia</span>
+    </button>
+  </div>
+</div>
+
 <div class="card">
   <div id="payment-screen" [style.display]="showSuccess ? 'none' : 'block'">
     <div class="logo-section">
@@ -80,7 +101,7 @@
     <div class="order-number">{{ orderNumber }}</div>
 
     <div class="amount-text">COP {{ displayAmount }}</div>
-    <div class="timer-text" id="countdown">{{displayTime}}</div>
+    <div class="timer-text" id="countdown">{{ displayTime }}</div>
 
     <hr class="divider" />
     <div class="qr-instruction">
@@ -109,32 +130,25 @@
         [(ngModel)]="reference"
       />
     </div>
-
-    <button
-      class="btn-green"
-      [class.inactive]="!canConfirm"
-      [disabled]="!canConfirm"
-      [attr.aria-busy]="submitting"
-      [attr.aria-disabled]="!canConfirm"
-      (click)="onConfirm()"
-    >
-      <span *ngIf="!submitting">He Pagado</span>
-      <span *ngIf="submitting">Enviando...</span>
-    </button>
-
-    <div class="attention-card">
-      <div class="attention-title">Atención</div>
-      <ul class="attention-list">
-        <li>
-          1. Tome una captura de pantalla y guarde el código QR, abra el
-          programa NEQUI y escanee el código para pagar.
-        </li>
-        <li>2. Pague, copie su referencia.</li>
-        <li>
-          3. Regrese aquí pegue la referencia y completa la recarga antes de que
-          termine el tiempo.
-        </li>
-      </ul>
+    <div class="info-text">
+      Para completar su pedido, rellene los siguientes datos
+    </div>
+    <div class="buttons-container">
+      <button class="btn-green" (click)="switchGuia()">
+        <span *ngIf="showAtention">Cerrar Guia </span>
+        <span *ngIf="!showAtention">Ver Guia</span>
+      </button>
+      <button
+        class="btn-green"
+        [class.inactive]="!canConfirm"
+        [disabled]="!canConfirm"
+        [attr.aria-busy]="submitting"
+        [attr.aria-disabled]="!canConfirm"
+        (click)="onConfirm()"
+      >
+        <span *ngIf="!submitting">He Pagado</span>
+        <span *ngIf="submitting">Enviando...</span>
+      </button>
     </div>
   </div>
 

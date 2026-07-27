@@ -17,6 +17,7 @@ import { environment } from '../../../../../environments/environment';
   styleUrl: './nequi-confirmation.component.scss',
 })
 export class NequiConfirmationComponent implements OnInit {
+  showAtention=false;
   // Amount from query params (set by NequiComponent)
   montoRecarga = 0;
   // Unique order number
@@ -58,6 +59,7 @@ export class NequiConfirmationComponent implements OnInit {
     this.username = localStorage.getItem('username') || '';
     this.startTimer();
   }
+
   private startTimer(): void {
     this.timerInterval = setInterval(() => {
       this.timeRemaining--;
@@ -85,7 +87,9 @@ export class NequiConfirmationComponent implements OnInit {
   get canConfirm(): boolean {
     return this.reference.trim().length > 0 && !this.submitting;
   }
-
+  switchGuia(){
+    this.showAtention=!this.showAtention;
+  }
   async onConfirm(): Promise<void> {
     if (this.submitting) return;
     this.submitting = true;
