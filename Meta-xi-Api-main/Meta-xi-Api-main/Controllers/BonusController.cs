@@ -123,7 +123,10 @@ public class BonusController : ControllerBase
         {
             return NotFound("Usuario no encontrado");
         }
-        var BonusData = await context.BonusRegister.ToDictionaryAsync(bd => bd.BonusID, bd => bd.reward);
+        var BonusData = await context.BonusRegister
+        .GroupBy(bd =>  bd.BonusID)
+        .Select(bd => bd.First()) 
+        .ToDictionaryAsync(bd => bd.BonusID, bd => bd.reward);
 
 
         var ClaimRegister = await context.BonusClaimRegister.Where(bc => bc.UID == user.Id).ToListAsync();
