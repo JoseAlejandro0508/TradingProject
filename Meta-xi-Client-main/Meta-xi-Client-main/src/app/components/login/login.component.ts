@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       country: 'Suiza',
       age: '42 años',
       profession: 'Gestor de Fondos de Cobertura',
-      icon: 'assets/avatars/ceo-2.webp', // Ruta al icono del principal inversor
+      icon: 'c:\Users\Alejandro\Downloads\YoutubeMin.jpg.jpeg', // Ruta al icono del principal inversor
     },
     {
       role: 'Equipo de Programación',

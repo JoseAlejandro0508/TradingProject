@@ -1,0 +1,103 @@
+.recharge-container {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.recharge-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-main);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.methods-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-method-select {
+  width: 100%;
+  border-radius: 16px;
+  padding: 14px 16px;
+  background: var(--btn-bg);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    transform: translateY(-1px);
+    background: var(--btn-hover);
+    border-color: var(--primary);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.btn-method-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.btn-logo-box {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--btn-logo-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.method-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.arrow-icon {
+  color: var(--text-muted);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* Brand-colored logo box borders */
+.btn-nequi .btn-logo-box {
+  border: 1px solid rgba(218, 0, 119, 0.2);
+}
+
+.btn-daviplata .btn-logo-box {
+  border: 1px solid rgba(230, 0, 0, 0.2);
+}
+
+.btn-trc20 .btn-logo-box {
+  border: 1px solid rgba(0, 147, 147, 0.2);
+}
+
+.btn-bep20 .btn-logo-box {
+  border: 1px solid rgba(243, 186, 47, 0.2);
+}

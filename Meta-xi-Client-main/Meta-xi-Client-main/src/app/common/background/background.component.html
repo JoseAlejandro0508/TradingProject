@@ -1,9 +1,18 @@
 <app-top-notification />
-<app-navbar *ngIf="!hideNavAndButtons"/>
-<main *ngIf="!noPadding" class="box-border margin mb-20 ">
+<app-navbar *ngIf="!hideNavAndButtons" />
+<main *ngIf="!noPadding" class="box-border margin mb-20">
   <router-outlet />
 </main>
 <main *ngIf="noPadding" class="box-border">
   <router-outlet />
 </main>
+<div *ngIf="!hideNavAndButtons" class="watsapp-chat" >
+  <a
+    href="https://chat.whatsapp.com/EiaLv7VdDcv1Jrzh0MgYhf?s=cl&p=i&ilr=4&amv=2"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <img [src]="'assets/social/watshao-icon.webp'" />
+  </a>
+</div>
 <app-buttons *ngIf="!hideNavAndButtons" />

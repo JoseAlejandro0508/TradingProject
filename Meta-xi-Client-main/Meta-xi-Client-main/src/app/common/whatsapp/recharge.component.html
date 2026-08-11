@@ -1,0 +1,49 @@
+<div class="recharge-container">
+  <h1 class="recharge-title">Seleccione el canal de recarga</h1>
+
+  <div class="methods-list">
+    <!-- Nequi -->
+    <button class="btn-method-select btn-nequi" [routerLink]="['/deposit', 'nequi']">
+      <div class="btn-method-content">
+        <div class="btn-logo-box">
+          <img src="assets/token/nequi-account.png" alt="Nequi" />
+        </div>
+        <span class="method-name">Nequi</span>
+      </div>
+      <span class="arrow-icon">&#x2794;</span>
+    </button>
+
+    <!-- DaviPlata -->
+    <button class="btn-method-select btn-daviplata" [routerLink]="['/deposit', 'daviplata']">
+      <div class="btn-method-content">
+        <div class="btn-logo-box">
+          <img src="assets/token/daviplata.png" alt="DaviPlata" />
+        </div>
+        <span class="method-name">DaviPlata</span>
+      </div>
+      <span class="arrow-icon">&#x2794;</span>
+    </button>
+
+    <!-- USDT-TRC20 -->
+    <button class="btn-method-select btn-trc20" [routerLink]="['/deposit', 'usdt-trc20']">
+      <div class="btn-method-content">
+        <div class="btn-logo-box">
+          <img src="assets/token/usdt-trc20.png" alt="USDT-TRC20" />
+        </div>
+        <span class="method-name">USDT-TRC20</span>
+      </div>
+      <span class="arrow-icon">&#x2794;</span>
+    </button>
+
+    <!-- USDT-BEP20 -->
+    <button class="btn-method-select btn-bep20" [routerLink]="['/deposit', 'usdt-bep20']">
+      <div class="btn-method-content">
+        <div class="btn-logo-box">
+          <img src="assets/token/usdt-bep20.jpg" alt="USDT-BEP20" />
+        </div>
+        <span class="method-name">USDT-BEP20</span>
+      </div>
+      <span class="arrow-icon">&#x2794;</span>
+    </button>
+  </div>
+</div>
