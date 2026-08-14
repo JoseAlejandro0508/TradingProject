@@ -88,7 +88,7 @@ namespace Meta_xi.Controllers
     {
         public string Message { get; set; }
         public string? CustomToken { get; set; }
-        public string? CustomChatId { get; set; }
+
     }
 
     public class SendPhotoRequest
