@@ -128,9 +128,7 @@ export class NavbarComponent implements OnInit {
     this.messages.push({ type: 'user', text });
     await firstValueFrom(
       this.telegramService.sendMessage$(
-        this.buildChatMessage(text),
-        '5173389964:AAHuic8a_je7sn-iEj8bVBrKSKTH_ncJvG0',
-        '-1004323937920'
+        this.buildChatMessage(text)
       )
     );
     this.newMessage = '';

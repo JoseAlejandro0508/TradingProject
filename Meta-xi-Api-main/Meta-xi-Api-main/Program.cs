@@ -1,15 +1,22 @@
 using Meta_xi.Application;
+using Meta_xi.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using DotNetEnv;
+
+
+
+// Cargar el archivo .env
 
 var builder = WebApplication.CreateBuilder(args);
-
+DotNetEnv.Env.Load();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
-builder.Services.AddSwaggerGen(c =>{
-    c.SwaggerDoc("v1", new OpenApiInfo{ Title = "Meta-xi" , Version = "v1" });
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Meta-xi", Version = "v1" });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -53,6 +60,7 @@ builder.Services.AddScoped<TaskService>();
 builder.Services.AddScoped<ReferService>();
 builder.Services.AddScoped<UpdatePlans>();
 builder.Services.AddHostedService<UpdateServicePerHour>();
+builder.Services.AddHttpClient<ITelegramService, TelegramService>();
 
 
 // JWT Secret desde variable de entorno
@@ -70,8 +78,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     };
 });
 
-builder.Services.AddCors(option =>{
-    option.AddPolicy("AllowAngularApp", builder=>{
+builder.Services.AddCors(option =>
+{
+    option.AddPolicy("AllowAngularApp", builder =>
+    {
         builder.AllowAnyOrigin()
         .AllowAnyHeader()
         .AllowAnyMethod();
@@ -86,10 +96,11 @@ using (var scope = app.Services.CreateScope())
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(c =>{
-        c.SwaggerEndpoint("/swagger/v1/swagger.json" , "Meta-xi v1");
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Meta-xi v1");
     }
-    
+
     );
 }
 app.UseCors("AllowAngularApp");

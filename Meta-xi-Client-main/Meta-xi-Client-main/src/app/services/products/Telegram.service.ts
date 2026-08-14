@@ -1,29 +1,25 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { NotificationService } from './notification.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TelegramService {
+  private http = inject(HttpClient);
+  private notificationService = inject(NotificationService);
+  private telegramApiUrl = `${environment.apiUrl}/Telegram`;
 
-  private botToken = '5159279882:AAGLRpDcgKTb6UInA3ngtkdJ1lFFAJD-lX4';
-  private chatId = '-1004494187573'; 
-  private telegramApiUrl = `https://api.telegram.org/bot${this.botToken}`;
-
-  constructor(
-    private http: HttpClient,
-    private notificationService: NotificationService
-  ) {}
+  constructor() {}
 
   sendPhoto(photo: File, caption: string): void {
     const formData = new FormData();
-    formData.append('chat_id', this.chatId);
     formData.append('photo', photo);
     formData.append('caption', caption);
 
-    this.http.post(`${this.telegramApiUrl}/sendPhoto`, formData).subscribe({
+    this.http.post(`${this.telegramApiUrl}/send-photo`, formData).subscribe({
       next: (response) => {
         console.log('Photo sent successfully:', response);
         this.notificationService.correct('Foto enviada correctamente.');
@@ -37,13 +33,13 @@ export class TelegramService {
     });
   }
 
-  sendMessage$(message: string,Token:string=this.botToken,ChatId:string=this.chatId): Observable<any> {
+  sendMessage$(message: string, token?: string): Observable<any> {
     const payload = {
-      chat_id: ChatId,
-      text: message,
+      message: message,
+      customToken: token,
+
     };
-    const API= `https://api.telegram.org/bot${Token}`;
-    return this.http.post(`${API}/sendMessage`, payload);
+    return this.http.post(`${this.telegramApiUrl}/send-message`, payload);
   }
 
   sendMessage(message: string): void {
