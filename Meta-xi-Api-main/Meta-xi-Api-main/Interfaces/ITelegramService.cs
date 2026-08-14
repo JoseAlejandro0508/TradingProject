@@ -4,7 +4,7 @@ namespace Meta_xi.Interfaces
 {
     public interface ITelegramService
     {
-        Task<bool> SendMessageAsync(string message, string? customToken = null, string? customChatId = null);
+        Task<bool> SendMessageAsync(string message, string? customToken = null);
         Task<bool> SendPhotoAsync(string filePath, string caption);
     }
 }

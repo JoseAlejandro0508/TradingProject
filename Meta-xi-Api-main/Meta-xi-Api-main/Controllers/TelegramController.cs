@@ -28,8 +28,7 @@ namespace Meta_xi.Controllers
 
             var success = await _telegramService.SendMessageAsync(
                 request.Message,
-                request.CustomToken,
-                request.CustomChatId
+                request.CustomToken
             );
 
             if (success)
