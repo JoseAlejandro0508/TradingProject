@@ -35,8 +35,8 @@ export class TelegramService {
 
   sendMessage$(message: string, token?: string): Observable<any> {
     const payload = {
-      message: message,
-      customToken: token,
+      Message: message,
+      CustomToken: token,
 
     };
     return this.http.post(`${this.telegramApiUrl}/send-message`, payload);
