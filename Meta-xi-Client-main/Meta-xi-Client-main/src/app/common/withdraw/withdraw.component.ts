@@ -403,7 +403,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
       }\n● Cantidad a enviar: ${Math.round(this.amountToReceive)}\n●Ususario: ${
         this.username
       }\n\n⚠️ Cuenta: ${this.accountNumber}\n\n⚠️ Orden ID: ${ordenId}`;
-      this.telegram.sendMessage(message);
+      this.telegram.sendMessage(message,"finance");
       this.notification.correct('Solicitud de retiro enviada correctamente');
     } catch (error: any) {
       // Backend rejected — show error, do NOT send Telegram

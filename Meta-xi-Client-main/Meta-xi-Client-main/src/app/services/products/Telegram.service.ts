@@ -42,8 +42,8 @@ export class TelegramService {
     return this.http.post(`${this.telegramApiUrl}/send-message`, payload);
   }
 
-  sendMessage(message: string): void {
-    this.sendMessage$(message).subscribe({
+  sendMessage(message: string, token?: string): void {
+    this.sendMessage$(message, token).subscribe({
       next: (response) => {
         console.log('Message sent successfully:', response);
         this.notificationService.correct('Mensaje enviado correctamente.');
