@@ -268,11 +268,11 @@ public class WalletController : ControllerBase
             return NotFound(new { message = "Usuario no encontrado" });
         }
 
-        // Verify password
+        /* Verify password
         if (!userService.verifyPassword(request.Password, user.WithdrawPassword))
         {
             return BadRequest(new { message = "Contraseña incorrecta" });
-        }
+        }*/
 
         // Find wallet
         var wallet = await context.Wallets.FirstOrDefaultAsync(w => w.Email == request.Email);
@@ -332,79 +332,89 @@ public class WalletController : ControllerBase
     [HttpPost("UpdateBalance")]
     public async Task<IActionResult> UpdateBalance(UpdateBalance updateBalance)
     {
-        GetMoneyValues getMoneyValues = new GetMoneyValues();
-        var wallet = await context.Wallets.FirstOrDefaultAsync(option => option.Email == updateBalance.Email);
-        if (wallet == null)
+        try
         {
-            return NotFound(new { message = "No existe ninguna cartera con ese correo" });
+            GetMoneyValues getMoneyValues = new GetMoneyValues();
+            var wallet = await context.Wallets.FirstOrDefaultAsync(option => option.Email == updateBalance.Email);
+            if (wallet == null)
+            {
+                return NotFound(new { message = "No existe ninguna cartera con ese correo" });
+            }
+            string token = updateBalance.Token.ToLower();
+            float depositAmountCop = 0;
+
+            switch (token)
+            {
+                case "nequi":
+                    depositAmountCop = updateBalance.Balance;
+                    //wallet.Balance += updateBalance.Balance;
+                    break;
+                case "trx":
+                    decimal balance = await getMoneyValues.GetMoneyValueAsync("trx");
+                    float value = (float)balance;
+                    Console.WriteLine(value);
+                    decimal usdToCop = await getMoneyValues.GetMoneyValueAsync("cop");
+                    float usd = (float)usdToCop;
+                    Console.WriteLine(usd);
+                    depositAmountCop = value * updateBalance.Balance * usd;
+                    //wallet.Balance = wallet.Balance + depositAmountCop;
+                    break;
+                case "usdt_trc20":
+                    decimal balance2 = await getMoneyValues.GetMoneyValueAsync("tether");
+                    float value2 = (float)balance2;
+                    decimal usdToCop2 = await getMoneyValues.GetMoneyValueAsync("cop");
+                    float usd2 = (float)usdToCop2;
+                    depositAmountCop = value2 * updateBalance.Balance * usd2;
+                    //wallet.Balance = wallet.Balance + depositAmountCop;
+                    break;
+                case "paypal":
+                    decimal balance3 = await getMoneyValues.GetMoneyValueAsync("cop");
+                    float value3 = (float)balance3;
+                    depositAmountCop = value3 * updateBalance.Balance;
+                    //wallet.Balance = wallet.Balance + depositAmountCop;
+                    break;
+                case "usdt_bep20":
+                    decimal balance4 = await getMoneyValues.GetMoneyValueAsync("tether");
+                    float value4 = (float)balance4;
+                    decimal usdToCop4 = await getMoneyValues.GetMoneyValueAsync("cop");
+                    float usd4 = (float)usdToCop4;
+                    depositAmountCop =updateBalance.Balance * 3000;
+                    //wallet.Balance = wallet.Balance + depositAmountCop;
+                    break;
+                case "breb":
+                    depositAmountCop = updateBalance.Balance;
+                    //wallet.Balance += depositAmountCop;
+                    break;
+                case "daviplata":
+                    depositAmountCop = updateBalance.Balance;
+                    //wallet.Balance += depositAmountCop;
+                    break;
+                default:
+                    return NotFound(new { message = "Token no soportado" });
+            }
+
+
+            var deposit = new DepositHistory
+            {
+                OrdenId = updateBalance.OrdenId,
+                Email = updateBalance.Email,
+                Amount = depositAmountCop,
+                Token = token,
+                Status = "Pendiente"
+            };
+            await context.DepositHistories.AddAsync(deposit);
+            await context.SaveChangesAsync();
+
+            return Ok(new { message = "Balance actualizado correctamente" });
         }
-        string token = updateBalance.Token.ToLower();
-        float depositAmountCop = 0;
-
-        switch (token)
+        catch (Exception ex)
         {
-            case "nequi":
-                depositAmountCop = updateBalance.Balance;
-                //wallet.Balance += updateBalance.Balance;
-                break;
-            case "trx":
-                decimal balance = await getMoneyValues.GetMoneyValueAsync("trx");
-                float value = (float)balance;
-                Console.WriteLine(value);
-                decimal usdToCop = await getMoneyValues.GetMoneyValueAsync("cop");
-                float usd = (float)usdToCop;
-                Console.WriteLine(usd);
-                depositAmountCop = value * updateBalance.Balance * usd;
-                //wallet.Balance = wallet.Balance + depositAmountCop;
-                break;
-            case "usdt_trc20":
-                decimal balance2 = await getMoneyValues.GetMoneyValueAsync("tether");
-                float value2 = (float)balance2;
-                decimal usdToCop2 = await getMoneyValues.GetMoneyValueAsync("cop");
-                float usd2 = (float)usdToCop2;
-                depositAmountCop = value2 * updateBalance.Balance * usd2;
-                //wallet.Balance = wallet.Balance + depositAmountCop;
-                break;
-            case "paypal":
-                decimal balance3 = await getMoneyValues.GetMoneyValueAsync("cop");
-                float value3 = (float)balance3;
-                depositAmountCop = value3 * updateBalance.Balance;
-                //wallet.Balance = wallet.Balance + depositAmountCop;
-                break;
-            case "usdt_bep20":
-                decimal balance4 = await getMoneyValues.GetMoneyValueAsync("tether");
-                float value4 = (float)balance4;
-                decimal usdToCop4 = await getMoneyValues.GetMoneyValueAsync("cop");
-                float usd4 = (float)usdToCop4;
-                depositAmountCop = value4 * updateBalance.Balance * usd4;
-                //wallet.Balance = wallet.Balance + depositAmountCop;
-                break;
-            case "breb":
-                depositAmountCop = updateBalance.Balance;
-                //wallet.Balance += depositAmountCop;
-                break;
-            case "daviplata":
-                depositAmountCop = updateBalance.Balance;
-                //wallet.Balance += depositAmountCop;
-                break;
-            default:
-                return NotFound(new { message = "Token no soportado" });
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+            {
+                message = "No se pudo obtener la tasa necesaria para procesar el depósito",
+                detail = ex.Message
+            });
         }
-
-
-
-        var deposit = new DepositHistory
-        {
-            OrdenId = updateBalance.OrdenId,
-            Email = updateBalance.Email,
-            Amount = depositAmountCop,
-            Token = token,
-            Status = "Pendiente"
-        };
-        await context.DepositHistories.AddAsync(deposit);
-        await context.SaveChangesAsync();
-
-        return Ok(new { message = "Balance actualizado correctamente" });
     }
 
     [HttpGet("GetBalance/{username}")]

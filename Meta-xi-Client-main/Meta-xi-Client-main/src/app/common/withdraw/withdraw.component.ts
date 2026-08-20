@@ -232,13 +232,13 @@ export class WithdrawComponent implements OnInit, OnDestroy {
   }
 
   confirmWithdrawal(): void {
-    if (this.modalPassword.length !== 4) {
+    /*if (this.modalPassword.length !== 4) {
       alert('La contraseña de retiro debe tener exactamente 4 dígitos.');
       return;
-    }
-    this.password = this.modalPassword;
+    }*/
+    //this.password = this.modalPassword;
     this.validate();
-    this.closePasswordModal();
+    //this.closePasswordModal();
     this.requestWithdrawal();
   }
 
@@ -331,7 +331,7 @@ export class WithdrawComponent implements OnInit, OnDestroy {
     // Button unlock logic
     const allFilled =
       String(this.amount ?? '').length > 0 &&
-      this.password.length > 0;
+      (this.password.length > 0||true);
 
     this.canSubmit = allFilled && amt >= this.MIN_AMOUNT && capValid;
   }
@@ -364,15 +364,16 @@ export class WithdrawComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Verify withdrawal password first
+    /* Verify withdrawal password first
     const passwordValid = await this.verifyWithdrawPassword();
+
     if (!passwordValid) {
       this.submitting = false;
       return;
     }
 
     this.submitting = true;
-
+*/
     // Convert amount to COP for backend if currency is USDT
     const amountToSend = this.isCOP
       ? this.amount ?? 0

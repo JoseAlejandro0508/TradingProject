@@ -96,6 +96,7 @@ namespace Meta_xi.Application
         /// </summary>
         public async Task<bool> SendPhotoAsync(string filePath, string caption)
         {
+   
             try
             {
                 if (!File.Exists(filePath))
@@ -106,7 +107,7 @@ namespace Meta_xi.Application
 
                 using (var form = new MultipartFormDataContent())
                 {
-                    form.Add(new StringContent(_chatId), "chat_id");
+                    form.Add(new StringContent(_FinancechatId), "chat_id");
                     form.Add(new StringContent(caption), "caption");
 
                     using (var fileStream = File.OpenRead(filePath))
