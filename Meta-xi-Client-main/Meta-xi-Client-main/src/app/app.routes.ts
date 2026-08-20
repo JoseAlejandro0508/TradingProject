@@ -153,8 +153,8 @@ export const routes: Routes = [
   {
     path: 'deposit',
     loadComponent: () =>
-      import('./common/deposit/deposit.component').then(
-        (m) => m.DepositComponent
+      import('./common/recharge/recharge.component').then(
+        (m) => m.RechargeComponent
       ),
     canActivate: [authGuard],
   },

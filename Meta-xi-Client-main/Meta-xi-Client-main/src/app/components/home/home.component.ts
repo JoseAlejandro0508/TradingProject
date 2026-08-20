@@ -324,7 +324,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // ─── Navigation ──────────────────────────────────────
   navigateToRecharge(): void {
-    this.router.navigate(['/deposit/nequi']);
+    this.router.navigate(['/deposit']);
   }
 
   navigateToWithdraw(): void {

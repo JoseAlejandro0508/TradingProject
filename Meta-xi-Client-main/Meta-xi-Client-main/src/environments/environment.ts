@@ -5,6 +5,6 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:5071/api',
-  usdtBep20WalletAddress: '0x02B5288a7F7Ae0E06E101E919116F99BBd6ca6fd',
+  usdtBep20WalletAddress: '0xd6ee1e8aa94ef6d828e0f2ef0c93c83f42d796c1',
   usdtTrc20WalletAddress: 'TRxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 };
