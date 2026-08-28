@@ -203,6 +203,13 @@ npm start
    - JWT Secret anterior
 
 3. **HTTPS** — Instalar Certbot:
+   sudo apt update
+   sudo apt install -y nginx certbot python3-certbot-nginx
+   Copiar en /etc/nginx/sites-enabled/tudominio.com  el VPSNgnixConfig
+   sudo ln -s /etc/nginx/sites-available/tudominio.com /etc/nginx/sites-enabled/
+   sudo nginx -t
+   sudo systemctl reload nginx
+   sudo certbot --nginx -d tudominio.com -d www.tudominio.com
    ```bash
    apt install certbot python3-certbot-nginx
    certbot --nginx -d tu-dominio.com
