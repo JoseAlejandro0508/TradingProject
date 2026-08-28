@@ -346,7 +346,8 @@ public class UserController : ControllerBase
         {
             return NotFound(new { message = "Usuario no encontrado" });
         }
-        string link = $"https://tradingvip.co/login?code={user.Code}";
+        string _domain = Environment.GetEnvironmentVariable("DOMAIN");
+        string link = $"{_domain}/login?code={user.Code}";
         return Ok(new { link });
     }
     //Endpoint para actualizar contraseña
